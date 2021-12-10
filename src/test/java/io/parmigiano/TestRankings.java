@@ -1,6 +1,5 @@
 package io.parmigiano;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -118,16 +117,16 @@ class TestRankings {
     @Test
     void testNextOffset() {
         int[] sorted = {0, 0, 1, 3, 3, 3, 4, 4};
-        Assertions.assertEquals(1, Rankings.nextOffset(0, 0, sorted));
-        Assertions.assertEquals(-1, Rankings.nextOffset(1, 0, sorted));
-        Assertions.assertEquals(1, Rankings.nextOffset(3, 0, sorted));
-        Assertions.assertEquals(2, Rankings.nextOffset(3, 1, sorted));
-        Assertions.assertEquals(1, Rankings.nextOffset(4, 0, sorted));
-        Assertions.assertEquals(-1, Rankings.nextOffset(4, 1, sorted));
-        Assertions.assertEquals(-1, Rankings.nextOffset(5, 0, sorted));
-        Assertions.assertEquals(-2, Rankings.nextOffset(5, -1, sorted));
-        Assertions.assertEquals(1, Rankings.nextOffset(6, 0, sorted));
-        Assertions.assertEquals(-1, Rankings.nextOffset(7, 0, sorted));
+        assertEquals(1, Rankings.nextOffset(0, 0, sorted));
+        assertEquals(-1, Rankings.nextOffset(1, 0, sorted));
+        assertEquals(1, Rankings.nextOffset(3, 0, sorted));
+        assertEquals(2, Rankings.nextOffset(3, 1, sorted));
+        assertEquals(1, Rankings.nextOffset(4, 0, sorted));
+        assertEquals(-1, Rankings.nextOffset(4, 1, sorted));
+        assertEquals(-1, Rankings.nextOffset(5, 0, sorted));
+        assertEquals(-2, Rankings.nextOffset(5, -1, sorted));
+        assertEquals(1, Rankings.nextOffset(6, 0, sorted));
+        assertEquals(-1, Rankings.nextOffset(7, 0, sorted));
     }
 
     @Test

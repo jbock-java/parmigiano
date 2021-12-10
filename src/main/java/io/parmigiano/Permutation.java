@@ -18,18 +18,20 @@ import static io.parmigiano.ArrayUtil.negativeFailure;
  */
 public final class Permutation implements Comparable<Permutation> {
 
+    private static final Permutation IDENTITY = new Permutation(new int[0], false);
+
     /*
      *  An array of N integers where each of the integers between 0 and N-1 appear exactly once.
      *  This array is never modified, and no code outside of this class can have a reference to it.
      *  Because of this, Permutation instances are effectively immutable.
      */
     private final int[] ranking;
-
-    private static final Permutation IDENTITY = new Permutation(new int[0], false);
+    private final int hash;
 
     private Permutation(int[] ranking, boolean validate) {
         ranking = Rankings.trim(ranking);
         this.ranking = validate ? Rankings.checkRanking(ranking) : ranking;
+        this.hash = Arrays.hashCode(ranking);
     }
 
     public static Permutation define() {
@@ -308,7 +310,7 @@ public final class Permutation implements Comparable<Permutation> {
     }
 
     /**
-     * <p>Determine whether this permutation has at most one than one nontrivial orbit.</p>
+     * <p>Determine whether this permutation has at most one nontrivial orbit.</p>
      *
      * @return true if this permutation is a cycle
      * @see #defineCycle
@@ -446,7 +448,7 @@ public final class Permutation implements Comparable<Permutation> {
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(ranking);
+        return hash;
     }
 
     /**
@@ -721,7 +723,7 @@ public final class Permutation implements Comparable<Permutation> {
         return sorting(chars);
     }
 
-    public static final class TakingBuilder<E extends Comparable> {
+    public static final class TakingBuilder<E extends Comparable<E>> {
         private final E[] from;
 
         private TakingBuilder(E[] from) {
@@ -803,7 +805,7 @@ public final class Permutation implements Comparable<Permutation> {
         return new TakingBuilderInt(a);
     }
 
-    public static <E extends Comparable> TakingBuilder<E> taking(E[] a) {
+    public static <E extends Comparable<E>> TakingBuilder<E> taking(E[] a) {
         return new TakingBuilder<>(a);
     }
 
@@ -886,5 +888,4 @@ public final class Permutation implements Comparable<Permutation> {
     public static Stream<Permutation> symmetricGroup(int n) {
         return Rankings.symmetricGroup(n).map(a -> define(a, false));
     }
-
 }
