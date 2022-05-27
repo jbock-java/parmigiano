@@ -10,7 +10,7 @@ class TranspositionTest {
 
     @Test
     void testProd() {
-        Permutation p = Transposition.product(Transposition.swap(0, 1), Transposition.swap(1, 2));
+        Cycles p = Cycles.create(0, 1).compose(Cycles.create(1, 2));
         assertEquals("cab", p.apply("abc"));
     }
 

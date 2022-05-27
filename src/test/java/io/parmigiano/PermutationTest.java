@@ -294,7 +294,7 @@ class PermutationTest {
 
     @Test
     void testCycleLength() {
-        Cycles swap01 = Transposition.swap(0, 1).toPermutation();
+        Cycles swap01 = Cycles.create(0, 1);
         assertEquals(1, swap01.maxMovedIndex());
     }
 

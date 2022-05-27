@@ -2,8 +2,6 @@ package io.parmigiano;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.stream.Collectors;
-
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -78,12 +76,5 @@ class TestRankingsLong {
 
         // null because b is not a rearrangement of a
         assertNull(Rankings.from(a, b));
-    }
-
-    @Test
-    void testNum() {
-        for (Permutation p : Permutation.symmetricGroup(4).collect(Collectors.toList())) {
-            System.out.print(p.apply("7319") + ", ");
-        }
     }
 }

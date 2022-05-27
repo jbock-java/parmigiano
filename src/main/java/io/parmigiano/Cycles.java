@@ -12,8 +12,6 @@ import static io.parmigiano.ArrayUtil.checkLength;
 
 /**
  * <p>An operation that shuffles a list.
- *
- * TODO hashCode / equals
  */
 public final class Cycles {
 
@@ -23,20 +21,16 @@ public final class Cycles {
     private final int[][] cycles;
 
     private Cycles(Permutation.Orbits orbits, int maxMovedIndex) {
-        this(orbits.orbits, maxMovedIndex);
+        this(orbits.orbits);
     }
 
-    private Cycles(int[][] cycles, int maxMovedIndex) {
-        this.maxMovedIndex = maxMovedIndex;
+    private Cycles(int[][] cycles) {
+        this.maxMovedIndex = maxIndex(cycles);
         this.cycles = cycles;
     }
 
     public static Cycles create(int... cycle) {
-        int length = 0;
-        for (int i : cycle) {
-            length = Math.max(i, length);
-        }
-        return new Cycles(new int[][]{cycle}, length);
+        return new Cycles(new int[][]{cycle});
     }
 
     public static Permutation cycle(int... cycle) {
@@ -79,6 +73,22 @@ public final class Cycles {
         for (int[] cycle : cycles) {
             for (int j = cycle.length - 2; j >= 0; j--) {
                 int temp = array[cycle[j + 1]];
+                array[cycle[j + 1]] = array[cycle[j]];
+                array[cycle[j]] = temp;
+            }
+        }
+    }
+    /**
+     * Apply this operation by modifying the input array.
+     *
+     * @param array an array
+     * @throws IllegalArgumentException if {@code array.length < this.length()}
+     */
+    private void clobber(char[] array) {
+        checkLength(maxMovedIndex, array.length);
+        for (int[] cycle : cycles) {
+            for (int j = cycle.length - 2; j >= 0; j--) {
+                char temp = array[cycle[j + 1]];
                 array[cycle[j + 1]] = array[cycle[j]];
                 array[cycle[j]] = temp;
             }
@@ -142,9 +152,16 @@ public final class Cycles {
      * @throws java.lang.IllegalArgumentException if {@code a.size() < this.length()}
      */
     public <E> List<E> apply(List<E> a) {
-        ArrayList<E> copy = new ArrayList<E>(a);
+        List<E> copy = new ArrayList<>(a);
         clobber(copy);
         return copy;
+    }
+
+    public String apply(String s) {
+        char[] dst = new char[s.length()];
+        s.getChars(0, s.length(), dst, 0);
+        clobber(dst);
+        return new String(dst);
     }
 
     /**
@@ -213,7 +230,17 @@ public final class Cycles {
             allCycles.add(newCycle.stream().mapToInt(p -> p).toArray());
         }
         int[][] ints = allCycles.toArray(new int[0][]);
-        return new Cycles(ints, max);
+        return new Cycles(ints);
+    }
+
+    private static int maxIndex(int[][] ints) {
+        int result = 0;
+        for (int[] a : ints) {
+            for (int i : a) {
+                result = Math.max(result, i);
+            }
+        }
+        return result;
     }
 
     private List<Integer> chaseCycle(int i, Cycles other) {
@@ -293,5 +320,33 @@ public final class Cycles {
 
     public static Stream<Cycles> symmetricGroup(int n) {
         return Rankings.symmetricGroup(n).map(a -> Permutation.define(a, false)).map(Permutation::toCycles);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Cycles cycles = (Cycles) o;
+        if (cycles.maxMovedIndex != maxMovedIndex) {
+            return false;
+        }
+        for (int i = 0; i < maxMovedIndex; i++) {
+            if (apply(i) != cycles.apply(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 1;
+        for (int i = 0; i <= maxMovedIndex; i++) {
+            int apply = apply(i);
+            result = 31 * result + apply;
+        }
+        return result;
     }
 }

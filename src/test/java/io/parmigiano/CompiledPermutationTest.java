@@ -19,8 +19,9 @@ class CompiledPermutationTest {
             int[] c = p.apply(a);
             for (int i = 0; i < a.length; i += 1) {
                 assertEquals(c[p.apply(i)], a[i]);
-                if (i >= p.maxMovedIndex())
-                    assertEquals(a[i], p.apply(a)[i]);
+                if (i > p.maxMovedIndex()) {
+                    assertEquals(a[i], c[i]);
+                }
             }
             assertArrayEquals(b, a);
         }
