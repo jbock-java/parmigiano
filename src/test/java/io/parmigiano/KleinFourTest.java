@@ -21,8 +21,8 @@ class KleinFourTest {
         Permutation.symmetricGroup(4)
                 .forEach(g -> {
                     Set<Permutation> gH = new TreeSet<>();
-                    for (Permutation h : klein()) {
-                        gH.add(g.compose(h));
+                    for (Cycles h : klein()) {
+                        gH.add(g.toCycles().compose(h).toPermutation());
                     }
                     cosets.add(gH);
                 });
@@ -59,12 +59,12 @@ class KleinFourTest {
                 cycle(1, 3, 2))));
     }
 
-    private List<Permutation> klein() {
-        List<Permutation> result = new ArrayList<>();
-        result.add(swap(0, 1).toPermutation().compose(swap(2, 3).toPermutation()));
-        result.add(swap(0, 3).toPermutation().compose(swap(1, 2).toPermutation()));
-        result.add(swap(0, 2).toPermutation().compose(swap(1, 3).toPermutation()));
-        result.add(Permutation.identity());
+    private List<Cycles> klein() {
+        List<Cycles> result = new ArrayList<>();
+        result.add(swap(0, 1).compose(swap(2, 3)));
+        result.add(swap(0, 3).compose(swap(1, 2)));
+        result.add(swap(0, 2).compose(swap(1, 3)));
+        result.add(Cycles.identity());
         return result;
     }
 }

@@ -1,8 +1,8 @@
 package io.parmigiano;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CyclesTest {
@@ -10,16 +10,17 @@ class CyclesTest {
     @Test
     void testUnApply() {
         Cycles p = Permutation.random(100).toCycles();
-        for (int i = -1; i <= p.length(); i++)
+        for (int i = -1; i <= p.maxMovedIndex(); i++)
             assertEquals(i, p.unApply(p.apply(i)));
     }
 
     @Test
-    void testUnclobber() {
-        int[] a = ArrayUtil.range(100);
-        Cycles p = Permutation.random(100).toCycles();
-        p.clobber(a);
-        p.unclobber(a);
-        assertArrayEquals(ArrayUtil.range(100), a);
-    }
+    void testApply() {
+        Cycles cycle = Cycles.create(0, 1);
+        Assertions.assertEquals(1, cycle.maxMovedIndex());
+        Assertions.assertEquals(0, cycle.apply(1));
+        Assertions.assertEquals(1, cycle.apply(0));
+        Assertions.assertEquals(2, cycle.apply(2));
+        Assertions.assertEquals(10, cycle.apply(10));
+    }    
 }

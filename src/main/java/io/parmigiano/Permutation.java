@@ -98,7 +98,7 @@ public final class Permutation implements Comparable<Permutation> {
         return define(ranking, true);
     }
 
-    private static Permutation define(int[] ranking, boolean dirty) {
+    static Permutation define(int[] ranking, boolean dirty) {
         return define(ranking, dirty, dirty);
     }
 
@@ -173,7 +173,7 @@ public final class Permutation implements Comparable<Permutation> {
             return other;
         if (other.ranking.length == 0)
             return this;
-        return define(Rankings.comp(this.ranking, other.ranking), false);
+        return toCycles().compose(other.toCycles()).toPermutation();
     }
 
     /**
@@ -508,7 +508,6 @@ public final class Permutation implements Comparable<Permutation> {
      * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
      * @see #apply(int)
      * @see #toCycles()
-     * @see Cycles#apply(Object[])
      */
     public <T> T[] apply(T[] input) {
         if (this.ranking.length == 0)
@@ -522,7 +521,6 @@ public final class Permutation implements Comparable<Permutation> {
      * @param input an array of length not less than {@code this.length()}
      * @return the result of applying this permutation to {@code input}
      * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
-     * @see Cycles#clobber(byte[])
      * @see #apply(int)
      */
     public byte[] apply(byte[] input) {
@@ -537,7 +535,6 @@ public final class Permutation implements Comparable<Permutation> {
      * @param input an array of length not less than {@code this.length()}
      * @return the result of applying this permutation to {@code input}
      * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
-     * @see Cycles#clobber(short[])
      * @see #apply(int)
      */
     public short[] apply(short[] input) {
@@ -552,7 +549,6 @@ public final class Permutation implements Comparable<Permutation> {
      * @param input an array of length not less than {@code this.length()}
      * @return the result of applying this permutation to {@code input}
      * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
-     * @see Cycles#clobber(int[])
      * @see #apply(int)
      */
     public int[] apply(int[] input) {
@@ -567,7 +563,6 @@ public final class Permutation implements Comparable<Permutation> {
      * @param input an array of length not less than {@code this.length()}
      * @return the result of applying this permutation to {@code input}
      * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
-     * @see Cycles#clobber(long[])
      * @see #apply(int)
      */
     public long[] apply(long[] input) {
@@ -582,7 +577,6 @@ public final class Permutation implements Comparable<Permutation> {
      * @param input an array of length not less than {@code this.length()}
      * @return the result of applying this permutation to {@code input}
      * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
-     * @see Cycles#clobber(float[])
      * @see #apply(int)
      */
     public float[] apply(float[] input) {
@@ -598,7 +592,6 @@ public final class Permutation implements Comparable<Permutation> {
      * @return the result of applying this permutation to {@code input}
      * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
      * @see #apply(int)
-     * @see Cycles#clobber(double[])
      */
     public double[] apply(double[] input) {
         if (this.ranking.length == 0)
@@ -626,7 +619,6 @@ public final class Permutation implements Comparable<Permutation> {
      * @param input an array of length not less than {@code this.length()}
      * @return the result of applying this permutation to {@code input}
      * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
-     * @see Cycles#clobber(char[])
      * @see #apply(int)
      */
     public char[] apply(char[] input) {
@@ -657,7 +649,6 @@ public final class Permutation implements Comparable<Permutation> {
      * @param input a list that must have at least {@code this.length()} elements
      * @return the result of applying this permutation to {@code input}
      * @throws java.lang.IllegalArgumentException if {@code input} has less than {@code this.length()} elements
-     * @see Cycles#clobber(List)
      * @see #apply(int)
      */
     public <E> List<E> apply(List<E> input) {

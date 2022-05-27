@@ -294,8 +294,8 @@ class PermutationTest {
 
     @Test
     void testCycleLength() {
-        Permutation swap01 = Transposition.swap(0, 1).toPermutation();
-        assertEquals(2, swap01.length());
+        Cycles swap01 = Transposition.swap(0, 1).toPermutation();
+        assertEquals(1, swap01.maxMovedIndex());
     }
 
     @Test
@@ -416,24 +416,7 @@ class PermutationTest {
             }
         }
     }
-
-    @Test
-    void testDestructive() {
-        for (int __ = 0; __ < 100; __++) {
-            int[] a = ArrayUtil.randomNumbers(10, 5);
-            int[] copy = Arrays.copyOf(a, a.length);
-            List<Integer> listCopy = Arrays.asList(ArrayUtil.box(Arrays.copyOf(a, a.length)));
-            Permutation p = Permutation.random(5);
-            Cycles d = p.toCycles();
-            d.clobber(copy);
-            d.clobber(listCopy);
-            int[] expected = p.apply(a);
-            assertArrayEquals(expected, copy);
-            assertArrayEquals(ArrayUtil.box(expected), listCopy.toArray(new Integer[listCopy.size()]));
-            assertEquals(p, d.toPermutation());
-        }
-    }
-
+    
     @Test
     void testNonDestructive() {
         int[] a = {0, 1, 2, 3, 4};
@@ -442,24 +425,7 @@ class PermutationTest {
         assertArrayEquals(p.apply(a), d.apply(a));
     }
 
-
-    @Test
-    void testDestructive3() {
-        for (int __ = 0; __ < 100; __++) {
-            int[] a = ArrayUtil.randomNumbers(100, 100);
-            int[] copy = Arrays.copyOf(a, a.length);
-            List<Integer> listCopy = Arrays.asList(ArrayUtil.box(Arrays.copyOf(a, a.length)));
-            Permutation p = Permutation.random(100);
-            Cycles d = p.toCycles();
-            d.clobber(copy);
-            d.clobber(listCopy);
-            int[] expected = p.apply(a);
-            assertArrayEquals(expected, copy);
-            assertArrayEquals(ArrayUtil.box(expected), listCopy.toArray(new Integer[listCopy.size()]));
-            assertEquals(p, d.toPermutation());
-        }
-    }
-
+    
     @Test
     void testSorts() {
         for (int __ = 0; __ < 100; __++) {

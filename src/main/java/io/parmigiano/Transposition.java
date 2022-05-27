@@ -1,11 +1,5 @@
 package io.parmigiano;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static io.parmigiano.ArrayUtil.checkLength;
-
 /**
  * An operation that swaps two elements of an array or list.
  */
@@ -119,246 +113,7 @@ public final class Transposition {
         this.j = j;
         this.k = k;
     }
-
-    /**
-     * Apply this operation by modifying the input array.
-     *
-     * @param array an array
-     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
-     */
-    public void clobber(int[] array) {
-        checkLength(j, array.length);
-        int temp = array[k];
-        array[k] = array[j];
-        array[j] = temp;
-    }
-
-    /**
-     * Apply this operation by modifying the input array.
-     *
-     * @param array an array
-     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
-     */
-    public void clobber(byte[] array) {
-        byte temp = array[k];
-        array[k] = array[j];
-        array[j] = temp;
-    }
-
-    /**
-     * Apply this operation by modifying the input array.
-     *
-     * @param array an array
-     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
-     */
-    public void clobber(char[] array) {
-        char temp = array[k];
-        array[k] = array[j];
-        array[j] = temp;
-    }
-
-    /**
-     * Apply this operation by modifying the input array.
-     *
-     * @param array an array
-     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
-     */
-    public void clobber(short[] array) {
-        short temp = array[k];
-        array[k] = array[j];
-        array[j] = temp;
-    }
-
-    /**
-     * Apply this operation by modifying the input array.
-     *
-     * @param array an array
-     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
-     */
-    public void clobber(float[] array) {
-        float temp = array[k];
-        array[k] = array[j];
-        array[j] = temp;
-    }
-
-    /**
-     * Apply this operation by modifying the input array.
-     *
-     * @param array an array
-     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
-     */
-    public void clobber(double[] array) {
-        double temp = array[k];
-        array[k] = array[j];
-        array[j] = temp;
-    }
-
-    /**
-     * Apply this operation by modifying the input array.
-     *
-     * @param array an array
-     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
-     */
-    public void clobber(long[] array) {
-        long temp = array[k];
-        array[k] = array[j];
-        array[j] = temp;
-    }
-
-    /**
-     * Apply this operation by modifying the input array.
-     *
-     * @param array an array
-     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
-     */
-    public void clobber(Object[] array) {
-        Object temp = array[k];
-        array[k] = array[j];
-        array[j] = temp;
-    }
-
-    /**
-     * Apply this operation by modifying the input list.
-     * The input list must support {@link java.util.List#set(int, Object)}.
-     *
-     * @param list an array
-     * @throws java.lang.UnsupportedOperationException if the input list is not mutable
-     * @throws java.lang.IllegalArgumentException      if {@code list.size() < this.length()}
-     */
-    public <E> void clobber(List<E> list) {
-        E temp = list.get(k);
-        list.set(k, list.get(j));
-        list.set(j, temp);
-    }
-
-    /**
-     * Apply this operation to produce a new array. This method does not modify the input.
-     *
-     * @param a an array of length not less than {@code this.length()}
-     * @return the result of applying this permutation to {@code a}
-     * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
-     */
-    public int[] apply(int[] a) {
-        int[] copy = Arrays.copyOf(a, a.length);
-        clobber(copy);
-        return copy;
-    }
-
-    /**
-     * Apply this operation to produce a new array. This method does not modify the input.
-     *
-     * @param a an array of length not less than {@code this.length()}
-     * @return the result of applying this permutation to {@code a}
-     * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
-     */
-    public byte[] apply(byte[] a) {
-        byte[] copy = Arrays.copyOf(a, a.length);
-        clobber(copy);
-        return copy;
-    }
-
-    /**
-     * Apply this operation to produce a new array. This method does not modify the input.
-     *
-     * @param a an array of length not less than {@code this.length()}
-     * @return the result of applying this permutation to {@code a}
-     * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
-     */
-    public char[] apply(char[] a) {
-        char[] copy = Arrays.copyOf(a, a.length);
-        clobber(copy);
-        return copy;
-    }
-
-    /**
-     * Apply this operation to produce a new array. This method does not modify the input.
-     *
-     * @param a an array of length not less than {@code this.length()}
-     * @return the result of applying this permutation to {@code a}
-     * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
-     */
-    public short[] apply(short[] a) {
-        short[] copy = Arrays.copyOf(a, a.length);
-        clobber(copy);
-        return copy;
-    }
-
-    /**
-     * Apply this operation to produce a new array. This method does not modify the input.
-     *
-     * @param a an array of length not less than {@code this.length()}
-     * @return the result of applying this permutation to {@code a}
-     * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
-     */
-    public float[] apply(float[] a) {
-        float[] copy = Arrays.copyOf(a, a.length);
-        clobber(copy);
-        return copy;
-    }
-
-    /**
-     * Apply this operation to produce a new array. This method does not modify the input.
-     *
-     * @param a an array of length not less than {@code this.length()}
-     * @return the result of applying this permutation to {@code a}
-     * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
-     */
-    public double[] apply(double[] a) {
-        double[] copy = Arrays.copyOf(a, a.length);
-        clobber(copy);
-        return copy;
-    }
-
-    /**
-     * Apply this operation to produce a new array. This method does not modify the input.
-     *
-     * @param a an array of length not less than {@code this.length()}
-     * @return the result of applying this permutation to {@code a}
-     * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
-     */
-    public long[] apply(long[] a) {
-        long[] copy = Arrays.copyOf(a, a.length);
-        clobber(copy);
-        return copy;
-    }
-
-    /**
-     * Apply this operation to produce a new array. This method does not modify the input.
-     *
-     * @param a an array of length not less than {@code this.length()}
-     * @return the result of applying this permutation to {@code a}
-     * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
-     */
-    public <E> E[] apply(E[] a) {
-        E[] copy = Arrays.copyOf(a, a.length);
-        clobber(copy);
-        return copy;
-    }
-
-    /**
-     * Apply this operation to produce a new list. This method does not modify the input.
-     *
-     * @param a an list of size not less than {@code this.length()}
-     * @return the result of applying this permutation to {@code a}
-     * @throws java.lang.IllegalArgumentException if {@code a.size() < this.length()}
-     */
-    public <E> List<E> apply(List<E> a) {
-        ArrayList<E> copy = new ArrayList<E>(a.size());
-        for (int i = 0; i < a.size(); i++)
-            copy.set(i, a.get(apply(i)));
-        return copy;
-    }
-
-    /**
-     * Move an index. This method will not fail if the input is negative, but just return it unchanged.
-     *
-     * @param i a number
-     * @return the moved index
-     */
-    public int apply(int i) {
-        return i == j ? k : i == k ? j : i;
-    }
-
+    
     /**
      * Check if this transposition commutes with the other.
      *
@@ -371,42 +126,20 @@ public final class Transposition {
     }
 
     /**
-     * Return the minimum number of elements that an array or list must have, in order for this operation to
-     * be applicable.
-     *
-     * @return the length of this operation
-     */
-    public int length() {
-        return j + 1;
-    }
-
-    /**
-     * Return the first index to be swapped.
-     * This is always greater than the second.
-     *
-     * @return a non-negative number
-     * @see #second()
-     */
-    public int first() {
-        return j;
-    }
-
-    /**
-     * Return the second index to be swapped.
-     *
-     * @return a non-negative number
-     */
-    public int second() {
-        return k;
-    }
-
-    /**
      * Get a permutation version of this operation.
      *
      * @return a permutation
      */
-    public Permutation toPermutation() {
-        return Permutation.defineCycle(j, k);
+    public Cycles toPermutation() {
+        return Cycles.create(j, k);
+    }
+
+    private Cycles compose(Cycles other) {
+        return toPermutation().compose(other);
+    }
+
+    public Cycles compose(Transposition other) {
+        return compose(other.toPermutation());
     }
 
     /**
