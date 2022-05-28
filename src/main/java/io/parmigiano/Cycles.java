@@ -46,6 +46,23 @@ public final class Cycles {
         return new Cycles(CycleUtil.toOrbits(ranking));
     }
 
+    public Cycles invert() {
+        int[][] newCycles = new int[cycles.length][];
+        for (int i = 0; i < cycles.length; i++) {
+            int[] cycle = cycles[i];
+            newCycles[i] = reverse(cycles[i]);
+        }
+        return new Cycles(newCycles);
+    }
+
+    private static int[] reverse(int[] validData) {
+        int[] result = new int[validData.length];
+        for (int i = 0; i < validData.length; i++) {
+            result[validData.length - 1 - i] = validData[i];
+        }
+        return result;
+    }
+
     public static Cycles random(int length) {
         return fromRanking(Rankings.random(length));
     }

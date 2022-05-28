@@ -379,10 +379,10 @@ class PermutationTest {
     /* example from README */
     @Test
     void testPprod() {
-        Cycles c0 = Cycles.create(9, 7);
-        Cycles c1 = Cycles.create(11, 6, 3, 10, 8, 4, 1);
-        Cycles c2 = Cycles.create(5, 2, 0);
-        assertEquals("Hello world!", c0.compose(c1).compose(c2).apply(" !Hdellloorw"));
+        Cycles c0 = Cycles.create(7, 9);
+        Cycles c1 = Cycles.create(1, 4, 8, 10, 3, 6, 11);
+        Cycles c2 = Cycles.create(0, 2, 5);
+        assertEquals("Hello world!", c0.compose(c1).compose(c2).invert().apply(" !Hdellloorw"));
     }
 
     /* making sure sorting does what we think it does */
