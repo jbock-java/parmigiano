@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static io.parmigiano.MyInt.box;
+import static io.parmigiano.MyInt.box2;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -63,7 +64,7 @@ class PermutationTest {
     @Test
     void testIterable() {
         for (int __ = 0; __ < 100; __++) {
-            List<MyInt> a = MyInt.box2(ArrayUtil.randomNumbers(100, 50 + (int) (Math.random() * 100)));
+            List<MyInt> a = box2(ArrayUtil.randomNumbers(100, 50 + (int) (Math.random() * 100)));
             Cycles p = Cycles.random((int) (Math.random() * a.size()));
             List<MyInt> applied = p.apply(a);
             List<MyInt> arrayList = new ArrayList<MyInt>(a.size());
@@ -220,9 +221,9 @@ class PermutationTest {
         throw new IllegalArgumentException("not in x: " + el);
     }
 
-    int indexOf(MyInt[] x, MyInt el) {
-        for (int i = 0; i < x.length; i += 1) {
-            if (x[i].n == el.n)
+    int indexOf(List<MyInt> x, MyInt el) {
+        for (int i = 0; i < x.size(); i += 1) {
+            if (x.get(i).n == el.n)
                 return i;
         }
         throw new IllegalArgumentException("not in x: " + el);
@@ -256,20 +257,20 @@ class PermutationTest {
 
     @Test
     void testSortInvertComparator() {
-        MyInt[] x = box(new int[]{4, 6, 10, -5, 195, 33, 2});
-        Permutation unsort = Permutation.sorting(x).using(MyInt.COMP).invert();
-        MyInt[] y = Arrays.copyOf(x, x.length);
-        Arrays.sort(y, MyInt.COMP);
-        for (int k = 0; k < y.length; k += 1) {
-            assertEquals(x[indexOf(x, y[k])], y[k]);
-            assertEquals(indexOf(x, y[k]), unsort.apply(k));
+        List<MyInt> x = box2(new int[]{4, 6, 10, -5, 195, 33, 2});
+        Cycles unsort = Cycles.sorting(x, MyInt.COMP).invert();
+        List<MyInt> y = new ArrayList<>(x);
+        y.sort(MyInt.COMP);
+        for (int k = 0; k < y.size(); k += 1) {
+            assertEquals(x.get(indexOf(x, y.get(k))), y.get(k));
+            assertEquals(indexOf(x, y.get(k)), unsort.apply(k));
         }
     }
 
     /* negative index */
     @Test
     void testApplyInvalid() {
-        assertThrows(IllegalArgumentException.class, () -> Permutation.identity().apply(-1));
+        assertThrows(IllegalArgumentException.class, () -> Cycles.identity().apply(-1));
     }
 
     /**
@@ -286,7 +287,7 @@ class PermutationTest {
     @Test
     void testSort1024() {
         int[] a = Rankings.random(1024);
-        assertArrayEquals(classicSort(a), Permutation.sorting(a).apply(a));
+        assertArrayEquals(classicSort(a), Cycles.sorting(a).apply(a));
     }
 
     @Test

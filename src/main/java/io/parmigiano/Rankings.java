@@ -3,6 +3,7 @@ package io.parmigiano;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -769,7 +770,9 @@ public final class Rankings {
         return ranking;
     }
 
-
+    public static <E> int[] sorting(List<E> a, Comparator<E> comp) {
+        return sorting(a.toArray(), comp);
+    }
 
     /* ================= from ================= */
 

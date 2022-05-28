@@ -2,6 +2,7 @@ package io.parmigiano;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -159,12 +160,13 @@ public final class Cycles {
     }
 
     /**
-     * Move an index. This method will not fail if the input is negative, but just return it unchanged.
+     * Move an index.
      *
      * @param n a number
      * @return the moved index
      */
     public int apply(int n) {
+        Preconditions.checkState(n >= 0, "negative index: %d", n);
         if (n > maxMovedIndex) {
             return n;
         }
@@ -335,6 +337,10 @@ public final class Cycles {
 
     public static Cycles sorting(int[] input) {
         return fromRanking(Rankings.sorting(input));
+    }
+
+    public static <E> Cycles sorting(List<E> input, Comparator<E> comparator) {
+        return fromRanking(Rankings.sorting(input, comparator));
     }
 
     public static Stream<Cycles> symmetricGroup(int n) {
