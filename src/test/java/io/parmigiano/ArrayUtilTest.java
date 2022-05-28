@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static io.parmigiano.TestUtil.count;
-import static io.parmigiano.TestUtil.duplicateIndexes;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -72,23 +70,23 @@ class ArrayUtilTest {
 
     @Test
     void testCommutator5() {
-        Assertions.assertEquals(120L, Permutation.symmetricGroup(5).count());
+        assertEquals(120L, Permutation.symmetricGroup(5).count());
         Assertions.assertTrue(TestUtil.isClosed(Permutation.symmetricGroup(5).toList()));
-        Assertions.assertEquals(60, TestUtil.commutator(Permutation.symmetricGroup(5).toList()).size());
+        assertEquals(60, TestUtil.commutator(Permutation.symmetricGroup(5).toList()).size());
         Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(Permutation.symmetricGroup(5).toList())));
-        Assertions.assertEquals(60, TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(5).toList())).size());
+        assertEquals(60, TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(5).toList())).size());
         Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(5).toList()))));
     }
 
     @Test
     void testCommutator4() {
-        Assertions.assertEquals(24, Permutation.symmetricGroup(4).toList().size());
+        assertEquals(24, Permutation.symmetricGroup(4).toList().size());
         Assertions.assertTrue(TestUtil.isClosed(Permutation.symmetricGroup(4).toList()));
-        Assertions.assertEquals(12, TestUtil.commutator(Permutation.symmetricGroup(4).toList()).size());
+        assertEquals(12, TestUtil.commutator(Permutation.symmetricGroup(4).toList()).size());
         Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(Permutation.symmetricGroup(4).toList())));
-        Assertions.assertEquals(4, TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(4).toList())).size());
+        assertEquals(4, TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(4).toList())).size());
         Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(4).toList()))));
-        Assertions.assertEquals(1, TestUtil.commutator(TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(4).toList()))).size());
+        assertEquals(1, TestUtil.commutator(TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(4).toList()))).size());
         Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(4).toList())))));
     }
 
@@ -96,9 +94,9 @@ class ArrayUtilTest {
     void testCommutatorEven() {
         for (int i = 3; i < 7; i += 1) {
             List<Permutation> sym = Permutation.symmetricGroup(i).toList();
-            Assertions.assertEquals(TestUtil.factorial(i), sym.size());
-            Assertions.assertEquals(0, TestUtil.signatureSum(sym));
-            Assertions.assertEquals(sym.size() / 2, TestUtil.signatureSum(TestUtil.commutator(sym)));
+            assertEquals(TestUtil.factorial(i), sym.size());
+            assertEquals(0, TestUtil.signatureSum(sym));
+            assertEquals(sym.size() / 2, TestUtil.signatureSum(TestUtil.commutator(sym)));
         }
     }
 
@@ -169,61 +167,61 @@ class ArrayUtilTest {
         for (int i = 0; i < 1000; i += 1) {
             int maxNumber = 100;
             int[] ints = ArrayUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
-            int[] pair = TestUtil.duplicateIndexes(ints, 0);
+            int[] pair = TestUtil.duplicateIndexes(ints);
             assertTrue(TestUtil.count(ints, ints[pair[0]]) > 1);
             assertEquals(ints[pair[0]], ints[pair[1]]);
-            assertEquals(ArrayUtil.indexOf(ints, ints[pair[0]], 0), pair[0]);
         }
     }
 
     @Test
     void testDuplicateIndexes3() {
         int[] ints = {0, 1, 4, 1, 2, 6, 5, 2, 0, 0, 6, 0};
-        Assertions.assertEquals(1, TestUtil.duplicateIndexes(ints, 0)[0]);
+        int[] dupes = TestUtil.duplicateIndexes(ints);
+        assertEquals(ints[dupes[1]], ints[dupes[0]]);
     }
 
     @Test
     void testDuplicateIndexes4() {
         for (int i = 0; i < 1000; i += 1) {
             int maxNumber = 100;
-            MyInt[] ints = MyInt.box(ArrayUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
-            int[] pair = duplicateIndexes(ints, MyInt.COMP);
-            assertTrue(count(ints, ints[pair[0]]) > 1);
-            assertEquals(ints[pair[0]], ints[pair[1]]);
+            List<MyInt> ints = MyInt.box(ArrayUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
+            int[] pair = TestUtil.duplicateIndexes(ints, MyInt.COMP);
+            assertTrue(TestUtil.count(ints, ints.get(pair[0])) > 1);
+            assertEquals(ints.get(pair[0]), ints.get(pair[1]));
         }
     }
 
     @Test
     void testFactorial() {
-        Assertions.assertEquals(1, TestUtil.factorial(0));
-        Assertions.assertEquals(1, TestUtil.factorial(1));
-        Assertions.assertEquals(2, TestUtil.factorial(2));
-        Assertions.assertEquals(6, TestUtil.factorial(3));
-        Assertions.assertEquals(24, TestUtil.factorial(4));
-        Assertions.assertEquals(120, TestUtil.factorial(5));
-        Assertions.assertEquals(19, TestUtil.factorial(19) / TestUtil.factorial(18));
-        Assertions.assertEquals(20, TestUtil.factorial(20) / TestUtil.factorial(19));
+        assertEquals(1, TestUtil.factorial(0));
+        assertEquals(1, TestUtil.factorial(1));
+        assertEquals(2, TestUtil.factorial(2));
+        assertEquals(6, TestUtil.factorial(3));
+        assertEquals(24, TestUtil.factorial(4));
+        assertEquals(120, TestUtil.factorial(5));
+        assertEquals(19, TestUtil.factorial(19) / TestUtil.factorial(18));
+        assertEquals(20, TestUtil.factorial(20) / TestUtil.factorial(19));
     }
 
     @Test
     void testFindCommutator() {
         Permutation p = Permutation.create(1, 2);
         Permutation q = Permutation.create(0, 1);
-        Assertions.assertEquals(Permutation.fromRanking(1, 2, 0), Permutation.product(p.invert(), q.invert(), p, q));
+        assertEquals(Permutation.fromRanking(1, 2, 0), Permutation.product(p.invert(), q.invert(), p, q));
     }
 
     @Test
     void testEvenCommutator() {
         Permutation p = Permutation.create(0, 4, 1);
         Permutation q = Permutation.create(0, 3, 2, 1, 4);
-        Assertions.assertEquals(Permutation.fromRanking(1, 2, 0), Permutation.product(p.invert(), q.invert(), p, q));
+        assertEquals(Permutation.fromRanking(1, 2, 0), Permutation.product(p.invert(), q.invert(), p, q));
     }
 
     @Test
     void testEvenCommutator2() {
         Permutation p = Permutation.create(0, 3, 1);
         Permutation q = Permutation.create(0, 4, 2, 1, 3);
-        Assertions.assertEquals(Permutation.fromRanking(1, 2, 0), Permutation.product(p.invert(), q.invert(), p, q));
+        assertEquals(Permutation.fromRanking(1, 2, 0), Permutation.product(p.invert(), q.invert(), p, q));
     }
 
     @Test

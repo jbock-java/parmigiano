@@ -17,19 +17,11 @@ public class MyInt {
     }
 
     public static final Comparator<MyInt> COMP = new MyComparator();
-
-    static MyInt[] box(int[] a) {
-        MyInt[] result = new MyInt[a.length];
-        for (int i = 0; i < result.length; i += 1) {
-            result[i] = new MyInt(a[i]);
-        }
-        return result;
-    }
-
-    static List<MyInt> box2(int[] a) {
+    
+    static List<MyInt> box(int[] a) {
         List<MyInt> result = new ArrayList<>(a.length);
-        for (int i = 0; i < a.length; i += 1) {
-            result.add(new MyInt(a[i]));
+        for (int j : a) {
+            result.add(new MyInt(j));
         }
         return result;
     }

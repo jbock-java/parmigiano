@@ -1,11 +1,13 @@
 package io.parmigiano;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FifthRootsOfUnityTest {
     
@@ -65,7 +67,7 @@ class FifthRootsOfUnityTest {
                 .filter(r -> r.get(3).times(r.get(4)).equals(r.get(2)))
                 .filter(r -> r.get(4).times(r.get(4)).equals(r.get(3)))
                 .toList();
-        Assertions.assertTrue(permutations.contains(roots));
-        Assertions.assertEquals(4, permutations.size());
+        assertTrue(permutations.contains(roots));
+        assertEquals(4, permutations.size());
     }
 }

@@ -28,7 +28,7 @@ class TestRankings {
     @Test
     void testSortStrict() {
         for (int __ = 0; __ < 100; __ += 1) {
-            List<String> a = TestUtil.symbols2(100);
+            List<String> a = TestUtil.symbols(100);
             List<String> shuffled = Permutation.random(a.size()).apply(a);
             assertEquals(ArrayUtil.sortedCopy(a), Permutation.sorting(shuffled).apply(shuffled));
         }
@@ -51,7 +51,7 @@ class TestRankings {
     @Test
     void testFromStrict() {
         for (int __ = 0; __ < 100; __ += 1) {
-            List<String> a = TestUtil.symbols2(100);
+            List<String> a = TestUtil.symbols(100);
             List<String> shuffled = Permutation.random(a.size()).apply(a);
             assertEquals(a, Taking.from(shuffled).to(a).apply(shuffled));
         }

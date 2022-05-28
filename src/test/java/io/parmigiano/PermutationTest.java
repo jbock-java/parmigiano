@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static io.parmigiano.MyInt.box2;
+import static io.parmigiano.MyInt.box;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -33,8 +33,8 @@ class PermutationTest {
     void testComp() {
         Permutation p = Permutation.fromRanking(1, 2, 0);
         assertEquals(Permutation.fromRanking(1, 2, 0), p);
-        assertEquals(List.of("c", "a", "b"), p.apply(TestUtil.symbols2(3)));
-        assertEquals(List.of("b", "c", "a"), p.compose(p).apply(TestUtil.symbols2(3)));
+        assertEquals(List.of("c", "a", "b"), p.apply(TestUtil.symbols(3)));
+        assertEquals(List.of("b", "c", "a"), p.compose(p).apply(TestUtil.symbols(3)));
     }
 
     /* check defining property of composition */
@@ -62,7 +62,7 @@ class PermutationTest {
     @Test
     void testIterable() {
         for (int __ = 0; __ < 100; __++) {
-            List<MyInt> a = box2(ArrayUtil.randomNumbers(100, 50 + (int) (Math.random() * 100)));
+            List<MyInt> a = box(ArrayUtil.randomNumbers(100, 50 + (int) (Math.random() * 100)));
             Permutation p = Permutation.random((int) (Math.random() * a.size()));
             List<MyInt> applied = p.apply(a);
             List<MyInt> arrayList = new ArrayList<MyInt>(a.size());
@@ -169,20 +169,20 @@ class PermutationTest {
     @Test
     void cycleApply() {
         assertEquals(List.of("b", "c", "e", "d", "a"),
-                Permutation.create(0, 4, 2, 1).apply(TestUtil.symbols2(5)));
+                Permutation.create(0, 4, 2, 1).apply(TestUtil.symbols(5)));
         assertEquals(List.of("c", "b", "e", "d", "a"),
-                Permutation.create(0, 4, 2).apply(TestUtil.symbols2(5)));
+                Permutation.create(0, 4, 2).apply(TestUtil.symbols(5)));
         assertEquals(List.of("c", "a", "b"),
-                Permutation.create(0, 1, 2).apply(TestUtil.symbols2(3)));
+                Permutation.create(0, 1, 2).apply(TestUtil.symbols(3)));
     }
 
     @Test
     void testCycleApply() {
         assertEquals(List.of("c", "a", "b"),
-                Permutation.product(Permutation.create(0, 1), Permutation.create(1, 2)).apply(TestUtil.symbols2(3)));
-        assertEquals(List.of("c", "a", "b"), Permutation.create(0, 1, 2).apply(TestUtil.symbols2(3)));
+                Permutation.product(Permutation.create(0, 1), Permutation.create(1, 2)).apply(TestUtil.symbols(3)));
+        assertEquals(List.of("c", "a", "b"), Permutation.create(0, 1, 2).apply(TestUtil.symbols(3)));
         assertEquals(List.of("a", "c", "b"), Permutation.product(Permutation.create(0, 1),
-                Permutation.product(Permutation.create(0, 1), Permutation.create(1, 2))).apply(TestUtil.symbols2(3)));
+                Permutation.product(Permutation.create(0, 1), Permutation.create(1, 2))).apply(TestUtil.symbols(3)));
     }
 
     @Test
@@ -255,7 +255,7 @@ class PermutationTest {
 
     @Test
     void testSortInvertComparator() {
-        List<MyInt> x = box2(new int[]{4, 6, 10, -5, 195, 33, 2});
+        List<MyInt> x = box(new int[]{4, 6, 10, -5, 195, 33, 2});
         Permutation unsort = Permutation.sorting(x, MyInt.COMP).invert();
         List<MyInt> y = new ArrayList<>(x);
         y.sort(MyInt.COMP);
@@ -297,7 +297,7 @@ class PermutationTest {
     @Test
     void testFromQuickly() {
         Permutation p = Taking.from(new int[]{1, 2, 3}).to(new int[]{2, 3, 1});
-        assertEquals(List.of("b", "c", "a"), p.apply(TestUtil.symbols2(3)));
+        assertEquals(List.of("b", "c", "a"), p.apply(TestUtil.symbols(3)));
     }
 
     /* check defining property of from */
@@ -410,6 +410,13 @@ class PermutationTest {
             assertEquals(count, TestUtil.factorial(n));
         }
         assertEquals(Permutation.symmetricGroup(9).count(), TestUtil.factorial(9));
+    }
+
+    @Test
+    void testToString() {
+        assertEquals("(1 4) (2 3)", Permutation.create(1, 4).compose(Permutation.create(2, 3)).toString());
+        assertEquals("(1 3 4 2)", Permutation.create(1, 3, 4, 2).toString());
+        assertEquals("id", Permutation.create(0, 1).compose(Permutation.create(0, 1)).toString());
     }
 }
 

@@ -7,11 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.IntUnaryOperator;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static io.parmigiano.ArrayUtil.checkLength;
 import static io.parmigiano.Preconditions.checkState;
+import static java.util.stream.Collectors.joining;
 
 /**
  * <p>An operation that shuffles a list.
@@ -272,16 +272,6 @@ public final class Permutation {
         return result;
     }
 
-    @Override
-    public String toString() {
-        if (cycles.length == 0)
-            return "id";
-        List<String> s = Arrays.stream(cycles).map(a ->
-                "(" + Arrays.stream(a).mapToObj(Integer::toString).collect(Collectors.joining(" "))
-                        + ")").toList();
-        return String.join(" ", s);
-    }
-
     /**
      * Max moved index.
      *
@@ -366,5 +356,18 @@ public final class Permutation {
             result = 31 * result + apply;
         }
         return result;
+    }
+
+
+    @Override
+    public String toString() {
+        if (isIdentity()) {
+            return "id";
+        }
+        return Arrays.stream(cycles)
+                .map(Arrays::stream)
+                .map(s ->  s.mapToObj(Integer::toString))
+                .map(s ->  s.collect(joining(" ", "(", ")")))
+                .collect(joining(" "));
     }
 }
