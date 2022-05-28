@@ -125,17 +125,7 @@ public final class Permutation implements Comparable<Permutation> {
         return define(CycleUtil.cyclic(cycle), false);
     }
 
-
-    /**
-     * Creates a new <a href="http://en.wikipedia.org/wiki/Cyclic_permutation">cycle</a>.
-     *
-     * @param cycle1based a list of numbers that defines a permutation in 1-based cycle notation
-     * @return the cyclic permutation defined by {@code cycle1based}
-     */
-    public static Permutation cycle1(int... cycle1based) {
-        return defineCycle(ArrayUtil.add(cycle1based, -1));
-    }
-
+    
     /**
      * Creates a random permutation of given length.
      *
@@ -264,7 +254,6 @@ public final class Permutation implements Comparable<Permutation> {
      * @param delete a non-negative integer
      * @param insert a non-negative integer
      * @return a permutation of length {@code Math.max(delete, insert) + 1}
-     * @see #defineCycle
      */
     public static Permutation move(int delete, int insert) {
         return defineCycle(ArrayUtil.range(insert, delete, true));

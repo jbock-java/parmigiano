@@ -170,11 +170,11 @@ class PermutationTest {
     @Test
     void cycleApply() {
         assertEquals(List.of("b", "c", "e", "d", "a"),
-                Permutation.cycle1(1, 5, 3, 2).apply(TestUtil.symbols2(5)));
+                Cycles.create(0, 4, 2, 1).apply(TestUtil.symbols2(5)));
         assertEquals(List.of("c", "b", "e", "d", "a"),
-                Permutation.cycle1(1, 5, 3).apply(TestUtil.symbols2(5)));
+                Cycles.create(0, 4, 2).apply(TestUtil.symbols2(5)));
         assertEquals(List.of("c", "a", "b"),
-                Permutation.cycle1(1, 2, 3).apply(TestUtil.symbols2(3)));
+                Cycles.create(0, 1, 2).apply(TestUtil.symbols2(3)));
     }
 
     @Test
@@ -305,9 +305,9 @@ class PermutationTest {
     private void testFromQuickly2() {
         int size = 2048;
         int[] a = Rankings.random(size);
-        Permutation random;
+        Cycles random;
         do {
-            random = Permutation.random((int) (Math.random() * size));
+            random = Cycles.random((int) (Math.random() * size));
         } while (random.isIdentity());
         int[] b = random.apply(a);
         assertFalse(Arrays.equals(a, b));
