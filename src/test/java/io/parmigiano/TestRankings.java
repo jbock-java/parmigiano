@@ -3,11 +3,11 @@ package io.parmigiano;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -51,9 +51,9 @@ class TestRankings {
     @Test
     void testFromStrict() {
         for (int __ = 0; __ < 100; __ += 1) {
-            String[] a = TestUtil.symbols(100);
-            String[] shuffled = Permutation.random(a.length).apply(a);
-            assertArrayEquals(a, Permutation.taking(shuffled).to(a).apply(shuffled));
+            List<String> a = TestUtil.symbols2(100);
+            List<String> shuffled = Cycles.random(a.size()).apply(a);
+            assertEquals(a, Permutation.taking(shuffled).to(a).apply(shuffled));
         }
     }
 

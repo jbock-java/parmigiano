@@ -337,7 +337,6 @@ class PermutationTest {
             int order = p.order();
             sign += p.toCycles().signature();
             Cycles cycles = p.toCycles();
-//      assertEquals(p, CompiledPermutation.product(cycles));
             assertEquals(p, p.toCycles().toPermutation());
             if (p.reverses(5)) {
                 assertEquals(2, order);
@@ -364,12 +363,10 @@ class PermutationTest {
     /* check edge cases */
     @Test
     void testZero() {
-        Permutation p = Permutation.identity();
-        assertEquals(Permutation.define(new int[0]), p);
-        assertEquals(p, Permutation.defineCycle());
-        assertEquals(0, p.length());
+        Cycles p = Cycles.identity();
+        assertEquals(0, p.maxMovedIndex());
         assertArrayEquals(new int[0], p.apply(new int[0]));
-        assertEquals(0, p.toCycles().numCycles());
+        assertEquals(0, p.numCycles());
         assertEquals(Permutation.identity(), Permutation.defineCycle(0));
         assertEquals(Permutation.identity(), Permutation.defineCycle(1));
         assertEquals(Permutation.identity(), Permutation.defineCycle(2));

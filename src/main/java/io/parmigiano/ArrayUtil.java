@@ -3,6 +3,7 @@ package io.parmigiano;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
@@ -199,106 +200,6 @@ public final class ArrayUtil {
         }
     }
 
-    /* ================= box ================= */
-
-    /**
-     * Box every value in the input. Return an array of boxed values.
-     * @param a an array of primitives
-     * @return an array of boxed primitives
-     */
-    public static Integer[] box(int[] a) {
-        if (a.length == 0)
-            return BOX_INT_0;
-        Integer[] result = new Integer[a.length];
-        for (int i = 0; i < a.length; i += 1)
-            result[i] = a[i];
-        return result;
-    }
-
-    /**
-     * Box every value in the input. Return an array of boxed values.
-     * @param a an array of primitives
-     * @return an array of boxed primitives
-     */
-    public static Byte[] box(byte[] a) {
-        if (a.length == 0)
-            return BOX_BYTE_0;
-        Byte[] result = new Byte[a.length];
-        for (int i = 0; i < a.length; i += 1)
-            result[i] = a[i];
-        return result;
-    }
-
-    /**
-     * Box every value in the input. Return an array of boxed values.
-     * @param a an array of primitives
-     * @return an array of boxed primitives
-     */
-    public static Short[] box(short[] a) {
-        if (a.length == 0)
-            return BOX_SHORT_0;
-        Short[] result = new Short[a.length];
-        for (int i = 0; i < a.length; i += 1)
-            result[i] = a[i];
-        return result;
-    }
-
-    /**
-     * Box every value in the input. Return an array of boxed values.
-     * @param a an array of primitives
-     * @return an array of boxed primitives
-     */
-    public static Long[] box(long[] a) {
-        if (a.length == 0)
-            return BOX_LONG_0;
-        Long[] result = new Long[a.length];
-        for (int i = 0; i < a.length; i += 1)
-            result[i] = a[i];
-        return result;
-    }
-
-    /**
-     * Box every value in the input. Return an array of boxed values.
-     * @param a an array of primitives
-     * @return an array of boxed primitives
-     */
-    public static Float[] box(float[] a) {
-        if (a.length == 0)
-            return BOX_FLOAT_0;
-        Float[] result = new Float[a.length];
-        for (int i = 0; i < a.length; i += 1)
-            result[i] = a[i];
-        return result;
-    }
-
-    /**
-     * Box every value in the input. Return an array of boxed values.
-     * @param a an array of primitives
-     * @return an array of boxed primitives
-     */
-    public static Double[] box(double[] a) {
-        if (a.length == 0)
-            return BOX_DOUBLE_0;
-        Double[] result = new Double[a.length];
-        for (int i = 0; i < a.length; i += 1)
-            result[i] = a[i];
-        return result;
-    }
-
-    /**
-     * Box every value in the input. Return an array of boxed values.
-     * @param a an array of primitives
-     * @return an array of boxed primitives
-     */
-    public static Character[] box(char[] a) {
-        if (a.length == 0)
-            return BOX_CHAR_0;
-        Character[] result = new Character[a.length];
-        for (int i = 0; i < a.length; i += 1)
-            result[i] = a[i];
-        return result;
-    }
-
     /**
      * Returns a sorted copy of the input.
      * @param input an array
@@ -365,11 +266,6 @@ public final class ArrayUtil {
         return sorted;
     }
 
-    /**
-     * Returns a sorted copy of the input.
-     * @param input an array
-     * @return a sorted copy of the input
-     */
     public static Comparable[] sortedCopy(Comparable[] input) {
         Comparable[] sorted = Arrays.copyOf(input, input.length);
         Arrays.sort(sorted);
@@ -410,16 +306,8 @@ public final class ArrayUtil {
                     + ", but input length is " + inputLength);
     }
 
-    static void slotFailure() {
-        throw new IllegalArgumentException("could not find a free spot");
-    }
-
     static void negativeFailure() {
         throw new IllegalArgumentException("negative number not allowed");
-    }
-
-    static void nullFailure() {
-        throw new IllegalArgumentException("null values are not allowed");
     }
 
     static void duplicateFailure() {
@@ -659,6 +547,11 @@ public final class ArrayUtil {
         return true;
     }
 
+    static void checkEqualLength(List<?> a, List<?> b) {
+        if (a.size() != b.size())
+            lengthFailure();
+    }
+
     static void checkEqualLength(int[] a, int[] b) {
         if (a.length != b.length)
             lengthFailure();
@@ -699,148 +592,6 @@ public final class ArrayUtil {
             lengthFailure();
     }
 
-    /* ================= unique ================= */
-
-    /**
-     * Returns a copy of the input array with duplicates removed.
-     * This will only produce the expected result if the input is sorted.
-     * @param sorted a sorted array
-     * @return the unique sorted array
-     */
-    public static int[] unique(int[] sorted) {
-        int[] result = new int[sorted.length];
-        int idx = 0;
-        int previous = sorted[0];
-        for (int i : sorted) {
-            if (i != previous) {
-                result[idx++] = previous;
-                previous = i;
-            }
-        }
-        result[idx++] = previous;
-        return idx == sorted.length ? result : copyOf(result, idx);
-    }
-
-    /**
-     * Returns a copy of the input array with duplicates removed.
-     * This will only produce the expected result if the input is sorted.
-     * @param sorted a sorted array
-     * @return the unique sorted array
-     */
-    public static byte[] unique(byte[] sorted) {
-        byte[] result = new byte[sorted.length];
-        int idx = 0;
-        byte previous = sorted[0];
-        for (byte b : sorted) {
-            if (b != previous) {
-                result[idx++] = previous;
-                previous = b;
-            }
-        }
-        result[idx++] = previous;
-        return idx == sorted.length ? result : copyOf(result, idx);
-    }
-
-    /**
-     * Returns a copy of the input array with duplicates removed.
-     * This will only produce the expected result if the input is sorted.
-     * @param sorted a sorted array
-     * @return the unique sorted array
-     */
-    public static short[] unique(short[] sorted) {
-        short[] result = new short[sorted.length];
-        int idx = 0;
-        short previous = sorted[0];
-        for (short n : sorted) {
-            if (n != previous) {
-                result[idx++] = previous;
-                previous = n;
-            }
-        }
-        result[idx++] = previous;
-        return idx == sorted.length ? result : copyOf(result, idx);
-    }
-
-    /**
-     * Returns a copy of the input array with duplicates removed.
-     * This will only produce the expected result if the input is sorted.
-     * @param sorted a sorted array
-     * @return the unique sorted array
-     */
-    public static long[] unique(long[] sorted) {
-        long[] result = new long[sorted.length];
-        int idx = 0;
-        long previous = sorted[0];
-        for (long n : sorted) {
-            if (n != previous) {
-                result[idx++] = previous;
-                previous = n;
-            }
-        }
-        result[idx++] = previous;
-        return idx == sorted.length ? result : copyOf(result, idx);
-    }
-
-    /**
-     * Returns a copy of the input array with duplicates removed.
-     * This will only produce the expected result if the input is sorted.
-     * @param sorted a sorted array
-     * @return the unique sorted array
-     */
-    public static float[] unique(float[] sorted) {
-        float[] result = new float[sorted.length];
-        int idx = 0;
-        float previous = sorted[0];
-        for (float f : sorted) {
-            if (f != previous) {
-                result[idx++] = previous;
-                previous = f;
-            }
-        }
-        result[idx++] = previous;
-        return idx == sorted.length ? result : copyOf(result, idx);
-    }
-
-    /**
-     * Returns a copy of the input array with duplicates removed.
-     * This will only produce the expected result if the input is sorted.
-     * @param sorted a sorted array
-     * @return the unique sorted array
-     */
-    public static double[] unique(double[] sorted) {
-        double[] result = new double[sorted.length];
-        int idx = 0;
-        double previous = sorted[0];
-        for (double d : sorted) {
-            if (d != previous) {
-                result[idx++] = previous;
-                previous = d;
-            }
-        }
-        result[idx++] = previous;
-        return idx == sorted.length ? result : copyOf(result, idx);
-    }
-
-    /**
-     * Returns a copy of the input array with duplicates removed.
-     * This will only produce the expected result if the input is sorted.
-     * @param sorted a sorted array
-     * @return the unique sorted array
-     */
-    public static char[] unique(char[] sorted) {
-        char[] result = new char[sorted.length];
-        int idx = 0;
-        char previous = sorted[0];
-        for (char c : sorted) {
-            if (c != previous) {
-                result[idx++] = previous;
-                previous = c;
-            }
-        }
-        result[idx++] = previous;
-        return idx == sorted.length ? result : copyOf(result, idx);
-    }
-
     /* ================= isUnique ================= */
 
     /**
@@ -872,254 +623,7 @@ public final class ArrayUtil {
                 return false;
         return true;
     }
-
-    /**
-     * Test if the input contains duplicates. This method always returns the correct result,
-     * whether or not the input is sorted.
-     * @param a an array
-     * @return true if the input contains no duplicate element
-     */
-    public static boolean isUnique(byte[] a) {
-        return isUnique(a, false);
-    }
-
-    /**
-     * Test if the input contains duplicates.
-     * @param a an array
-     * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
-     *                  to improve performance.
-     *                  If set to true, but the input is not sorted, this method will not return
-     *                  the correct result.
-     * @return true if the input contains no duplicate element
-     */
-    public static boolean isUnique(byte[] a, boolean omitCheck) {
-        if (a.length < 2)
-            return true;
-        if (!omitCheck && !isSorted(a))
-            a = sortedCopy(a);
-        for (int i = 1; i < a.length; i++)
-            if (a[i] == a[i - 1])
-                return false;
-        return true;
-    }
-
-    /**
-     * Test if the input contains duplicates. This method always returns the correct result,
-     * whether or not the input is sorted.
-     * @param a an array
-     * @return true if the input contains no duplicate element
-     */
-    public static boolean isUnique(short[] a) {
-        return isUnique(a, false);
-    }
-
-    /**
-     * Test if the input contains duplicates.
-     * @param a an array
-     * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
-     *                  to improve performance.
-     *                  If set to true, but the input is not sorted, this method will not return
-     *                  the correct result.
-     * @return true if the input contains no duplicate element
-     */
-    public static boolean isUnique(short[] a, boolean omitCheck) {
-        if (a.length < 2)
-            return true;
-        if (!omitCheck && !isSorted(a))
-            a = sortedCopy(a);
-        for (int i = 1; i < a.length; i++)
-            if (a[i] == a[i - 1])
-                return false;
-        return true;
-    }
-
-    /**
-     * Test if the input contains duplicates. This method always returns the correct result,
-     * whether or not the input is sorted.
-     * @param a an array
-     * @return true if the input contains no duplicate element
-     */
-    public static boolean isUnique(char[] a) {
-        return isUnique(a, false);
-    }
-
-    /**
-     * Test if the input contains duplicates.
-     * @param a an array
-     * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
-     *                  to improve performance.
-     *                  If set to true, but the input is not sorted, this method will not return
-     *                  the correct result.
-     * @return true if the input contains no duplicate element
-     */
-    public static boolean isUnique(char[] a, boolean omitCheck) {
-        if (a.length < 2)
-            return true;
-        if (!omitCheck && !isSorted(a))
-            a = sortedCopy(a);
-        for (int i = 1; i < a.length; i++)
-            if (a[i] == a[i - 1])
-                return false;
-        return true;
-    }
-
-    /**
-     * Test if the input contains duplicates. This method always returns the correct result,
-     * whether or not the input is sorted.
-     * @param a an array
-     * @return true if the input contains no duplicate element
-     */
-    public static boolean isUnique(long[] a) {
-        return isUnique(a, false);
-    }
-
-    /**
-     * Test if the input contains duplicates.
-     * @param a an array
-     * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
-     *                  to improve performance.
-     *                  If set to true, but the input is not sorted, this method will not return
-     *                  the correct result.
-     * @return true if the input contains no duplicate element
-     */
-    public static boolean isUnique(long[] a, boolean omitCheck) {
-        if (a.length < 2)
-            return true;
-        if (!omitCheck && !isSorted(a))
-            a = sortedCopy(a);
-        for (int i = 1; i < a.length; i++)
-            if (a[i] == a[i - 1])
-                return false;
-        return true;
-    }
-
-    /**
-     * Test if the input contains duplicates. This method always returns the correct result,
-     * whether or not the input is sorted.
-     * @param a an array
-     * @return true if the input contains no duplicate element
-     */
-    public static boolean isUnique(double[] a) {
-        return isUnique(a, false);
-    }
-
-    /**
-     * Test if the input contains duplicates.
-     * @param a an array
-     * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
-     *                  to improve performance.
-     *                  If set to true, but the input is not sorted, this method will not return
-     *                  the correct result.
-     * @return true if the input contains no duplicate element
-     */
-    public static boolean isUnique(double[] a, boolean omitCheck) {
-        if (a.length < 2)
-            return true;
-        if (!omitCheck && !isSorted(a))
-            a = sortedCopy(a);
-        double previous = a[0];
-        for (int i = 1; i < a.length; i++)
-            if (a[i] == a[i - 1])
-                return false;
-        return true;
-    }
-
-    /**
-     * Test if the input contains duplicates. This method always returns the correct result,
-     * whether or not the input is sorted.
-     * @param a an array
-     * @return true if the input contains no duplicate element
-     */
-    public static boolean isUnique(float[] a) {
-        return isUnique(a, false);
-    }
-
-    /**
-     * Test if the input contains duplicates.
-     * @param a an array
-     * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
-     *                  to improve performance.
-     *                  If set to true, but the input is not sorted, this method will not return
-     *                  the correct result.
-     * @return true if the input contains no duplicate element
-     */
-    public static boolean isUnique(float[] a, boolean omitCheck) {
-        if (a.length < 2)
-            return true;
-        if (!omitCheck && !isSorted(a))
-            a = sortedCopy(a);
-        float previous = a[0];
-        for (int i = 1; i < a.length; i++)
-            if (a[i] == a[i - 1])
-                return false;
-        return true;
-    }
-
-    /**
-     * Test if the input contains duplicates. This method always returns the correct result,
-     * whether or not the input is sorted.
-     * @param a an array
-     * @return true if the input contains no duplicate element
-     */
-    public static boolean isUnique(Comparable[] a) {
-        return isUnique(a, false);
-    }
-
-    /**
-     * Test if the input contains duplicates.
-     * @param a an array
-     * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
-     *                  to improve performance.
-     *                  If set to true, but the input is not sorted, this method will not return
-     *                  the correct result.
-     * @return true if the input contains no duplicate element
-     */
-    public static boolean isUnique(Comparable[] a, boolean omitCheck) {
-        if (a.length < 2)
-            return true;
-        if (!omitCheck && !isSorted(a))
-            a = sortedCopy(a);
-        for (int i = 1; i < a.length; i++)
-            if (a[i] != a[i - 1] && !a[i].equals(a[i - 1]))
-                return false;
-        return true;
-    }
-
-    /**
-     * Test if the input contains duplicates. This method always returns the correct result,
-     * whether or not the input is sorted.
-     * Null elements are not allowed.
-     * @param a an array
-     * @param comparator a Comparator
-     * @return true if the input contains no duplicate element
-     */
-    @SuppressWarnings("unchecked")
-    public static boolean isUnique(Object[] a, Comparator comparator) {
-        return isUnique(a, comparator, false);
-    }
-
-    /**
-     * Test if the input contains duplicates.
-     * @param a an array
-     * @param comparator a Comparator
-     * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
-     *                  to improve performance.
-     *                  If set to true, but the input is not sorted, this method will not return
-     *                  the correct result.
-     * @return true if the input contains no duplicate element
-     */
-    @SuppressWarnings("unchecked")
-    public static boolean isUnique(Object[] a, Comparator comparator, boolean omitCheck) {
-        if (a.length < 2)
-            return true;
-        if (!omitCheck && !isSorted(comparator, a))
-            a = sortedCopy(a, comparator);
-        for (int i = 1; i < a.length; i++)
-            if (a[i] != a[i - 1] && !a[i].equals(a[i - 1]))
-                return false;
-        return true;
-    }
-
+    
     /**
      * Remove an element at index {@code i}.
      * @param a an array
@@ -1128,7 +632,7 @@ public final class ArrayUtil {
      */
     public static int[] cut(int[] a, int i) {
         if (i < 0 || i >= a.length)
-            throw new IllegalArgumentException("i must be non netative and less than " + a.length);
+            throw new IllegalArgumentException("i must be non negative and less than " + a.length);
         int[] result = new int[a.length - 1];
         System.arraycopy(a, 0, result, 0, i);
         System.arraycopy(a, i + 1, result, i, a.length - i - 1);
@@ -1151,5 +655,4 @@ public final class ArrayUtil {
         System.arraycopy(a, i, result, i + 1, a.length - i);
         return result;
     }
-
 }

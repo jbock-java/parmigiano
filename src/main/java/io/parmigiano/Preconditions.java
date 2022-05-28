@@ -13,4 +13,10 @@ class Preconditions {
             throw new IllegalArgumentException(String.format(template, n));
         }
     }
+
+    static void checkState(boolean b, String template, Object o) {
+        if (!b) {
+            throw new IllegalArgumentException(String.format(template, o));
+        }
+    }
 }

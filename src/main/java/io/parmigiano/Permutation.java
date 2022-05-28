@@ -594,11 +594,7 @@ public final class Permutation implements Comparable<Permutation> {
     public static <E extends Comparable> Permutation sorting(E[] input) {
         return define(Rankings.sorting(input), false);
     }
-
-    public static Permutation sorting(char[] input) {
-        return define(Rankings.sorting(input), false);
-    }
-
+    
 
     public static <E> SortingBuilder<E> sorting(E[] input) {
         return new SortingBuilder<>(input);
@@ -607,13 +603,7 @@ public final class Permutation implements Comparable<Permutation> {
     public static Permutation sorting(int[] input) {
         return define(Rankings.sorting(input), false);
     }
-
-    public static Permutation sorting(String s) {
-        char[] chars = new char[s.length()];
-        s.getChars(0, chars.length, chars, 0);
-        return sorting(chars);
-    }
-
+    
     public static final class TakingBuilder<E extends Comparable<E>> {
         private final E[] from;
 
@@ -623,6 +613,12 @@ public final class Permutation implements Comparable<Permutation> {
 
         public Permutation to(E[] to) {
             return define(Rankings.from(from, to), false, false);
+        }
+    }
+
+    public record TakingBuilderList<E extends Comparable<E>>(List<E> from) {
+        public Cycles to(List<E> to) {
+            return Cycles.fromRanking(Rankings.from(from, to));
         }
     }
 
@@ -637,31 +633,7 @@ public final class Permutation implements Comparable<Permutation> {
             return Cycles.fromRanking(Rankings.from(from, to));
         }
     }
-
-    public static final class TakingBuilderLong {
-        private final long[] from;
-
-        private TakingBuilderLong(long[] from) {
-            this.from = from;
-        }
-
-        public Permutation to(long[] to) {
-            return define(Rankings.from(from, to), false, false);
-        }
-    }
-
-    public static final class TakingBuilderDouble {
-        private final double[] from;
-
-        private TakingBuilderDouble(double[] from) {
-            this.from = from;
-        }
-
-        public Permutation to(double[] to) {
-            return define(Rankings.from(from, to), false, false);
-        }
-    }
-
+    
     public static final class TakingBuilderComp<E> {
 
         private final E[] from;
@@ -700,10 +672,10 @@ public final class Permutation implements Comparable<Permutation> {
         return new TakingBuilder<>(a);
     }
 
-    public static TakingBuilderLong taking(long[] a) {
-        return new TakingBuilderLong(a);
+    public static <E extends Comparable<E>> TakingBuilderList<E> taking(List<E> a) {
+        return new TakingBuilderList<>(a);
     }
-
+    
     public static <E> TakingBuilderObj<E> taking(E[] a) {
         return new TakingBuilderObj<>(a);
     }
