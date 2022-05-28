@@ -17,11 +17,11 @@ class TestRankings {
     void testSortRandom() {
         for (int __ = 0; __ < 100; __ += 1) {
             int[] a = ArrayUtil.randomNumbers(100, 200);
-            assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sorting(a).apply(a));
+            assertArrayEquals(ArrayUtil.sortedCopy(a), Cycles.sorting(a).apply(a));
         }
         for (int __ = 0; __ < 100; __ += 1) {
             int[] a = ArrayUtil.randomNumbers(100, 20);
-            assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sorting(a).apply(a));
+            assertArrayEquals(ArrayUtil.sortedCopy(a), Cycles.sorting(a).apply(a));
         }
     }
 
@@ -30,7 +30,7 @@ class TestRankings {
         for (int __ = 0; __ < 100; __ += 1) {
             List<String> a = TestUtil.symbols2(100);
             List<String> shuffled = Cycles.random(a.size()).apply(a);
-            assertEquals(ArrayUtil.sortedCopy(a), Permutation.sortingComparable(shuffled).apply(shuffled));
+            assertEquals(ArrayUtil.sortedCopy(a), Cycles.sorting(shuffled).apply(shuffled));
         }
     }
 
@@ -38,13 +38,13 @@ class TestRankings {
     void testFromRandom() {
         for (int __ = 0; __ < 100; __ += 1) {
             int[] a = ArrayUtil.randomNumbers(100, 200);
-            int[] b = Permutation.random(a.length).apply(a);
-            assertArrayEquals(b, Permutation.taking(a).to(b).apply(a));
+            int[] b = Cycles.random(a.length).apply(a);
+            assertArrayEquals(b, Taking.from(a).to(b).apply(a));
         }
         for (int __ = 0; __ < 100; __ += 1) {
             int[] a = ArrayUtil.randomNumbers(100, 20);
-            int[] b = Permutation.random(a.length).apply(a);
-            assertArrayEquals(b, Permutation.taking(a).to(b).apply(a));
+            int[] b = Cycles.random(a.length).apply(a);
+            assertArrayEquals(b, Taking.from(a).to(b).apply(a));
         }
     }
 
@@ -53,7 +53,7 @@ class TestRankings {
         for (int __ = 0; __ < 100; __ += 1) {
             List<String> a = TestUtil.symbols2(100);
             List<String> shuffled = Cycles.random(a.size()).apply(a);
-            assertEquals(a, Permutation.taking(shuffled).to(a).apply(shuffled));
+            assertEquals(a, Taking.from(shuffled).to(a).apply(shuffled));
         }
     }
 
@@ -128,14 +128,6 @@ class TestRankings {
         assertEquals(-2, Rankings.nextOffset(5, -1, sorted));
         assertEquals(1, Rankings.nextOffset(6, 0, sorted));
         assertEquals(-1, Rankings.nextOffset(7, 0, sorted));
-    }
-
-    @Test
-    void testDecompose() {
-        for (int __ = 0; __ < 100; __++) {
-            Permutation p = Permutation.random(100);
-            assertEquals(p, p.toCycles().toPermutation());
-        }
     }
 
     @Test

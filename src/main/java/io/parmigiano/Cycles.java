@@ -188,18 +188,7 @@ public final class Cycles {
                 n = n == cycle[j] ? cycle[j + 1] : n == cycle[j + 1] ? cycle[j] : n;
         return n;
     }
-
-    /**
-     * Uncompile this operation.
-     *
-     * @return a ranking-based version of this operation
-     */
-    public Permutation toPermutation() {
-        int[] ranking = ArrayUtil.range(maxMovedIndex + 1);
-        unclobber(ranking);
-        return Permutation.define(ranking);
-    }
-
+    
     /**
      * Composing with another permutation creates a new operation.
      *
@@ -339,12 +328,27 @@ public final class Cycles {
         return fromRanking(Rankings.sorting(input));
     }
 
+    public static <E extends Comparable<E>> Cycles sorting(List<E> input) {
+        return Cycles.fromRanking(Rankings.sorting(input));
+    }
+    
     public static <E> Cycles sorting(List<E> input, Comparator<E> comparator) {
         return fromRanking(Rankings.sorting(input, comparator));
     }
 
     public static Stream<Cycles> symmetricGroup(int n) {
         return Rankings.symmetricGroup(n).map(Cycles::fromRanking);
+    }
+
+    public int order() {
+        // TODO this can probably be optimized
+        int i = 1;
+        Cycles p = this;
+        while (!p.isIdentity()) {
+            i += 1;
+            p = p.compose(this);
+        }
+        return i;
     }
 
     @Override

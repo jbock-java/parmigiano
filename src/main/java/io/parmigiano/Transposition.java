@@ -147,7 +147,7 @@ public final class Transposition {
      * @param transpositions an array of transpositions
      * @return the product of the input
      */
-    public static Permutation product(Transposition... transpositions) {
+    public static Cycles product(Transposition... transpositions) {
         int maxIndex = 0;
         for (Transposition t : transpositions)
             maxIndex = Math.max(maxIndex, t.j);
@@ -157,7 +157,7 @@ public final class Transposition {
             ranking[t.k] = ranking[t.j];
             ranking[t.j] = temp;
         }
-        return Permutation.define(ranking);
+        return Cycles.fromRanking(ranking);
     }
 
     public String toString() {
