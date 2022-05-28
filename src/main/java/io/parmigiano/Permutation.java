@@ -16,34 +16,34 @@ import static io.parmigiano.Preconditions.checkState;
 /**
  * <p>An operation that shuffles a list.
  */
-public final class Cycles {
+public final class Permutation {
 
-    private static final Cycles IDENTITY = new Cycles(new int[0][]);
+    private static final Permutation IDENTITY = new Permutation(new int[0][]);
 
     private final int maxMovedIndex;
     private final int[][] cycles;
 
-    private Cycles(int[][] cycles) {
+    private Permutation(int[][] cycles) {
         this(cycles, maxIndex(cycles));
     }
 
-    private Cycles create(int[][] cycles) {
+    private Permutation create(int[][] cycles) {
         if (cycles.length == 0) {
             return IDENTITY;
         }
-        return new Cycles(cycles);
+        return new Permutation(cycles);
     }
 
-    private Cycles(int[][] cycles, int maxMovedIndex) {
+    private Permutation(int[][] cycles, int maxMovedIndex) {
         this.maxMovedIndex = maxMovedIndex;
         this.cycles = cycles;
     }
 
-    public static Cycles create(int... cycle) {
+    public static Permutation create(int... cycle) {
         if (cycle.length <= 1) {
             return IDENTITY;
         }
-        return new Cycles(new int[][]{cycle});
+        return new Permutation(new int[][]{cycle});
     }
 
     /**
@@ -51,23 +51,23 @@ public final class Cycles {
      *
      * @return the identity permutation
      */
-    public static Cycles identity() {
+    public static Permutation identity() {
         return IDENTITY;
     }
 
-    static Cycles fromRanking(int... ranking) {
+    static Permutation fromRanking(int... ranking) {
         if (ranking.length == 0) {
             return IDENTITY;
         }
-        return new Cycles(CycleUtil.toOrbits(ranking));
+        return new Permutation(CycleUtil.toOrbits(ranking));
     }
 
-    public Cycles invert() {
+    public Permutation invert() {
         int[][] newCycles = new int[cycles.length][];
         for (int i = 0; i < cycles.length; i++) {
             newCycles[i] = reverse(cycles[i]);
         }
-        return new Cycles(newCycles, maxMovedIndex);
+        return new Permutation(newCycles, maxMovedIndex);
     }
 
     private static int[] reverse(int[] cycle) {
@@ -78,7 +78,7 @@ public final class Cycles {
         return inverse;
     }
 
-    public static Cycles random(int length) {
+    public static Permutation random(int length) {
         return fromRanking(Rankings.random(length));
     }
 
@@ -98,17 +98,6 @@ public final class Cycles {
         for (int[] cycle : cycles) {
             for (int j = cycle.length - 2; j >= 0; j--) {
                 char temp = array[cycle[j + 1]];
-                array[cycle[j + 1]] = array[cycle[j]];
-                array[cycle[j]] = temp;
-            }
-        }
-    }
-
-    private void unclobber(int[] array) {
-        checkLength(maxMovedIndex, array.length);
-        for (int[] cycle : cycles) {
-            for (int j = 0; j < cycle.length - 1; j++) {
-                int temp = array[cycle[j + 1]];
                 array[cycle[j + 1]] = array[cycle[j]];
                 array[cycle[j]] = temp;
             }
@@ -195,7 +184,7 @@ public final class Cycles {
      * @param other another permutation
      * @return the composition or product
      */
-    public Cycles compose(Cycles other) {
+    public Permutation compose(Permutation other) {
         if (maxMovedIndex == 0)
             return other;
         if (other.maxMovedIndex == 0)
@@ -260,9 +249,9 @@ public final class Cycles {
      * @param permutations an array of permutations
      * @return the composition or product
      */
-    public static Cycles product(Cycles... permutations) {
-        Cycles result = identity();
-        for (Cycles permutation : permutations)
+    public static Permutation product(Permutation... permutations) {
+        Permutation result = identity();
+        for (Permutation permutation : permutations)
             result = result.compose(permutation);
         return result;
     }
@@ -271,12 +260,12 @@ public final class Cycles {
         return cycles.length == 0;
     }
 
-    public Cycles pow(int n) {
+    public Permutation pow(int n) {
         if (n == 0 || isIdentity()) {
             return identity();
         }
-        Cycles seed = n < 0 ? invert() : this;
-        Cycles result = seed;
+        Permutation seed = n < 0 ? invert() : this;
+        Permutation result = seed;
         for (int i = 1; i < Math.abs(n); i += 1) {
             result = result.compose(seed);
         }
@@ -324,26 +313,26 @@ public final class Cycles {
         return evenLengthCycles % 2 == 0 ? 1 : -1;
     }
 
-    public static Cycles sorting(int[] input) {
+    public static Permutation sorting(int[] input) {
         return fromRanking(Rankings.sorting(input));
     }
 
-    public static <E extends Comparable<E>> Cycles sorting(List<E> input) {
-        return Cycles.fromRanking(Rankings.sorting(input));
+    public static <E extends Comparable<E>> Permutation sorting(List<E> input) {
+        return Permutation.fromRanking(Rankings.sorting(input));
     }
     
-    public static <E> Cycles sorting(List<E> input, Comparator<E> comparator) {
+    public static <E> Permutation sorting(List<E> input, Comparator<E> comparator) {
         return fromRanking(Rankings.sorting(input, comparator));
     }
 
-    public static Stream<Cycles> symmetricGroup(int n) {
-        return Rankings.symmetricGroup(n).map(Cycles::fromRanking);
+    public static Stream<Permutation> symmetricGroup(int n) {
+        return Rankings.symmetricGroup(n).map(Permutation::fromRanking);
     }
 
     public int order() {
         // TODO this can probably be optimized
         int i = 1;
-        Cycles p = this;
+        Permutation p = this;
         while (!p.isIdentity()) {
             i += 1;
             p = p.compose(this);
@@ -357,7 +346,7 @@ public final class Cycles {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Cycles cycles = (Cycles) o;
+        Permutation cycles = (Permutation) o;
         if (cycles.maxMovedIndex != maxMovedIndex) {
             return false;
         }

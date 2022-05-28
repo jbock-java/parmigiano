@@ -130,15 +130,15 @@ public final class Transposition {
      *
      * @return a permutation
      */
-    public Cycles toPermutation() {
-        return Cycles.create(j, k);
+    public Permutation toPermutation() {
+        return Permutation.create(j, k);
     }
 
-    private Cycles compose(Cycles other) {
+    private Permutation compose(Permutation other) {
         return toPermutation().compose(other);
     }
 
-    public Cycles compose(Transposition other) {
+    public Permutation compose(Transposition other) {
         return compose(other.toPermutation());
     }
 
@@ -147,7 +147,7 @@ public final class Transposition {
      * @param transpositions an array of transpositions
      * @return the product of the input
      */
-    public static Cycles product(Transposition... transpositions) {
+    public static Permutation product(Transposition... transpositions) {
         int maxIndex = 0;
         for (Transposition t : transpositions)
             maxIndex = Math.max(maxIndex, t.j);
@@ -157,7 +157,7 @@ public final class Transposition {
             ranking[t.k] = ranking[t.j];
             ranking[t.j] = temp;
         }
-        return Cycles.fromRanking(ranking);
+        return Permutation.fromRanking(ranking);
     }
 
     public String toString() {

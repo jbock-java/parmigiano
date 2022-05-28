@@ -52,7 +52,7 @@ class FifthRootsOfUnityTest {
     @Test
     void testAll() {
         List<Root> roots = Arrays.asList(Root.values());
-        Stream<Cycles> permutationStream = Cycles.symmetricGroup(5);
+        Stream<Permutation> permutationStream = Permutation.symmetricGroup(5);
         List<List<Root>> permutations = permutationStream
                 .map(p -> p.apply(roots))
                 .filter(r -> r.get(0).times(r.get(0)).equals(r.get(0)))

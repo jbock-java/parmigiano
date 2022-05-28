@@ -25,14 +25,14 @@ class PermutationTest {
     /* Check example from constructor javadoc */
     @Test
     void testAbc() {
-        Cycles p = Cycles.fromRanking(1, 2, 0);
+        Permutation p = Permutation.fromRanking(1, 2, 0);
         assertEquals("cab", p.apply("abc"));
     }
 
     @Test
     void testComp() {
-        Cycles p = Cycles.fromRanking(1, 2, 0);
-        assertEquals(Cycles.fromRanking(1, 2, 0), p);
+        Permutation p = Permutation.fromRanking(1, 2, 0);
+        assertEquals(Permutation.fromRanking(1, 2, 0), p);
         assertEquals(List.of("c", "a", "b"), p.apply(TestUtil.symbols2(3)));
         assertEquals(List.of("b", "c", "a"), p.compose(p).apply(TestUtil.symbols2(3)));
     }
@@ -40,8 +40,8 @@ class PermutationTest {
     /* check defining property of composition */
     @Test
     void testComp2() {
-        Cycles p = Cycles.random(7);
-        Cycles p2 = Cycles.random(7);
+        Permutation p = Permutation.random(7);
+        Permutation p2 = Permutation.random(7);
         for (int i = 0; i < 10; i += 1) {
             assertEquals(p2.apply(p.apply(i)), p2.compose(p).apply(i));
         }
@@ -51,7 +51,7 @@ class PermutationTest {
     @Test
     void testApply() {
         int[] a = ArrayUtil.randomNumbers(100, 200);
-        Cycles p = Cycles.random((int) (a.length * Math.random()));
+        Permutation p = Permutation.random((int) (a.length * Math.random()));
         int[] pa = p.apply(a);
         for (int i = 0; i < a.length; i += 1) {
             int pi = p.apply(i);
@@ -63,7 +63,7 @@ class PermutationTest {
     void testIterable() {
         for (int __ = 0; __ < 100; __++) {
             List<MyInt> a = box2(ArrayUtil.randomNumbers(100, 50 + (int) (Math.random() * 100)));
-            Cycles p = Cycles.random((int) (Math.random() * a.size()));
+            Permutation p = Permutation.random((int) (Math.random() * a.size()));
             List<MyInt> applied = p.apply(a);
             List<MyInt> arrayList = new ArrayList<MyInt>(a.size());
             List<MyInt> linkedList = new LinkedList<>();
@@ -91,13 +91,13 @@ class PermutationTest {
     /* gaps in ranking */
     @Test
     void testInvalidGap() {
-        assertThrows(ArrayIndexOutOfBoundsException.class, () -> Cycles.fromRanking(1, 2, 0, 5));
+        assertThrows(ArrayIndexOutOfBoundsException.class, () -> Permutation.fromRanking(1, 2, 0, 5));
     }
 
     /* missing zero in ranking */
     @Test
     void testInvalidMissingZero() {
-        assertThrows(ArrayIndexOutOfBoundsException.class, () -> Cycles.fromRanking(1, 2, 3));
+        assertThrows(ArrayIndexOutOfBoundsException.class, () -> Permutation.fromRanking(1, 2, 3));
     }
 
     /* duplicates in ranking */
@@ -105,46 +105,46 @@ class PermutationTest {
     void testInvalidDuplicate() {
         int[] ranking = {1, 2, 0, 2, 3};
         assertFalse(Rankings.isValid(ranking));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> Cycles.fromRanking(ranking));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Permutation.fromRanking(ranking));
     }
 
     /* negative number in ranking */
     @Test
     void testInvalidNegative() {
-        assertThrows(ArrayIndexOutOfBoundsException.class, () -> Cycles.fromRanking(-1, 0, 1));
+        assertThrows(ArrayIndexOutOfBoundsException.class, () -> Permutation.fromRanking(-1, 0, 1));
     }
 
     @Test
     void testInvert() {
-        Cycles p = Cycles.fromRanking(1, 2, 0);
-        assertTrue(Cycles.product(p.invert(), p).isIdentity());
-        assertTrue(Cycles.product(p, p.invert()).isIdentity());
-        assertTrue(Cycles.product(p, p.pow(2)).isIdentity());
-        assertTrue(Cycles.product(p.pow(2), p).isIdentity());
-        assertTrue(Cycles.product().isIdentity());
+        Permutation p = Permutation.fromRanking(1, 2, 0);
+        assertTrue(Permutation.product(p.invert(), p).isIdentity());
+        assertTrue(Permutation.product(p, p.invert()).isIdentity());
+        assertTrue(Permutation.product(p, p.pow(2)).isIdentity());
+        assertTrue(Permutation.product(p.pow(2), p).isIdentity());
+        assertTrue(Permutation.product().isIdentity());
         assertTrue(p.pow(0).isIdentity());
         assertFalse(p.pow(1).isIdentity());
         assertFalse(p.pow(2).isIdentity());
         assertEquals(p.pow(0), p.pow(3));
-        assertEquals(p.pow(2), Cycles.product(p, p));
+        assertEquals(p.pow(2), Permutation.product(p, p));
         assertEquals(p.pow(1), p);
-        assertEquals(p.pow(-1), Cycles.product(p, p));
+        assertEquals(p.pow(-1), Permutation.product(p, p));
         assertEquals(p.pow(-1), p.invert());
         assertEquals(p.pow(2), p.compose(p));
-        assertEquals("abc", Cycles.product(p, p.invert()).apply("abc"));
+        assertEquals("abc", Permutation.product(p, p.invert()).apply("abc"));
     }
 
     @Test
     void testIdentity() {
-        assertTrue(Cycles.identity().isIdentity());
-        Assertions.assertTrue(Cycles.fromRanking(0, 1, 2, 3, 4).isIdentity());
-        Assertions.assertTrue(Cycles.fromRanking(0, 1, 2, 3, 4).invert().isIdentity());
+        assertTrue(Permutation.identity().isIdentity());
+        Assertions.assertTrue(Permutation.fromRanking(0, 1, 2, 3, 4).isIdentity());
+        Assertions.assertTrue(Permutation.fromRanking(0, 1, 2, 3, 4).invert().isIdentity());
     }
 
     /* test defining property of identity */
     @Test
     void testIdentity2() {
-        Cycles identity = Cycles.identity();
+        Permutation identity = Permutation.identity();
         for (int i = 0; i < 10; i += 1) {
             assertEquals(i, identity.apply(i));
         }
@@ -153,7 +153,7 @@ class PermutationTest {
     /* Check defining property of inverse */
     @Test
     void testInverse2() {
-        Cycles p = Cycles.sorting(new int[]{4, 6, 10, -5, 195, 33, 2});
+        Permutation p = Permutation.sorting(new int[]{4, 6, 10, -5, 195, 33, 2});
         for (int i = 0; i <= p.maxMovedIndex(); i += 1) {
             assertEquals(i, p.invert().apply(p.apply(i)));
         }
@@ -161,42 +161,42 @@ class PermutationTest {
 
     @Test
     void cycleEquality() {
-        assertEquals(Cycles.create(1, 5, 3, 2), Cycles.create(5, 3, 2, 1));
-        assertEquals(Cycles.create(1, 5, 3, 2), Cycles.create(2, 1, 5, 3));
-        assertNotEquals(Cycles.create(1, 5, 3, 2), Cycles.create(1, 5, 2, 3));
+        assertEquals(Permutation.create(1, 5, 3, 2), Permutation.create(5, 3, 2, 1));
+        assertEquals(Permutation.create(1, 5, 3, 2), Permutation.create(2, 1, 5, 3));
+        assertNotEquals(Permutation.create(1, 5, 3, 2), Permutation.create(1, 5, 2, 3));
     }
 
     @Test
     void cycleApply() {
         assertEquals(List.of("b", "c", "e", "d", "a"),
-                Cycles.create(0, 4, 2, 1).apply(TestUtil.symbols2(5)));
+                Permutation.create(0, 4, 2, 1).apply(TestUtil.symbols2(5)));
         assertEquals(List.of("c", "b", "e", "d", "a"),
-                Cycles.create(0, 4, 2).apply(TestUtil.symbols2(5)));
+                Permutation.create(0, 4, 2).apply(TestUtil.symbols2(5)));
         assertEquals(List.of("c", "a", "b"),
-                Cycles.create(0, 1, 2).apply(TestUtil.symbols2(3)));
+                Permutation.create(0, 1, 2).apply(TestUtil.symbols2(3)));
     }
 
     @Test
     void testCycleApply() {
         assertEquals(List.of("c", "a", "b"),
-                Cycles.product(Cycles.create(0, 1), Cycles.create(1, 2)).apply(TestUtil.symbols2(3)));
-        assertEquals(List.of("c", "a", "b"), Cycles.create(0, 1, 2).apply(TestUtil.symbols2(3)));
-        assertEquals(List.of("a", "c", "b"), Cycles.product(Cycles.create(0, 1),
-                Cycles.product(Cycles.create(0, 1), Cycles.create(1, 2))).apply(TestUtil.symbols2(3)));
+                Permutation.product(Permutation.create(0, 1), Permutation.create(1, 2)).apply(TestUtil.symbols2(3)));
+        assertEquals(List.of("c", "a", "b"), Permutation.create(0, 1, 2).apply(TestUtil.symbols2(3)));
+        assertEquals(List.of("a", "c", "b"), Permutation.product(Permutation.create(0, 1),
+                Permutation.product(Permutation.create(0, 1), Permutation.create(1, 2))).apply(TestUtil.symbols2(3)));
     }
 
     @Test
     void testCycleEquals() {
-        assertTrue(Cycles.product(Cycles.create(1, 2), Cycles.create(2, 1)).isIdentity());
-        assertEquals(Cycles.create(2, 3), Cycles.product(Cycles.create(1, 2),
-                Cycles.product(Cycles.create(1, 2), Cycles.create(2, 3))));
+        assertTrue(Permutation.product(Permutation.create(1, 2), Permutation.create(2, 1)).isIdentity());
+        assertEquals(Permutation.create(2, 3), Permutation.product(Permutation.create(1, 2),
+                Permutation.product(Permutation.create(1, 2), Permutation.create(2, 3))));
     }
 
     @Test
     void testCycleLaw() {
-        Cycles longest = Cycles.create(2, 4, 1, 11, 3);
-        assertEquals(Cycles.product(Cycles.create(2, 4),
-                Cycles.create(4, 1, 11, 3)), longest);
+        Permutation longest = Permutation.create(2, 4, 1, 11, 3);
+        assertEquals(Permutation.product(Permutation.create(2, 4),
+                Permutation.create(4, 1, 11, 3)), longest);
     }
 
     @Test
@@ -204,7 +204,7 @@ class PermutationTest {
         int[] x = new int[]{4, 6, 10, -5, 195, 33, 2};
         int[] y = Arrays.copyOf(x, x.length);
         Arrays.sort(y);
-        Cycles p = Cycles.sorting(x);
+        Permutation p = Permutation.sorting(x);
         for (int i = 0; i < x.length; i += 1) {
             assertEquals(x[i], y[p.apply(i)]);
         }
@@ -231,7 +231,7 @@ class PermutationTest {
     @Test
     void testSortInvert() {
         int[] x = new int[]{4, 6, 10, -5, 195, 33, 2};
-        Cycles unsort = Cycles.sorting(x).invert();
+        Permutation unsort = Permutation.sorting(x).invert();
         int[] y = Arrays.copyOf(x, x.length);
         Arrays.sort(y);
         for (int k = 0; k < y.length; k += 1) {
@@ -247,7 +247,7 @@ class PermutationTest {
         int[] distinct = Rankings.random(size);
         int[] sorted = Arrays.copyOf(distinct, distinct.length);
         Arrays.sort(sorted);
-        Cycles p = Cycles.sorting(distinct);
+        Permutation p = Permutation.sorting(distinct);
         for (int i = 0; i < sorted.length; i += 1) {
             distinct[i] = sorted[p.apply(i)];
         }
@@ -256,7 +256,7 @@ class PermutationTest {
     @Test
     void testSortInvertComparator() {
         List<MyInt> x = box2(new int[]{4, 6, 10, -5, 195, 33, 2});
-        Cycles unsort = Cycles.sorting(x, MyInt.COMP).invert();
+        Permutation unsort = Permutation.sorting(x, MyInt.COMP).invert();
         List<MyInt> y = new ArrayList<>(x);
         y.sort(MyInt.COMP);
         for (int k = 0; k < y.size(); k += 1) {
@@ -268,7 +268,7 @@ class PermutationTest {
     /* negative index */
     @Test
     void testApplyInvalid() {
-        assertThrows(IllegalArgumentException.class, () -> Cycles.identity().apply(-1));
+        assertThrows(IllegalArgumentException.class, () -> Permutation.identity().apply(-1));
     }
 
     /**
@@ -285,18 +285,18 @@ class PermutationTest {
     @Test
     void testSort1024() {
         int[] a = Rankings.random(1024);
-        assertArrayEquals(classicSort(a), Cycles.sorting(a).apply(a));
+        assertArrayEquals(classicSort(a), Permutation.sorting(a).apply(a));
     }
 
     @Test
     void testCycleLength() {
-        Cycles swap01 = Cycles.create(0, 1);
+        Permutation swap01 = Permutation.create(0, 1);
         assertEquals(1, swap01.maxMovedIndex());
     }
 
     @Test
     void testFromQuickly() {
-        Cycles p = Taking.from(new int[]{1, 2, 3}).to(new int[]{2, 3, 1});
+        Permutation p = Taking.from(new int[]{1, 2, 3}).to(new int[]{2, 3, 1});
         assertEquals(List.of("b", "c", "a"), p.apply(TestUtil.symbols2(3)));
     }
 
@@ -304,9 +304,9 @@ class PermutationTest {
     private void testFromQuickly2() {
         int size = 2048;
         int[] a = Rankings.random(size);
-        Cycles random;
+        Permutation random;
         do {
-            random = Cycles.random((int) (Math.random() * size));
+            random = Permutation.random((int) (Math.random() * size));
         } while (random.isIdentity());
         int[] b = random.apply(a);
         assertFalse(Arrays.equals(a, b));
@@ -323,16 +323,16 @@ class PermutationTest {
 
     @Test
     void testMove() {
-        assertEquals("213", Cycles.create(0, 1).apply("123"));
-        assertEquals("23145", Cycles.create(2, 1, 0).apply("12345"));
-        assertEquals("14235", Cycles.create(1, 2, 3).apply("12345"));
+        assertEquals("213", Permutation.create(0, 1).apply("123"));
+        assertEquals("23145", Permutation.create(2, 1, 0).apply("12345"));
+        assertEquals("14235", Permutation.create(1, 2, 3).apply("12345"));
     }
 
     /* various assertions about Sym(5) */
     @Test
     void testCyclesAndTranspositions() {
         int sign = 0;
-        for (Cycles p : Cycles.symmetricGroup(5).toList()) {
+        for (Permutation p : Permutation.symmetricGroup(5).toList()) {
             int order = p.order();
             sign += p.signature();
             if (order > 5) {
@@ -356,7 +356,7 @@ class PermutationTest {
     /* check edge cases */
     @Test
     void testZero() {
-        Cycles p = Cycles.identity();
+        Permutation p = Permutation.identity();
         assertEquals(0, p.maxMovedIndex());
         assertArrayEquals(new int[0], p.apply(new int[0]));
         assertEquals(0, p.numCycles());
@@ -365,9 +365,9 @@ class PermutationTest {
     /* example from README */
     @Test
     void testPprod() {
-        Cycles c0 = Cycles.create(7, 9);
-        Cycles c1 = Cycles.create(1, 4, 8, 10, 3, 6, 11);
-        Cycles c2 = Cycles.create(0, 2, 5);
+        Permutation c0 = Permutation.create(7, 9);
+        Permutation c1 = Permutation.create(1, 4, 8, 10, 3, 6, 11);
+        Permutation c2 = Permutation.create(0, 2, 5);
         assertEquals("Hello world!", c0.compose(c1).compose(c2).invert().apply(" !Hdellloorw"));
     }
 
@@ -375,14 +375,14 @@ class PermutationTest {
     @Test
     void testDegenerate() {
         int[] a = new int[]{3, 3, 3, 3, 3, 3, 3};
-        assertFalse(Cycles.sorting(a).isIdentity());
+        assertFalse(Permutation.sorting(a).isIdentity());
     }
 
     @Test
     void testSorts() {
         for (int __ = 0; __ < 100; __++) {
             int[] a = ArrayUtil.randomNumbers(100, 50 + (int) (Math.random() * 100));
-            Cycles p = Cycles.sorting(a);
+            Permutation p = Permutation.sorting(a);
             assertTrue(isSorted(p.apply(a)));
         }
     }
@@ -404,12 +404,12 @@ class PermutationTest {
     @Test
     void testSymmetricGroupDistinct() {
         for (int n = 1; n < 8; n++) {
-            List<Cycles> sym = Cycles.symmetricGroup(n).toList();
+            List<Permutation> sym = Permutation.symmetricGroup(n).toList();
             long count = sym.size();
             assertEquals(count, sym.stream().distinct().count());
             assertEquals(count, TestUtil.factorial(n));
         }
-        assertEquals(Cycles.symmetricGroup(9).count(), TestUtil.factorial(9));
+        assertEquals(Permutation.symmetricGroup(9).count(), TestUtil.factorial(9));
     }
 }
 

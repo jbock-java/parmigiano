@@ -5,8 +5,8 @@ import java.util.List;
 public final class Taking {
 
     public record TakingBuilderList<E extends Comparable<E>>(List<E> from) {
-        public Cycles to(List<E> to) {
-            return Cycles.fromRanking(Rankings.from(from, to));
+        public Permutation to(List<E> to) {
+            return Permutation.fromRanking(Rankings.from(from, to));
         }
     }
 
@@ -17,8 +17,8 @@ public final class Taking {
             this.from = from;
         }
 
-        public Cycles to(int[] to) {
-            return Cycles.fromRanking(Rankings.from(from, to));
+        public Permutation to(int[] to) {
+            return Permutation.fromRanking(Rankings.from(from, to));
         }
     }
 

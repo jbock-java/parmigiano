@@ -8,7 +8,7 @@ import java.util.Set;
 import static io.parmigiano.ArrayUtil.duplicateFailure;
 import static io.parmigiano.ArrayUtil.indexOf;
 import static io.parmigiano.ArrayUtil.negativeFailure;
-import static io.parmigiano.Cycles.chaseCycle;
+import static io.parmigiano.Permutation.chaseCycle;
 
 /**
  * A collection of methods that return cycles or operate on cycles.

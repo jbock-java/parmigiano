@@ -13,7 +13,7 @@ import java.util.TreeSet;
 
 class TestUtil {
 
-    static Iterable<Cycles[]> cartesian(List<Cycles> a, List<Cycles> b) {
+    static Iterable<Permutation[]> cartesian(List<Permutation> a, List<Permutation> b) {
         return () ->
                 new Iterator<>() {
                     int idxa = 0;
@@ -25,16 +25,16 @@ class TestUtil {
                     }
 
                     @Override
-                    public Cycles[] next() {
-                        Cycles pa = a.get(idxa);
-                        Cycles pb = b.get(idxb);
+                    public Permutation[] next() {
+                        Permutation pa = a.get(idxa);
+                        Permutation pb = b.get(idxb);
                         if (b.size() - idxb == 1) {
                             idxb = 0;
                             idxa += 1;
                         } else {
                             idxb += 1;
                         }
-                        return new Cycles[]{pa, pb};
+                        return new Permutation[]{pa, pb};
                     }
 
                     @Override
@@ -45,17 +45,17 @@ class TestUtil {
 
     }
 
-    static List<Cycles> commutator(List<Cycles> input) {
-        ArrayList<Cycles> result = new ArrayList<>();
-        for (Cycles p : distinct2(commutatorIterable(input)))
+    static List<Permutation> commutator(List<Permutation> input) {
+        ArrayList<Permutation> result = new ArrayList<>();
+        for (Permutation p : distinct2(commutatorIterable(input)))
             result.add(p);
         return result;
     }
 
-    static Iterable<Cycles> commutatorIterable(List<Cycles> input) {
+    static Iterable<Permutation> commutatorIterable(List<Permutation> input) {
         return () -> {
-            List<Cycles> inlist = Arrays.asList(input.toArray(new Cycles[input.size()]));
-            final Iterator<Cycles[]> cartesian = cartesian(inlist, inlist).iterator();
+            List<Permutation> inlist = Arrays.asList(input.toArray(new Permutation[input.size()]));
+            final Iterator<Permutation[]> cartesian = cartesian(inlist, inlist).iterator();
             return new Iterator<>() {
                 @Override
                 public boolean hasNext() {
@@ -63,9 +63,9 @@ class TestUtil {
                 }
 
                 @Override
-                public Cycles next() {
-                    Cycles[] p = cartesian.next();
-                    return Cycles.product(p[0].invert(), p[1].invert(), p[0], p[1]);
+                public Permutation next() {
+                    Permutation[] p = cartesian.next();
+                    return Permutation.product(p[0].invert(), p[1].invert(), p[0], p[1]);
                 }
             };
         };
@@ -125,11 +125,11 @@ class TestUtil {
         };
     }
 
-    static List<Cycles> center(List<Cycles> input) {
-        List<Cycles> result = new ArrayList<>();
+    static List<Permutation> center(List<Permutation> input) {
+        List<Permutation> result = new ArrayList<>();
         outer:
-        for (Cycles a : input) {
-            for (Cycles b : input)
+        for (Permutation a : input) {
+            for (Permutation b : input)
                 if (!a.compose(b).equals(b.compose(a)))
                     continue outer;
             result.add(a);
@@ -137,9 +137,9 @@ class TestUtil {
         return result;
     }
 
-    static boolean isClosed(List<Cycles> permutations) {
-        Set<Cycles> set = new HashSet<>(permutations);
-        for (Cycles[] p : cartesian(permutations, permutations))
+    static boolean isClosed(List<Permutation> permutations) {
+        Set<Permutation> set = new HashSet<>(permutations);
+        for (Permutation[] p : cartesian(permutations, permutations))
             if (!set.contains(p[0].compose(p[1])) || !set.contains(p[1].compose(p[0])))
                 return false;
         return true;
@@ -161,9 +161,9 @@ class TestUtil {
         return c;
     }
 
-    static int signatureSum(List<Cycles> permutations) {
+    static int signatureSum(List<Permutation> permutations) {
         int result = 0;
-        for (Cycles p : permutations)
+        for (Permutation p : permutations)
             result += p.signature();
         return result;
     }
