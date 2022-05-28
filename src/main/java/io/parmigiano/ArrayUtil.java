@@ -1,6 +1,8 @@
 package io.parmigiano;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -269,6 +271,12 @@ public final class ArrayUtil {
     public static Comparable[] sortedCopy(Comparable[] input) {
         Comparable[] sorted = Arrays.copyOf(input, input.length);
         Arrays.sort(sorted);
+        return sorted;
+    }
+
+    public static <E> List<E> sortedCopy(List<E> input, Comparator<E> comp) {
+        List<E> sorted = new ArrayList<>(input);
+        Collections.sort(sorted, comp);
         return sorted;
     }
 

@@ -422,9 +422,23 @@ class PermutationTest {
     void testSorts() {
         for (int __ = 0; __ < 100; __++) {
             int[] a = ArrayUtil.randomNumbers(100, 50 + (int) (Math.random() * 100));
-            Permutation p = Permutation.sorting(a);
-            assertTrue(p.sorts(a));
+            Cycles p = Permutation.sorting(a);
+            assertTrue(isSorted(p.apply(a)));
         }
+    }
+
+    static boolean isSorted(int[] a) {
+        if (a.length <= 1) {
+            return true;
+        }
+        int cur = a[0];
+        for (int i = 1; i < a.length; i++) {
+            if (a[i] < cur) {
+                return false;
+            }
+            cur = a[i];
+        }
+        return true;
     }
 
     @Test

@@ -580,14 +580,14 @@ public final class Permutation implements Comparable<Permutation> {
     }
 
     public static final class SortingBuilder<E> {
-        private final E[] a;
+        private final List<E> a;
 
-        public SortingBuilder(E[] a) {
+        public SortingBuilder(List<E> a) {
             this.a = a;
         }
 
-        public Permutation using(Comparator<E> comparator) {
-            return define(Rankings.sorting(a, comparator), false);
+        public Cycles using(Comparator<E> comparator) {
+            return Cycles.fromRanking(Rankings.sorting(a, comparator));
         }
     }
 
@@ -596,12 +596,12 @@ public final class Permutation implements Comparable<Permutation> {
     }
     
 
-    public static <E> SortingBuilder<E> sorting(E[] input) {
+    public static <E> SortingBuilder<E> sorting(List<E> input) {
         return new SortingBuilder<>(input);
     }
 
-    public static Permutation sorting(int[] input) {
-        return define(Rankings.sorting(input), false);
+    public static Cycles sorting(int[] input) {
+        return Cycles.fromRanking(Rankings.sorting(input));
     }
     
     public static final class TakingBuilder<E extends Comparable<E>> {

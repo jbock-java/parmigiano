@@ -3,9 +3,12 @@ package io.parmigiano;
 import org.junit.jupiter.api.Test;
 
 import java.util.Comparator;
+import java.util.List;
 
 import static io.parmigiano.MyInt.box;
+import static io.parmigiano.MyInt.box2;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,14 +24,14 @@ class TestRankingsComparator {
 
     @Test
     void testSortRandom() {
-        MyInt[] a;
+        List<MyInt> a;
         for (int __ = 0; __ < REPEAT; __ += 1) {
-            a = box(ArrayUtil.randomNumbers(100, 200));
-            assertArrayEquals(ArrayUtil.sortedCopy(a, MyInt.COMP), Permutation.sorting(a).using(MyInt.COMP).apply(a));
+            a = box2(ArrayUtil.randomNumbers(100, 200));
+            assertEquals(ArrayUtil.sortedCopy(a, MyInt.COMP), Permutation.sorting(a).using(MyInt.COMP).apply(a));
         }
         for (int i = 0; i < REPEAT; i += 1) {
-            a = box(ArrayUtil.randomNumbers(100, 200));
-            assertArrayEquals(ArrayUtil.sortedCopy(a, MyInt.COMP), Permutation.sorting(a).using(MyInt.COMP).apply(a));
+            a = box2(ArrayUtil.randomNumbers(100, 200));
+            assertEquals(ArrayUtil.sortedCopy(a, MyInt.COMP), Permutation.sorting(a).using(MyInt.COMP).apply(a));
         }
     }
 
@@ -42,7 +45,6 @@ class TestRankingsComparator {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void testFromRandom() {
         for (int __ = 0; __ < REPEAT; __ += 1) {
             int[] a = ArrayUtil.randomNumbers(100, 200);
