@@ -270,23 +270,7 @@ public final class Permutation implements Comparable<Permutation> {
     public static Permutation move(int delete, int insert) {
         return defineCycle(ArrayUtil.range(insert, delete, true));
     }
-
-    /**
-     * <p>Calculate the orbit of given index.
-     * The orbit is an array of distinct integers that contains all indexes</p>
-     * <pre><code>
-     *   i, apply(i), apply(apply(i)), ...
-     * </code></pre>
-     * <p>The orbit always contains at least one element, that is the start index {@code i} itself.</p>
-     *
-     * @param i a non negative number which is less than {@code this.length()}
-     * @return the orbit of {@code i}
-     * @throws java.lang.IllegalArgumentException if {@code i < 0} or {@code i >= this.length}.
-     */
-    public int[] orbit(int i) {
-        return CycleUtil.orbit(ranking, i);
-    }
-
+    
     /**
      * <p>Calculate the order of this permutation. The order is the smallest positive number {@code n}
      * such that</p>
@@ -308,27 +292,14 @@ public final class Permutation implements Comparable<Permutation> {
         }
         return i;
     }
-
-    /**
-     * <p>Determine whether this permutation has at most one nontrivial orbit.</p>
-     *
-     * @return true if this permutation is a cycle
-     * @see #defineCycle
-     * @see #orbit
-     */
-    public boolean isCycle() {
-        return CycleUtil.isCyclicRanking(ranking);
-    }
-
+    
     /**
      * Get a cycle based version of this operation, which can be used to change arrays in place.
      *
      * @return a cycle based version of this operation
      */
     public Cycles toCycles() {
-        if (this.ranking.length == 0)
-            return Cycles.identity();
-        return Cycles.create(new Orbits(CycleUtil.toOrbits(ranking)));
+        return Cycles.fromRanking(ranking);
     }
 
 
@@ -384,20 +355,6 @@ public final class Permutation implements Comparable<Permutation> {
         if (ranking.length == 0 && n == 0)
             return this;
         return define(Rankings.shift(n, ranking), false);
-    }
-
-    /**
-     * Find a cycle in this permutation or return {@code null} if this is the identity.
-     *
-     * @return a cycle in this permutation or {@code null} if there are no cycles because this is the identity
-     */
-    public int[] findCycle() {
-        if (ranking.length == 0)
-            return null;
-        for (int i = 0; i < ranking.length; i++)
-            if (ranking[i] != i)
-                return orbit(i);
-        throw new IllegalStateException(); // we'll never get here
     }
 
     /**
@@ -467,15 +424,6 @@ public final class Permutation implements Comparable<Permutation> {
             if (this.ranking[i] != other.ranking[i])
                 return this.ranking[i] - other.ranking[i];
         return other.ranking.length - this.ranking.length;
-    }
-
-    /**
-     * Get a copy of the ranking that represents of this permutation.
-     *
-     * @return a copy of the ranking
-     */
-    public int[] getRanking() {
-        return Arrays.copyOf(ranking, ranking.length);
     }
 
     /**
@@ -659,23 +607,7 @@ public final class Permutation implements Comparable<Permutation> {
         return Rankings.apply(ranking, input);
     }
 
-    public static Permutation sorting(byte[] input) {
-        return define(Rankings.sorting(input), false);
-    }
-
-    public static Permutation sorting(short[] input) {
-        return define(Rankings.sorting(input), false);
-    }
-
     public static Permutation sorting(long[] input) {
-        return define(Rankings.sorting(input), false);
-    }
-
-    public static Permutation sorting(float[] input) {
-        return define(Rankings.sorting(input), false);
-    }
-
-    public static Permutation sorting(double[] input) {
         return define(Rankings.sorting(input), false);
     }
 
@@ -804,10 +736,6 @@ public final class Permutation implements Comparable<Permutation> {
         return new TakingBuilderLong(a);
     }
 
-    public static TakingBuilderDouble taking(double[] a) {
-        return new TakingBuilderDouble(a);
-    }
-
     public static <E> TakingBuilderObj<E> taking(E[] a) {
         return new TakingBuilderObj<>(a);
     }
@@ -815,67 +743,7 @@ public final class Permutation implements Comparable<Permutation> {
     public boolean sorts(int[] a) {
         return Rankings.sorts(ranking, a);
     }
-
-    public boolean sorts(byte[] a) {
-        return Rankings.sorts(ranking, a);
-    }
-
-    public boolean sorts(short[] a) {
-        return Rankings.sorts(ranking, a);
-    }
-
-    public boolean sorts(char[] a) {
-        return Rankings.sorts(ranking, a);
-    }
-
-    public boolean sorts(long[] a) {
-        return Rankings.sorts(ranking, a);
-    }
-
-    public boolean sorts(float[] a) {
-        return Rankings.sorts(ranking, a);
-    }
-
-    public boolean sorts(double[] a) {
-        return Rankings.sorts(ranking, a);
-    }
-
-    public <E extends Comparable<E>> boolean sorts(E[] a) {
-        return Rankings.sorts(ranking, a);
-    }
-
-    public <E extends Comparable<E>> boolean sorts(List<E> a) {
-        return Rankings.sorts(ranking, a);
-    }
-
-    public static final class SortsBuilder<E> {
-        private final E[] a;
-        private final int[] ranking;
-
-        public SortsBuilder(E[] a, int[] ranking) {
-            this.a = a;
-            this.ranking = ranking;
-        }
-
-        public boolean using(Comparator<E> comparator) {
-            return Rankings.sorts(ranking, a, comparator);
-        }
-    }
-
-    public <E> SortsBuilder<E> sorts(E[] a) {
-        return new SortsBuilder<>(a, ranking);
-    }
-
-    /* Transport an array safely to Cycles constructor */
-    static final class Orbits {
-        static Orbits EMPTY = new Orbits(new int[0][]);
-        final int[][] orbits;
-
-        private Orbits(int[][] orbits) {
-            this.orbits = orbits;
-        }
-    }
-
+    
     public static Stream<Permutation> symmetricGroup(int n) {
         return Rankings.symmetricGroup(n).map(a -> define(a, false));
     }

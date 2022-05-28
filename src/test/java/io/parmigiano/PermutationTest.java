@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,28 +64,27 @@ class PermutationTest {
     @Test
     void testIterable() {
         for (int __ = 0; __ < 100; __++) {
-            MyInt[] a = MyInt.box(ArrayUtil.randomNumbers(100, 50 + (int) (Math.random() * 100)));
-            Permutation p = Permutation.random((int) (Math.random() * a.length));
-            Object[] applied = p.apply(a);
-            List<MyInt> arrayList = new ArrayList<MyInt>(a.length);
+            List<MyInt> a = MyInt.box2(ArrayUtil.randomNumbers(100, 50 + (int) (Math.random() * 100)));
+            Cycles p = Cycles.random((int) (Math.random() * a.size()));
+            List<MyInt> applied = p.apply(a);
+            List<MyInt> arrayList = new ArrayList<MyInt>(a.size());
             List<MyInt> linkedList = new LinkedList<MyInt>();
-            Collections.addAll(arrayList, a);
-            Collections.addAll(linkedList, a);
+            arrayList.addAll(a);
+            linkedList.addAll(a);
             List<MyInt> arrayListApplied, linkedListApplied;
             List<MyInt> arrayListApplied2, linkedListApplied2;
 
             // standard
             arrayListApplied = p.apply(arrayList);
             linkedListApplied = p.apply(linkedList);
-            for (int i = 0; i < a.length; i += 1) {
-                assertEquals(applied[i], arrayListApplied.get(i));
-                assertEquals(applied[i], linkedListApplied.get(i));
+            for (int i = 0; i < a.size(); i += 1) {
+                assertEquals(applied.get(i), arrayListApplied.get(i));
+                assertEquals(applied.get(i), linkedListApplied.get(i));
             }
 
             // compiled
-            Cycles compiled = p.toCycles();
-            arrayListApplied2 = compiled.apply(arrayList);
-            linkedListApplied2 = compiled.apply(linkedList);
+            arrayListApplied2 = p.apply(arrayList);
+            linkedListApplied2 = p.apply(linkedList);
             assertEquals(arrayListApplied, arrayListApplied2);
             assertEquals(linkedListApplied, linkedListApplied2);
         }

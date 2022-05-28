@@ -1,6 +1,8 @@
 package io.parmigiano;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Example class that has a Comparator but is not directly Comparable
@@ -20,6 +22,14 @@ public class MyInt {
         MyInt[] result = new MyInt[a.length];
         for (int i = 0; i < result.length; i += 1) {
             result[i] = new MyInt(a[i]);
+        }
+        return result;
+    }
+
+    static List<MyInt> box2(int[] a) {
+        List<MyInt> result = new ArrayList<>(a.length);
+        for (int i = 0; i < a.length; i += 1) {
+            result.add(new MyInt(a[i]));
         }
         return result;
     }

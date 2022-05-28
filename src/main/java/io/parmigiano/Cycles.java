@@ -15,14 +15,10 @@ import static io.parmigiano.ArrayUtil.checkLength;
  */
 public final class Cycles {
 
-    private static final Cycles IDENTITY = new Cycles(Permutation.Orbits.EMPTY, 0);
+    private static final Cycles IDENTITY = new Cycles(new int[0][]);
 
     private final int maxMovedIndex;
     private final int[][] cycles;
-
-    private Cycles(Permutation.Orbits orbits, int maxMovedIndex) {
-        this(orbits.orbits);
-    }
 
     private Cycles(int[][] cycles) {
         this.maxMovedIndex = maxIndex(cycles);
@@ -31,10 +27,6 @@ public final class Cycles {
 
     public static Cycles create(int... cycle) {
         return new Cycles(new int[][]{cycle});
-    }
-
-    public static Permutation cycle(int... cycle) {
-        return Permutation.define(CycleUtil.cyclic(cycle));
     }
 
     /**
@@ -46,28 +38,17 @@ public final class Cycles {
         return IDENTITY;
     }
 
-    /**
-     * Define a new operation as a list of cycles.
-     *
-     * @param orbits a list of cycles
-     * @return the operation defined by the input
-     */
-    static Cycles create(Permutation.Orbits orbits) {
-        if (orbits.orbits.length == 0)
+    static Cycles fromRanking(int[] ranking) {
+        if (ranking.length == 0) {
             return IDENTITY;
-        int maxIndex = 0;
-        for (int[] orbit : orbits.orbits)
-            for (int i : orbit)
-                maxIndex = Math.max(maxIndex, i);
-        return new Cycles(orbits, maxIndex + 1);
+        }
+        return new Cycles(CycleUtil.toOrbits(ranking));
     }
 
-    /**
-     * Apply this operation by modifying the input array.
-     *
-     * @param array an array
-     * @throws IllegalArgumentException if {@code array.length < this.length()}
-     */
+    public static Cycles random(int length) {
+        return fromRanking(Rankings.random(length));
+    }
+
     private void clobber(int[] array) {
         checkLength(maxMovedIndex, array.length);
         for (int[] cycle : cycles) {
@@ -78,12 +59,7 @@ public final class Cycles {
             }
         }
     }
-    /**
-     * Apply this operation by modifying the input array.
-     *
-     * @param array an array
-     * @throws IllegalArgumentException if {@code array.length < this.length()}
-     */
+
     private void clobber(char[] array) {
         checkLength(maxMovedIndex, array.length);
         for (int[] cycle : cycles) {
@@ -95,12 +71,6 @@ public final class Cycles {
         }
     }
 
-    /**
-     * Undo the action of this operation by modifying the input array.
-     *
-     * @param array an array
-     * @throws IllegalArgumentException if {@code array.length < this.length()}
-     */
     private void unclobber(int[] array) {
         checkLength(maxMovedIndex, array.length);
         for (int[] cycle : cycles) {
@@ -112,14 +82,6 @@ public final class Cycles {
         }
     }
 
-    /**
-     * Apply this operation by modifying the input list.
-     * The input list must support {@link List#set(int, Object)}.
-     *
-     * @param list a list
-     * @throws UnsupportedOperationException if the input list is not mutable
-     * @throws IllegalArgumentException      if {@code list.size() < this.length()}
-     */
     private <E> void clobber(List<E> list) {
         checkLength(maxMovedIndex, list.size());
         for (int[] cycle : cycles) {
