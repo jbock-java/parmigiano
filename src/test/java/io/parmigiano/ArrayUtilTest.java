@@ -20,13 +20,13 @@ class ArrayUtilTest {
 
     @Test
     void testCombinations() {
-        List<Permutation> permutations = Permutation.symmetricGroup(3).collect(Collectors.toList());
+        List<Cycles> permutations = Cycles.symmetricGroup(3).toList();
         assertEquals(6, permutations.size());
-        Set<Permutation> perms = new HashSet<Permutation>();
-        for (Permutation perm : permutations) {
+        Set<Cycles> perms = new HashSet<>();
+        for (Cycles perm : permutations) {
             assertTrue(perms.add(perm));
         }
-        for (Permutation perm : Permutation.symmetricGroup(3).collect(Collectors.toList())) {
+        for (Cycles perm : Cycles.symmetricGroup(3).collect(Collectors.toList())) {
             assertFalse(perms.add(perm));
         }
     }
@@ -35,8 +35,8 @@ class ArrayUtilTest {
     void testCartesian() {
         int total = 0;
         int offDiagonal = 0;
-        List<Permutation> a = Permutation.symmetricGroup(3).collect(Collectors.toList());
-        for (Permutation[] permutation : TestUtil.cartesian(a, a)) {
+        List<Cycles> a = Cycles.symmetricGroup(3).toList();
+        for (Cycles[] permutation : TestUtil.cartesian(a, a)) {
             total += 1;
             if (permutation[0] != permutation[1]) {
                 offDiagonal += 1;
@@ -48,54 +48,54 @@ class ArrayUtilTest {
 
     @Test
     void testCenter() {
-        List<Permutation> a = Permutation.symmetricGroup(5).collect(Collectors.toList());
-        List<Permutation> center = TestUtil.center(a);
+        List<Cycles> a = Cycles.symmetricGroup(5).toList();
+        List<Cycles> center = TestUtil.center(a);
         assertEquals(1, center.size());
         assertTrue(center.get(0).isIdentity());
     }
 
     @Test
     void testClosed() {
-        Permutation id = Permutation.define(0, 1, 2, 3);
-        Permutation p = Permutation.define(1, 0, 2, 3);
-        Permutation k = Permutation.define(0, 1, 3, 2);
-        Permutation p2 = Permutation.define(1, 2, 0, 3);
-        Assertions.assertTrue(TestUtil.isClosed(Arrays.asList(id)));
-        Assertions.assertTrue(TestUtil.isClosed(Arrays.asList(id, p)));
-        Assertions.assertTrue(TestUtil.isClosed(Arrays.asList(id, p2, p2.pow(2))));
-        Assertions.assertTrue(TestUtil.isClosed(Arrays.asList(id, p, k, Permutation.product(p, k))));
-        Assertions.assertFalse(TestUtil.isClosed(Arrays.asList(id, p2)));
-        Assertions.assertFalse(TestUtil.isClosed(Arrays.asList(p)));
-        Assertions.assertFalse(TestUtil.isClosed(Arrays.asList(id, p, p2)));
-        assertTrue(Permutation.product(p, k).pow(2).isIdentity());
+        Cycles id = Cycles.fromRanking(0, 1, 2, 3);
+        Cycles p = Cycles.fromRanking(1, 0, 2, 3);
+        Cycles k = Cycles.fromRanking(0, 1, 3, 2);
+        Cycles p2 = Cycles.fromRanking(1, 2, 0, 3);
+        Assertions.assertTrue(TestUtil.isClosed(List.of(id)));
+        Assertions.assertTrue(TestUtil.isClosed(List.of(id, p)));
+        Assertions.assertTrue(TestUtil.isClosed(List.of(id, p2, p2.pow(2))));
+        Assertions.assertTrue(TestUtil.isClosed(List.of(id, p, k, Cycles.product(p, k))));
+        Assertions.assertFalse(TestUtil.isClosed(List.of(id, p2)));
+        Assertions.assertFalse(TestUtil.isClosed(List.of(p)));
+        Assertions.assertFalse(TestUtil.isClosed(List.of(id, p, p2)));
+        assertTrue(Cycles.product(p, k).pow(2).isIdentity());
     }
 
     @Test
     void testCommutator5() {
-        Assertions.assertEquals(120l, Permutation.symmetricGroup(5).count());
-        Assertions.assertTrue(TestUtil.isClosed(Permutation.symmetricGroup(5).collect(Collectors.toList())));
-        Assertions.assertEquals(60, TestUtil.commutator(Permutation.symmetricGroup(5).collect(Collectors.toList())).size());
-        Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(Permutation.symmetricGroup(5).collect(Collectors.toList()))));
-        Assertions.assertEquals(60, TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(5).collect(Collectors.toList()))).size());
-        Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(5).collect(Collectors.toList())))));
+        Assertions.assertEquals(120L, Cycles.symmetricGroup(5).count());
+        Assertions.assertTrue(TestUtil.isClosed(Cycles.symmetricGroup(5).toList()));
+        Assertions.assertEquals(60, TestUtil.commutator(Cycles.symmetricGroup(5).toList()).size());
+        Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(Cycles.symmetricGroup(5).toList())));
+        Assertions.assertEquals(60, TestUtil.commutator(TestUtil.commutator(Cycles.symmetricGroup(5).toList())).size());
+        Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(TestUtil.commutator(Cycles.symmetricGroup(5).toList()))));
     }
 
     @Test
     void testCommutator4() {
-        Assertions.assertEquals(24, Permutation.symmetricGroup(4).collect(Collectors.toList()).size());
-        Assertions.assertTrue(TestUtil.isClosed(Permutation.symmetricGroup(4).collect(Collectors.toList())));
-        Assertions.assertEquals(12, TestUtil.commutator(Permutation.symmetricGroup(4).collect(Collectors.toList())).size());
-        Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(Permutation.symmetricGroup(4).collect(Collectors.toList()))));
-        Assertions.assertEquals(4, TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(4).collect(Collectors.toList()))).size());
-        Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(4).collect(Collectors.toList())))));
-        Assertions.assertEquals(1, TestUtil.commutator(TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(4).collect(Collectors.toList())))).size());
-        Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(4).collect(Collectors.toList()))))));
+        Assertions.assertEquals(24, Cycles.symmetricGroup(4).toList().size());
+        Assertions.assertTrue(TestUtil.isClosed(Cycles.symmetricGroup(4).toList()));
+        Assertions.assertEquals(12, TestUtil.commutator(Cycles.symmetricGroup(4).toList()).size());
+        Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(Cycles.symmetricGroup(4).toList())));
+        Assertions.assertEquals(4, TestUtil.commutator(TestUtil.commutator(Cycles.symmetricGroup(4).toList())).size());
+        Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(TestUtil.commutator(Cycles.symmetricGroup(4).toList()))));
+        Assertions.assertEquals(1, TestUtil.commutator(TestUtil.commutator(TestUtil.commutator(Cycles.symmetricGroup(4).toList()))).size());
+        Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(TestUtil.commutator(TestUtil.commutator(Cycles.symmetricGroup(4).toList())))));
     }
 
     @Test
     void testCommutatorEven() {
         for (int i = 3; i < 7; i += 1) {
-            List<Permutation> sym = Permutation.symmetricGroup(i).collect(Collectors.toList());
+            List<Cycles> sym = Cycles.symmetricGroup(i).toList();
             Assertions.assertEquals(TestUtil.factorial(i), sym.size());
             Assertions.assertEquals(0, TestUtil.signatureSum(sym));
             Assertions.assertEquals(sym.size() / 2, TestUtil.signatureSum(TestUtil.commutator(sym)));
@@ -207,9 +207,9 @@ class ArrayUtilTest {
 
     @Test
     void testFindCommutator() {
-        Permutation p = Permutation.define(CycleUtil.cyclic(1, 2));
-        Permutation q = Permutation.define(CycleUtil.cyclic(0, 1));
-        Assertions.assertEquals(Permutation.define(1, 2, 0), Permutation.product(p.invert(), q.invert(), p, q));
+        Cycles p = Cycles.create(1, 2);
+        Cycles q = Cycles.create(0, 1);
+        Assertions.assertEquals(Cycles.fromRanking(1, 2, 0), Cycles.product(p.invert(), q.invert(), p, q));
     }
 
     @Test
@@ -221,9 +221,9 @@ class ArrayUtilTest {
 
     @Test
     void testEvenCommutator2() {
-        Permutation p = Permutation.define(CycleUtil.cyclic(0, 3, 1));
-        Permutation q = Permutation.define(CycleUtil.cyclic(0, 4, 2, 1, 3));
-        Assertions.assertEquals(Permutation.define(1, 2, 0), Permutation.product(p.invert(), q.invert(), p, q));
+        Cycles p = Cycles.create(0, 3, 1);
+        Cycles q = Cycles.create(0, 4, 2, 1, 3);
+        Assertions.assertEquals(Cycles.fromRanking(1, 2, 0), Cycles.product(p.invert(), q.invert(), p, q));
     }
 
     @Test

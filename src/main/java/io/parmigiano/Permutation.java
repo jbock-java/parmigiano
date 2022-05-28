@@ -33,6 +33,7 @@ public final class Permutation implements Comparable<Permutation> {
         ranking = Rankings.trim(ranking);
         this.ranking = validate ? Rankings.checkRanking(ranking) : ranking;
         this.hash = Arrays.hashCode(ranking);
+//        throw new IllegalArgumentException();
     }
 
     public static Permutation define() {

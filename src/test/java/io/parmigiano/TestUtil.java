@@ -3,16 +3,17 @@ package io.parmigiano;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
 class TestUtil {
 
-    static Iterable<Permutation[]> cartesian(final List<Permutation> a, final List<Permutation> b) {
+    static Iterable<Cycles[]> cartesian(List<Cycles> a, List<Cycles> b) {
         return () ->
                 new Iterator<>() {
                     int idxa = 0;
@@ -24,16 +25,16 @@ class TestUtil {
                     }
 
                     @Override
-                    public Permutation[] next() {
-                        Permutation pa = a.get(idxa);
-                        Permutation pb = b.get(idxb);
+                    public Cycles[] next() {
+                        Cycles pa = a.get(idxa);
+                        Cycles pb = b.get(idxb);
                         if (b.size() - idxb == 1) {
                             idxb = 0;
                             idxa += 1;
                         } else {
                             idxb += 1;
                         }
-                        return new Permutation[]{pa, pb};
+                        return new Cycles[]{pa, pb};
                     }
 
                     @Override
@@ -44,33 +45,33 @@ class TestUtil {
 
     }
 
-    static List<Permutation> commutator(final List<Permutation> input) {
-        LinkedList<Permutation> result = new LinkedList<Permutation>();
-        for (Permutation p : distinct(commutatorIterable(input)))
-            result.push(p);
+    static List<Cycles> commutator(List<Cycles> input) {
+        ArrayList<Cycles> result = new ArrayList<>();
+        for (Cycles p : distinct2(commutatorIterable(input)))
+            result.add(p);
         return result;
     }
 
-    static Iterable<Permutation> commutatorIterable(final List<Permutation> input) {
+    static Iterable<Cycles> commutatorIterable(List<Cycles> input) {
         return () -> {
-            List<Permutation> inlist = Arrays.asList(input.toArray(new Permutation[input.size()]));
-            final Iterator<Permutation[]> cartesian = cartesian(inlist, inlist).iterator();
-            return new Iterator<Permutation>() {
+            List<Cycles> inlist = Arrays.asList(input.toArray(new Cycles[input.size()]));
+            final Iterator<Cycles[]> cartesian = cartesian(inlist, inlist).iterator();
+            return new Iterator<>() {
                 @Override
                 public boolean hasNext() {
                     return cartesian.hasNext();
                 }
 
                 @Override
-                public Permutation next() {
-                    Permutation[] p = cartesian.next();
-                    return Permutation.product(p[0].invert(), p[1].invert(), p[0], p[1]);
+                public Cycles next() {
+                    Cycles[] p = cartesian.next();
+                    return Cycles.product(p[0].invert(), p[1].invert(), p[0], p[1]);
                 }
             };
         };
     }
 
-    static <E extends Comparable<E>> Iterable<E> distinct(final Iterable<E> input) {
+    static <E extends Comparable<E>> Iterable<E> distinct(Iterable<E> input) {
         return () -> {
             final TreeSet<E> set = new TreeSet<E>();
             final Iterator<E> it = input.iterator();
@@ -97,23 +98,48 @@ class TestUtil {
         };
     }
 
-    static List<Permutation> center(final List<Permutation> input) {
-        LinkedList<Permutation> result = new LinkedList<Permutation>();
+    static <E> Iterable<E> distinct2(Iterable<E> input) {
+        return () -> {
+            final HashSet<E> set = new HashSet<>();
+            final Iterator<E> it = input.iterator();
+            return new Iterator<E>() {
+                E current = null;
+
+                @Override
+                public boolean hasNext() {
+                    while (it.hasNext()) {
+                        E candidate = it.next();
+                        if (set.add(candidate)) {
+                            current = candidate;
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                @Override
+                public E next() {
+                    return current;
+                }
+            };
+        };
+    }
+
+    static List<Cycles> center(List<Cycles> input) {
+        List<Cycles> result = new ArrayList<>();
         outer:
-        for (Permutation a : input) {
-            for (Permutation b : input)
+        for (Cycles a : input) {
+            for (Cycles b : input)
                 if (!a.compose(b).equals(b.compose(a)))
                     continue outer;
-            result.push(a);
+            result.add(a);
         }
         return result;
     }
 
-    static boolean isClosed(final List<Permutation> permutations) {
-        TreeSet<Permutation> set = new TreeSet<Permutation>();
-        for (Permutation p : permutations)
-            set.add(p);
-        for (Permutation[] p : cartesian(permutations, permutations))
+    static boolean isClosed(List<Cycles> permutations) {
+        Set<Cycles> set = new HashSet<>(permutations);
+        for (Cycles[] p : cartesian(permutations, permutations))
             if (!set.contains(p[0].compose(p[1])) || !set.contains(p[1].compose(p[0])))
                 return false;
         return true;
@@ -135,23 +161,11 @@ class TestUtil {
         return c;
     }
 
-    static int signatureSum(List<Permutation> permutations) {
+    static int signatureSum(List<Cycles> permutations) {
         int result = 0;
-        for (Permutation p : permutations)
-            result += p.toCycles().signature();
+        for (Cycles p : permutations)
+            result += p.signature();
         return result;
-    }
-
-    static <E extends Comparable> boolean isDistinct(Iterable<E> input) {
-        Iterable<E> distinct = distinct(input);
-        Iterator it = distinct.iterator();
-        for (E __ : input) {
-            if (!it.hasNext())
-                return false;
-            it.next();
-        }
-        assert !it.hasNext();
-        return true;
     }
 
     static <E extends Comparable> boolean isDistinct(int[] input) {
