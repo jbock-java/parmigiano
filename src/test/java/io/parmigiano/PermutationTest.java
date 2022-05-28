@@ -26,24 +26,24 @@ class PermutationTest {
     /* Check example from constructor javadoc */
     @Test
     void testAbc() {
-        Permutation p = Permutation.define(1, 2, 0);
-        assertArrayEquals(new char[]{'c', 'a', 'b'}, p.apply(new char[]{'a', 'b', 'c'}));
+        Cycles p = Cycles.fromRanking(1, 2, 0);
+        assertEquals("cab", p.apply("abc"));
     }
 
     @Test
     void testComp() {
-        Permutation p = Permutation.define(1, 2, 0);
-        Assertions.assertEquals(Permutation.define(new int[]{1, 2, 0}), p);
-        assertArrayEquals(new String[]{"c", "a", "b"}, p.apply(TestUtil.symbols(3)));
-        assertArrayEquals(new String[]{"b", "c", "a"}, p.pow(2).apply(TestUtil.symbols(3)));
+        Cycles p = Cycles.fromRanking(1, 2, 0);
+        assertEquals(Cycles.fromRanking(1, 2, 0), p);
+        assertEquals(List.of("c", "a", "b"), p.apply(TestUtil.symbols2(3)));
+        assertEquals(List.of("b", "c", "a"), p.compose(p).apply(TestUtil.symbols2(3)));
     }
 
     /* check defining property of composition */
     @Test
     void testComp2() {
-        Permutation p = Permutation.define(1, 2, 0);
-        Permutation p2 = Permutation.sorting(new int[]{4, 6, 10, -5, 195, 33, 2});
-        for (int i = 0; i < p.length(); i += 1) {
+        Cycles p = Cycles.random(7);
+        Cycles p2 = Cycles.random(7);
+        for (int i = 0; i < 10; i += 1) {
             assertEquals(p2.apply(p.apply(i)), p2.compose(p).apply(i));
         }
     }
@@ -68,7 +68,7 @@ class PermutationTest {
             Cycles p = Cycles.random((int) (Math.random() * a.size()));
             List<MyInt> applied = p.apply(a);
             List<MyInt> arrayList = new ArrayList<MyInt>(a.size());
-            List<MyInt> linkedList = new LinkedList<MyInt>();
+            List<MyInt> linkedList = new LinkedList<>();
             arrayList.addAll(a);
             linkedList.addAll(a);
             List<MyInt> arrayListApplied, linkedListApplied;
@@ -325,7 +325,7 @@ class PermutationTest {
 
     @Test
     void testMove() {
-        Assertions.assertEquals(Permutation.identity(), Permutation.move(5, 5));
+        assertEquals(Permutation.identity(), Permutation.move(5, 5));
         assertEquals("213", Permutation.move(0, 1).apply("123"));
         assertEquals("23145", Permutation.move(0, 2).apply("12345"));
         assertEquals("14235", Permutation.move(3, 1).apply("12345"));
@@ -367,14 +367,14 @@ class PermutationTest {
     @Test
     void testZero() {
         Permutation p = Permutation.identity();
-        Assertions.assertEquals(Permutation.define(new int[0]), p);
-        Assertions.assertEquals(p, Permutation.defineCycle());
+        assertEquals(Permutation.define(new int[0]), p);
+        assertEquals(p, Permutation.defineCycle());
         assertEquals(0, p.length());
         assertArrayEquals(new int[0], p.apply(new int[0]));
         assertEquals(0, p.toCycles().numCycles());
-        Assertions.assertEquals(Permutation.identity(), Permutation.defineCycle(0));
-        Assertions.assertEquals(Permutation.identity(), Permutation.defineCycle(1));
-        Assertions.assertEquals(Permutation.identity(), Permutation.defineCycle(2));
+        assertEquals(Permutation.identity(), Permutation.defineCycle(0));
+        assertEquals(Permutation.identity(), Permutation.defineCycle(1));
+        assertEquals(Permutation.identity(), Permutation.defineCycle(2));
     }
 
     /* example from README */
@@ -383,8 +383,8 @@ class PermutationTest {
         Permutation c0 = Permutation.defineCycle(7, 9);
         Permutation c1 = Permutation.defineCycle(1, 4, 8, 10, 3, 6, 11);
         Permutation c2 = Permutation.defineCycle(0, 2, 5);
-        Assertions.assertEquals("Hello world!", Permutation.product(c0, c1, c2).invert().apply(" !Hdellloorw"));
-        Assertions.assertEquals("Hello world!", Permutation.product(Arrays.asList(c0, c1, c2)).invert().apply(" !Hdellloorw"));
+        assertEquals("Hello world!", Permutation.product(c0, c1, c2).invert().apply(" !Hdellloorw"));
+        assertEquals("Hello world!", Permutation.product(Arrays.asList(c0, c1, c2)).invert().apply(" !Hdellloorw"));
     }
 
     /* making sure sorting does what we think it does */

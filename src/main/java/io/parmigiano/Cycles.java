@@ -38,7 +38,7 @@ public final class Cycles {
         return IDENTITY;
     }
 
-    static Cycles fromRanking(int[] ranking) {
+    static Cycles fromRanking(int... ranking) {
         if (ranking.length == 0) {
             return IDENTITY;
         }

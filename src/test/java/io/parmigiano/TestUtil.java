@@ -1,5 +1,6 @@
 package io.parmigiano;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -265,6 +266,16 @@ class TestUtil {
         String s = "a";
         for (int i = 0; i < n; i += 1) {
             r[i] = s;
+            s = nextString(s);
+        }
+        return r;
+    }
+
+    static List<String> symbols2(int n) {
+        List<String> r = new ArrayList<>(n);
+        String s = "a";
+        for (int i = 0; i < n; i += 1) {
+            r.add(s);
             s = nextString(s);
         }
         return r;
