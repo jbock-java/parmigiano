@@ -2,7 +2,10 @@ package io.parmigiano;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 /* like PermutationFactoryTest, but use the long versions of sorting and from */
@@ -31,9 +34,9 @@ class TestRankingsLong {
     @Test
     void testSortStrict() {
         for (int i = 0; i < 100; i += 1) {
-            String[] a = TestUtil.symbols(100);
-            String[] shuffled = Permutation.random(a.length).apply(a);
-            assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sorting(shuffled).apply(shuffled));
+            List<String> a = TestUtil.symbols2(100);
+            List<String> shuffled = Permutation.random(a.size()).apply(a);
+            assertEquals(ArrayUtil.sortedCopy(a), Permutation.sortingComparable(shuffled).apply(shuffled));
         }
     }
     

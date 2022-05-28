@@ -214,9 +214,9 @@ class ArrayUtilTest {
 
     @Test
     void testEvenCommutator() {
-        Permutation p = Permutation.define(CycleUtil.cyclic(0, 4, 1));
-        Permutation q = Permutation.define(CycleUtil.cyclic(0, 3, 2, 1, 4));
-        Assertions.assertEquals(Permutation.define(1, 2, 0), Permutation.product(p.invert(), q.invert(), p, q));
+        Cycles p = Cycles.create(0, 4, 1);
+        Cycles q = Cycles.create(0, 3, 2, 1, 4);
+        Assertions.assertEquals(Cycles.fromRanking(1, 2, 0), Cycles.product(p.invert(), q.invert(), p, q));
     }
 
     @Test

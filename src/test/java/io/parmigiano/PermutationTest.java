@@ -367,9 +367,6 @@ class PermutationTest {
         assertEquals(0, p.maxMovedIndex());
         assertArrayEquals(new int[0], p.apply(new int[0]));
         assertEquals(0, p.numCycles());
-        assertEquals(Permutation.identity(), Permutation.defineCycle(0));
-        assertEquals(Permutation.identity(), Permutation.defineCycle(1));
-        assertEquals(Permutation.identity(), Permutation.defineCycle(2));
     }
 
     /* example from README */

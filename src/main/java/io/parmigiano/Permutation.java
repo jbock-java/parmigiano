@@ -3,6 +3,7 @@ package io.parmigiano;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static io.parmigiano.ArrayUtil.checkLength;
@@ -18,7 +19,7 @@ import static io.parmigiano.ArrayUtil.negativeFailure;
  */
 public final class Permutation implements Comparable<Permutation> {
 
-    private static final Permutation IDENTITY = new Permutation(new int[0], false);
+    private static final Supplier<Permutation> IDENTITY = () -> new Permutation(new int[0], false);
 
     /*
      *  An array of N integers where each of the integers between 0 and N-1 appear exactly once.
@@ -35,12 +36,12 @@ public final class Permutation implements Comparable<Permutation> {
     }
 
     public static Permutation define() {
-        return IDENTITY;
+        return IDENTITY.get();
     }
 
     public static Permutation define(int a0) {
         if (a0 == 0) {
-            return IDENTITY;
+            return IDENTITY.get();
         } else {
             throw new IllegalArgumentException("not a ranking");
         }
@@ -105,7 +106,7 @@ public final class Permutation implements Comparable<Permutation> {
     private static Permutation define(int[] ranking, boolean validate, boolean copy) {
         int[] trimmed = Rankings.trim(ranking);
         if (trimmed.length == 0)
-            return IDENTITY;
+            return IDENTITY.get();
         if (copy && ranking == trimmed) {
             trimmed = Arrays.copyOf(trimmed, trimmed.length);
         }
@@ -143,7 +144,7 @@ public final class Permutation implements Comparable<Permutation> {
      * @see Permutation#isIdentity
      */
     public static Permutation identity() {
-        return IDENTITY;
+        return IDENTITY.get();
     }
 
     /**
@@ -590,14 +591,14 @@ public final class Permutation implements Comparable<Permutation> {
             return Cycles.fromRanking(Rankings.sorting(a, comparator));
         }
     }
-
-    public static <E extends Comparable> Permutation sorting(E[] input) {
-        return define(Rankings.sorting(input), false);
-    }
     
 
     public static <E> SortingBuilder<E> sorting(List<E> input) {
         return new SortingBuilder<>(input);
+    }
+
+    public static <E extends Comparable<E>> Cycles sortingComparable(List<E> input) {
+        return Cycles.fromRanking(Rankings.sorting(input));
     }
 
     public static Cycles sorting(int[] input) {

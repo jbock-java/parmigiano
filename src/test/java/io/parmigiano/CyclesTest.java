@@ -9,7 +9,7 @@ class CyclesTest {
 
     @Test
     void testUnApply() {
-        Cycles p = Permutation.random(100).toCycles();
+        Cycles p = Cycles.random(100);
         for (int i = 0; i <= p.maxMovedIndex(); i++)
             assertEquals(i, p.unApply(p.apply(i)));
     }

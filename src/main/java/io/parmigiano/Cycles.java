@@ -344,7 +344,7 @@ public final class Cycles {
     }
 
     public static Stream<Cycles> symmetricGroup(int n) {
-        return Rankings.symmetricGroup(n).map(a -> Permutation.define(a, false)).map(Permutation::toCycles);
+        return Rankings.symmetricGroup(n).map(Cycles::fromRanking);
     }
 
     @Override

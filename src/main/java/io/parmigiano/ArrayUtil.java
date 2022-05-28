@@ -280,6 +280,12 @@ public final class ArrayUtil {
         return sorted;
     }
 
+    public static <E extends Comparable<E>> List<E> sortedCopy(List<E> input) {
+        List<E> sorted = new ArrayList<>(input);
+        Collections.sort(sorted);
+        return sorted;
+    }
+
     /**
      * Returns a sorted copy of the input.
      * @param input an array

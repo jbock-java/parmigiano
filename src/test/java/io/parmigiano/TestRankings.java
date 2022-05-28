@@ -28,9 +28,9 @@ class TestRankings {
     @Test
     void testSortStrict() {
         for (int __ = 0; __ < 100; __ += 1) {
-            String[] a = TestUtil.symbols(100);
-            String[] shuffled = Permutation.random(a.length).apply(a);
-            assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sorting(shuffled).apply(shuffled));
+            List<String> a = TestUtil.symbols2(100);
+            List<String> shuffled = Cycles.random(a.size()).apply(a);
+            assertEquals(ArrayUtil.sortedCopy(a), Permutation.sortingComparable(shuffled).apply(shuffled));
         }
     }
 
