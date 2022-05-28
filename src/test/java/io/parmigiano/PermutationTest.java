@@ -52,12 +52,11 @@ class PermutationTest {
     @Test
     void testApply() {
         int[] a = ArrayUtil.randomNumbers(100, 200);
-        Permutation p = Permutation.random((int) (a.length * Math.random()));
+        Cycles p = Cycles.random((int) (a.length * Math.random()));
+        int[] pa = p.apply(a);
         for (int i = 0; i < a.length; i += 1) {
-            assertEquals(p.apply(a)[p.apply(i)], a[i]);
-            if (i >= p.length()) {
-                assertEquals(a[i], p.apply(a)[i]);
-            }
+            int pi = p.apply(i);
+            assertEquals(pa[pi], a[i]);
         }
     }
 
@@ -93,13 +92,13 @@ class PermutationTest {
     /* gaps in ranking */
     @Test
     void testInvalidGap() {
-        assertThrows(IllegalArgumentException.class, () -> Permutation.define(1, 2, 0, 5));
+        assertThrows(ArrayIndexOutOfBoundsException.class, () -> Cycles.fromRanking(1, 2, 0, 5));
     }
 
     /* missing zero in ranking */
     @Test
     void testInvalidMissingZero() {
-        assertThrows(IllegalArgumentException.class, () -> Permutation.define(1, 2, 3));
+        assertThrows(ArrayIndexOutOfBoundsException.class, () -> Cycles.fromRanking(1, 2, 3));
     }
 
     /* duplicates in ranking */
@@ -107,6 +106,7 @@ class PermutationTest {
     void testInvalidDuplicate() {
         int[] ranking = {1, 2, 0, 2, 3};
         assertFalse(Rankings.isValid(ranking));
+        // TODO Cycles.fromRanking
         Assertions.assertThrows(IllegalArgumentException.class, () -> Permutation.define(ranking));
     }
 

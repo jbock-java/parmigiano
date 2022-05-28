@@ -81,8 +81,10 @@ public final class CycleUtil {
     public static int order(int[] ranking, final int i) {
         int length = 1;
         int j = i;
-        while ((j = ranking[j]) != i)
+        while ((j = ranking[j]) != i) {
+            System.out.println("bad j: " + j);
             length++;
+        }
         return length;
     }
 
