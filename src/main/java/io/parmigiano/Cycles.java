@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static io.parmigiano.ArrayUtil.checkLength;
+import static io.parmigiano.Preconditions.checkState;
 
 /**
  * <p>An operation that shuffles a list.
@@ -22,11 +23,25 @@ public final class Cycles {
     private final int[][] cycles;
 
     private Cycles(int[][] cycles) {
-        this.maxMovedIndex = maxIndex(cycles);
+        this(cycles, maxIndex(cycles));
+    }
+
+    private Cycles create(int[][] cycles) {
+        if (cycles.length == 0) {
+            return IDENTITY;
+        }
+        return new Cycles(cycles);
+    }
+
+    private Cycles(int[][] cycles, int maxMovedIndex) {
+        this.maxMovedIndex = maxMovedIndex;
         this.cycles = cycles;
     }
 
     public static Cycles create(int... cycle) {
+        if (cycle.length <= 1) {
+            return IDENTITY;
+        }
         return new Cycles(new int[][]{cycle});
     }
 
@@ -49,18 +64,17 @@ public final class Cycles {
     public Cycles invert() {
         int[][] newCycles = new int[cycles.length][];
         for (int i = 0; i < cycles.length; i++) {
-            int[] cycle = cycles[i];
             newCycles[i] = reverse(cycles[i]);
         }
-        return new Cycles(newCycles);
+        return new Cycles(newCycles, maxMovedIndex);
     }
 
-    private static int[] reverse(int[] validData) {
-        int[] result = new int[validData.length];
-        for (int i = 0; i < validData.length; i++) {
-            result[validData.length - 1 - i] = validData[i];
+    private static int[] reverse(int[] cycle) {
+        int[] inverse = new int[cycle.length];
+        for (int i = 0; i < cycle.length; i++) {
+            inverse[i] = cycle[cycle.length - 1 - i];
         }
-        return result;
+        return inverse;
     }
 
     public static Cycles random(int length) {
@@ -210,7 +224,7 @@ public final class Cycles {
             allCycles.add(newCycle.stream().mapToInt(p -> p).toArray());
         }
         int[][] ints = allCycles.toArray(new int[0][]);
-        return new Cycles(ints);
+        return create(ints);
     }
 
     private static int maxIndex(int[][] ints) {
@@ -221,12 +235,8 @@ public final class Cycles {
                 continue;
             }
             for (int i : a) {
-                if (i < 0) {
-                    throw new IllegalArgumentException("negative index: " + i);
-                }
-                if (!seen.add(i)) {
-                    throw new IllegalArgumentException("duplicate index: " + i);
-                }
+                checkState(i >= 0, "negative index: %d", i);
+                checkState(seen.add(i), "duplicate index: %d", i);
                 result = Math.max(result, i);
             }
         }
@@ -259,21 +269,36 @@ public final class Cycles {
      * @param permutations an array of permutations
      * @return the composition or product
      */
-    public static Permutation product(Cycles... permutations) {
-        Permutation result = Permutation.identity();
+    public static Cycles product(Cycles... permutations) {
+        Cycles result = identity();
         for (Cycles permutation : permutations)
-            result = result.compose(permutation.toPermutation());
+            result = result.compose(permutation);
+        return result;
+    }
+
+    public boolean isIdentity() {
+        return cycles.length == 0;
+    }
+
+    public Cycles pow(int n) {
+        if (n == 0 || isIdentity()) {
+            return identity();
+        }
+        Cycles seed = n < 0 ? invert() : this;
+        Cycles result = seed;
+        for (int i = 1; i < Math.abs(n); i += 1) {
+            result = result.compose(seed);
+        }
         return result;
     }
 
     @Override
     public String toString() {
         if (cycles.length == 0)
-            return "()";
+            return "id";
         List<String> s = Arrays.stream(cycles).map(a ->
-                "(" + String.join(" ",
-                        Arrays.stream(a).mapToObj(Integer::toString).collect(Collectors.toList()))
-                        + ")").collect(Collectors.toList());
+                "(" + Arrays.stream(a).mapToObj(Integer::toString).collect(Collectors.joining(" "))
+                        + ")").toList();
         return String.join(" ", s);
     }
 
@@ -306,6 +331,10 @@ public final class Cycles {
             if (cycle.length % 2 == 0)
                 evenLengthCycles++;
         return evenLengthCycles % 2 == 0 ? 1 : -1;
+    }
+
+    public static Cycles sorting(int[] input) {
+        return fromRanking(Rankings.sorting(input));
     }
 
     public static Stream<Cycles> symmetricGroup(int n) {
