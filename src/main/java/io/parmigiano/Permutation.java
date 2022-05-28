@@ -131,7 +131,6 @@ public final class Permutation implements Comparable<Permutation> {
      *
      * @param cycle1based a list of numbers that defines a permutation in 1-based cycle notation
      * @return the cyclic permutation defined by {@code cycle1based}
-     * @see Permutation#defineCycle
      */
     public static Permutation cycle1(int... cycle1based) {
         return defineCycle(ArrayUtil.add(cycle1based, -1));

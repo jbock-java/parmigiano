@@ -165,7 +165,7 @@ class ArrayUtilTest {
     }
 
     @Test
-    void testDuplicateIndexes2() throws Exception {
+    void testDuplicateIndexes2() {
         for (int i = 0; i < 1000; i += 1) {
             int maxNumber = 100;
             int[] ints = ArrayUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
@@ -183,7 +183,7 @@ class ArrayUtilTest {
     }
 
     @Test
-    void testDuplicateIndexes4() throws Exception {
+    void testDuplicateIndexes4() {
         for (int i = 0; i < 1000; i += 1) {
             int maxNumber = 100;
             MyInt[] ints = MyInt.box(ArrayUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));

@@ -106,14 +106,13 @@ class PermutationTest {
     void testInvalidDuplicate() {
         int[] ranking = {1, 2, 0, 2, 3};
         assertFalse(Rankings.isValid(ranking));
-        // TODO Cycles.fromRanking
-        Assertions.assertThrows(IllegalArgumentException.class, () -> Permutation.define(ranking));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Cycles.fromRanking(ranking));
     }
 
     /* negative number in ranking */
     @Test
     void testInvalidNegative() {
-        assertThrows(IllegalArgumentException.class, () -> Permutation.define(-1, 0, 1));
+        assertThrows(ArrayIndexOutOfBoundsException.class, () -> Cycles.fromRanking(-1, 0, 1));
     }
 
     @Test
@@ -380,11 +379,10 @@ class PermutationTest {
     /* example from README */
     @Test
     void testPprod() {
-        Permutation c0 = Permutation.defineCycle(7, 9);
-        Permutation c1 = Permutation.defineCycle(1, 4, 8, 10, 3, 6, 11);
-        Permutation c2 = Permutation.defineCycle(0, 2, 5);
-        assertEquals("Hello world!", Permutation.product(c0, c1, c2).invert().apply(" !Hdellloorw"));
-        assertEquals("Hello world!", Permutation.product(Arrays.asList(c0, c1, c2)).invert().apply(" !Hdellloorw"));
+        Cycles c0 = Cycles.create(9, 7);
+        Cycles c1 = Cycles.create(11, 6, 3, 10, 8, 4, 1);
+        Cycles c2 = Cycles.create(5, 2, 0);
+        assertEquals("Hello world!", c0.compose(c1).compose(c2).apply(" !Hdellloorw"));
     }
 
     /* making sure sorting does what we think it does */

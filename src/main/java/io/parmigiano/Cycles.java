@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.IntUnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -184,7 +185,7 @@ public final class Cycles {
             if (done.contains(i)) {
                 continue;
             }
-            List<Integer> newCycle = chaseCycle(i, other);
+            List<Integer> newCycle = chaseCycle(i, n -> apply(other.apply(n)));
             if (newCycle.isEmpty()) {
                 continue;
             }
@@ -197,32 +198,42 @@ public final class Cycles {
 
     private static int maxIndex(int[][] ints) {
         int result = 0;
+        Set<Integer> seen = new HashSet<>();
         for (int[] a : ints) {
+            if (a.length == 0) {
+                continue;
+            }
             for (int i : a) {
+                if (i < 0) {
+                    throw new IllegalArgumentException("negative index: " + i);
+                }
+                if (!seen.add(i)) {
+                    throw new IllegalArgumentException("duplicate index: " + i);
+                }
                 result = Math.max(result, i);
             }
         }
         return result;
     }
 
-    private List<Integer> chaseCycle(int i, Cycles other) {
-        int j = apply(other.apply(i));
+    static List<Integer> chaseCycle(int i, IntUnaryOperator op) {
+        int j = op.applyAsInt(i);
         if (i == j) {
             return List.of();
         }
         List<Integer> acc = new ArrayList<>();
         acc.add(i);
         acc.add(j);
-        return chaseCycle(j, other, acc);
+        return chaseCycle(j, op, acc);
     }
 
-    private List<Integer> chaseCycle(int i, Cycles other, List<Integer> acc) {
-        int j = apply(other.apply(i));
+    static List<Integer> chaseCycle(int i, IntUnaryOperator op, List<Integer> acc) {
+        int j = op.applyAsInt(i);
         if (acc.contains(j)) {
             return acc;
         }
         acc.add(j);
-        return chaseCycle(j, other, acc);
+        return chaseCycle(j, op, acc);
     }
 
     /**
