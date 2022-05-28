@@ -324,10 +324,9 @@ class PermutationTest {
 
     @Test
     void testMove() {
-        assertEquals(Permutation.identity(), Permutation.move(5, 5));
-        assertEquals("213", Permutation.move(0, 1).apply("123"));
-        assertEquals("23145", Permutation.move(0, 2).apply("12345"));
-        assertEquals("14235", Permutation.move(3, 1).apply("12345"));
+        assertEquals("213", Cycles.create(0, 1).apply("123"));
+        assertEquals("23145", Cycles.create(2, 1, 0).apply("12345"));
+        assertEquals("14235", Cycles.create(1, 2, 3).apply("12345"));
     }
 
     /* various assertions about Sym(5) */

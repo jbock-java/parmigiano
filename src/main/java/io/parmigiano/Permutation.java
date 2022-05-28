@@ -125,7 +125,7 @@ public final class Permutation implements Comparable<Permutation> {
         return define(CycleUtil.cyclic(cycle), false);
     }
 
-    
+
     /**
      * Creates a random permutation of given length.
      *
@@ -240,26 +240,6 @@ public final class Permutation implements Comparable<Permutation> {
     }
 
     /**
-     * Creates a cycle that acts as a delete followed by an insert. Examples:
-     * <pre><code>
-     *   Permutation.move(0, 2).apply("12345");
-     *   => 23145
-     *   </code></pre>
-     * <pre><code>
-     *   Permutation.move(3, 1).apply("12345");
-     *   => 14235
-     * </code></pre>
-     * If {@code delete == insert}, the identity of length {@code delete + 1} is returned.
-     *
-     * @param delete a non-negative integer
-     * @param insert a non-negative integer
-     * @return a permutation of length {@code Math.max(delete, insert) + 1}
-     */
-    public static Permutation move(int delete, int insert) {
-        return defineCycle(ArrayUtil.range(insert, delete, true));
-    }
-    
-    /**
      * <p>Calculate the order of this permutation. The order is the smallest positive number {@code n}
      * such that</p>
      * <pre><code>
@@ -280,7 +260,7 @@ public final class Permutation implements Comparable<Permutation> {
         }
         return i;
     }
-    
+
     /**
      * Get a cycle based version of this operation, which can be used to change arrays in place.
      *
@@ -731,7 +711,7 @@ public final class Permutation implements Comparable<Permutation> {
     public boolean sorts(int[] a) {
         return Rankings.sorts(ranking, a);
     }
-    
+
     public static Stream<Permutation> symmetricGroup(int n) {
         return Rankings.symmetricGroup(n).map(a -> define(a, false));
     }
