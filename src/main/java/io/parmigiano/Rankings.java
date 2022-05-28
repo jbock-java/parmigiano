@@ -19,6 +19,7 @@ import static io.parmigiano.ArrayUtil.negativeFailure;
 import static io.parmigiano.ArrayUtil.range;
 import static io.parmigiano.ArrayUtil.sortedCopy;
 import static io.parmigiano.ArrayUtil.withIndex;
+import static io.parmigiano.Preconditions.checkState;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.binarySearch;
 
@@ -794,11 +795,9 @@ public final class Rankings {
         int[] offsets = new int[a.length];
         for (int i = 0; i < a.length; i += 1) {
             int idx = binarySearch(sorted, a[i]);
-            if (idx < 0)
-                return null;
+            checkState(idx >= 0, "not found in target: %d", a[i]);
             int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-            if (offset == 0)
-                return null;
+            checkState(offset != 0, "b is not a rearrangement of a");
             ranking[i] = unsort[idx + unshift(offset)];
             offsets[idx] = offset;
         }

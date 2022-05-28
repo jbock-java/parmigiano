@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.parmigiano.MyInt.box;
 import static io.parmigiano.MyInt.box2;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -298,8 +297,8 @@ class PermutationTest {
 
     @Test
     void testFromQuickly() {
-        Permutation p = Permutation.taking(new int[]{1, 2, 3}).to(new int[]{2, 3, 1});
-        assertArrayEquals(new String[]{"b", "c", "a"}, p.apply(TestUtil.symbols(3)));
+        Cycles p = Permutation.taking(new int[]{1, 2, 3}).to(new int[]{2, 3, 1});
+        assertEquals(List.of("b", "c", "a"), p.apply(TestUtil.symbols2(3)));
     }
 
     /* check defining property of from */

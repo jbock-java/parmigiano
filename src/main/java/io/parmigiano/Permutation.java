@@ -664,8 +664,8 @@ public final class Permutation implements Comparable<Permutation> {
             this.from = from;
         }
 
-        public Permutation to(int[] to) {
-            return define(Rankings.from(from, to), false, false);
+        public Cycles to(int[] to) {
+            return Cycles.fromRanking(Rankings.from(from, to));
         }
     }
 

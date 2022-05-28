@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TestRankings {
@@ -94,7 +95,7 @@ class TestRankings {
             assertTrue(bc > 0);
 
             // null because b is not a rearrangement of a
-            assertNull(Rankings.from(a, b));
+            assertThrows(IllegalArgumentException.class, () -> Rankings.from(a, b));
         }
     }
 
