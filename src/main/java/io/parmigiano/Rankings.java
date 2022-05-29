@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
+import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -113,17 +114,17 @@ final class Rankings {
         return offset;
     }
 
-    static int nextOffset(int idx, int offset, List<?> sorted) {
+    static <E> int nextOffset(int idx, int offset, List<E> sorted, BiPredicate<E, E> equality) {
         if (offset >= 0) {
             int next = idx + ++offset;
-            if (next >= sorted.size() || !sorted.get(next).equals(sorted.get(idx)))
-                if (idx == 0 || !sorted.get(idx - 1).equals(sorted.get(idx)))
+            if (next >= sorted.size() || !equality.test(sorted.get(next), sorted.get(idx)))
+                if (idx == 0 || !equality.test(sorted.get(idx - 1), sorted.get(idx)))
                     return 0;
                 else
                     return -1;
         } else {
             int next = idx + --offset;
-            if (next < 0 || !sorted.get(next).equals(sorted.get(idx)))
+            if (next < 0 || !equality.test(sorted.get(next), sorted.get(idx)))
                 return 0;
         }
         return offset;
@@ -147,20 +148,6 @@ final class Rankings {
      */
     static int unshift(int i) {
         return i > 0 ? i - 1 : i;
-    }
-
-    static int nextOffsetShifting(int idx, int shiftedOffset, int[] sorted) {
-        if (shiftedOffset == 0)
-            return 1;
-        int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
-        return offset == 0 ? 0 : shift(offset);
-    }
-
-    static int nextOffsetShifting(int idx, int shiftedOffset, List<?> sorted) {
-        if (shiftedOffset == 0)
-            return 1;
-        int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
-        return offset == 0 ? 0 : shift(offset);
     }
 
     /* ================= sorting ================= */
@@ -190,9 +177,16 @@ final class Rankings {
         int[] offsets = new int[a.length];
         for (int i = 0; i < a.length; i++) {
             int idx = binarySearch(sorted, a[i]);
-            int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-            ranking[i] = idx + unshift(offset);
-            offsets[idx] = offset;
+            if (offsets[idx] == 0) {
+                ranking[i] = idx;
+                offsets[idx] = 1;
+            } else {
+                // a contains duplicates
+                int offset = unshift(offsets[idx]);
+                int newOffset = nextOffset(idx, offset, sorted);
+                ranking[i] = idx + newOffset;
+                offsets[idx] = shift(newOffset);
+            }
         }
         checkRanking(ranking);
         return ranking;
@@ -204,9 +198,20 @@ final class Rankings {
         int[] offsets = new int[a.size()];
         for (int i = 0; i < a.size(); i++) {
             int idx = Collections.binarySearch(sorted, a.get(i));
-            int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-            ranking[i] = idx + unshift(offset);
-            offsets[idx] = offset;
+            if (offsets[idx] == 0) {
+                ranking[i] = idx;
+                offsets[idx] = 1;
+            } else {
+                // a contains duplicates
+                int offset = unshift(offsets[idx]);
+                int newOffset = nextOffset(
+                        idx,
+                        offset,
+                        sorted,
+                        (e1, e2) -> e1.compareTo(e2) == 0);
+                ranking[i] = idx + newOffset;
+                offsets[idx] = shift(newOffset);
+            }
         }
         return ranking;
     }
@@ -217,9 +222,20 @@ final class Rankings {
         int[] offsets = new int[a.size()];
         for (int i = 0; i < a.size(); i++) {
             int idx = Collections.binarySearch(sorted, a.get(i), comp);
-            int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-            ranking[i] = idx + unshift(offset);
-            offsets[idx] = offset;
+            if (offsets[idx] == 0) {
+                ranking[i] = idx;
+                offsets[idx] = 1;
+            } else {
+                // a contains duplicates
+                int offset = unshift(offsets[idx]);
+                int newOffset = nextOffset(
+                        idx,
+                        offset,
+                        sorted,
+                        (e1, e2) -> comp.compare(e1, e2) == 0);
+                ranking[i] = idx + newOffset;
+                offsets[idx] = shift(newOffset);
+            }
         }
         return ranking;
     }

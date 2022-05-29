@@ -67,21 +67,69 @@ class TestRankings {
                 assertEquals(ArrayUtil.indexOf(a, el), unsort[Arrays.binarySearch(sorted, el)]);
             }
         }
-    }   
+    }
+
+    @Test
+    void testSortUnique() {
+        for (int __ = 0; __ < 100; __++) {
+            List<Integer> rr = new ArrayList<>(IntStream.range(0, 100).boxed().toList());
+            Collections.shuffle(rr);
+            int[] a = rr.stream().mapToInt(i -> i).toArray();
+            int[] sort = Rankings.sorting(a);
+            int[] sorted = Rankings.apply(sort, a);
+            int[] unsort = Rankings.invert(sort);
+            int[] hopefullyIdentity = TestUtil.comp(sort, unsort);
+            assertTrue(TestUtil.isSorted(hopefullyIdentity));
+            assertTrue(TestUtil.isSorted(sorted));
+            for (int el : a) {
+                assertEquals(ArrayUtil.indexOf(a, el), unsort[Arrays.binarySearch(sorted, el)]);
+            }
+        }
+    }
+
+    @Test
+    void testSort2() {
+        int[] a = new int[]{2, 3, 5, 2};
+        int[] sort = Rankings.sorting(a);
+        int[] sorted = Rankings.apply(sort, a);
+        int[] unsort = Rankings.invert(sort);
+        int[] hopefullyIdentity = TestUtil.comp(sort, unsort);
+        assertTrue(TestUtil.isSorted(hopefullyIdentity));
+        assertTrue(TestUtil.isSorted(sorted));
+    }
 
     @Test
     void testNextOffset() {
         int[] sorted = {0, 0, 1, 3, 3, 3, 4, 4};
         assertEquals(1, Rankings.nextOffset(0, 0, sorted));
         assertEquals(-1, Rankings.nextOffset(1, 0, sorted));
+        assertEquals(0, Rankings.nextOffset(2, 0, sorted));
         assertEquals(1, Rankings.nextOffset(3, 0, sorted));
         assertEquals(2, Rankings.nextOffset(3, 1, sorted));
+        assertEquals(0, Rankings.nextOffset(3, 2, sorted));
         assertEquals(1, Rankings.nextOffset(4, 0, sorted));
         assertEquals(-1, Rankings.nextOffset(4, 1, sorted));
         assertEquals(-1, Rankings.nextOffset(5, 0, sorted));
         assertEquals(-2, Rankings.nextOffset(5, -1, sorted));
         assertEquals(1, Rankings.nextOffset(6, 0, sorted));
         assertEquals(-1, Rankings.nextOffset(7, 0, sorted));
+    }
+
+    @Test
+    void testNextOffsetList() {
+        List<Integer> sorted = List.of(0, 0, 1, 3, 3, 3, 4, 4);
+        assertEquals(1, Rankings.nextOffset(0, 0, sorted, Integer::equals));
+        assertEquals(-1, Rankings.nextOffset(1, 0, sorted, Integer::equals));
+        assertEquals(0, Rankings.nextOffset(2, 0, sorted, Integer::equals));
+        assertEquals(1, Rankings.nextOffset(3, 0, sorted, Integer::equals));
+        assertEquals(2, Rankings.nextOffset(3, 1, sorted, Integer::equals));
+        assertEquals(0, Rankings.nextOffset(3, 2, sorted, Integer::equals));
+        assertEquals(1, Rankings.nextOffset(4, 0, sorted, Integer::equals));
+        assertEquals(-1, Rankings.nextOffset(4, 1, sorted, Integer::equals));
+        assertEquals(-1, Rankings.nextOffset(5, 0, sorted, Integer::equals));
+        assertEquals(-2, Rankings.nextOffset(5, -1, sorted, Integer::equals));
+        assertEquals(1, Rankings.nextOffset(6, 0, sorted, Integer::equals));
+        assertEquals(-1, Rankings.nextOffset(7, 0, sorted, Integer::equals));
     }
 
     @Test
