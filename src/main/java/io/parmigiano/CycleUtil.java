@@ -77,4 +77,28 @@ public final class CycleUtil {
         }
         return orbits.toArray(new int[0][]);
     }
+
+    public static int[] rotateToIndex(int[] a, int n) {
+        if (n == 0) {
+            return a;
+        }
+        int[] result = new int[a.length];
+        for (int i = 0; i < a.length; i++) {
+            result[(a.length + (i - n)) % a.length] = a[i];
+        }
+        return result;
+    }
+
+    public static int maxIndex(int[] a) {
+        if (a.length == 0) {
+            return -1;
+        }
+        int result = 0;
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] > a[result]) {
+                result = i; 
+            }
+        }
+        return result;
+    }
 }

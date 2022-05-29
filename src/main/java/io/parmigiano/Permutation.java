@@ -370,4 +370,34 @@ public final class Permutation {
                 .map(s ->  s.collect(joining(" ", "(", ")")))
                 .collect(joining(" "));
     }
+
+    public String print() {
+        if (isIdentity()) {
+            return "identity()";
+        }
+        String receiver = printCycle(cycles[0]);
+        if (cycles.length == 1) {
+            return receiver;
+        }
+        return receiver + Arrays.stream(cycles)
+                .skip(1)
+                .map(Permutation::printCycle)
+                .collect(joining(").compose(", ".compose(", ")"));
+    }
+
+    private static String printCycle(int[] cycle) {
+        return Arrays.stream(cycle)
+                .mapToObj(Integer::toString)
+                .collect(joining(", ", "create(", ")"));
+    }
+
+    public Permutation normalize() {
+        int[][] newCycles = new int[cycles.length][];
+        for (int i = 0; i < cycles.length; i++) {
+            int[] cycle = cycles[i];
+            newCycles[i] = CycleUtil.rotateToIndex(cycle, CycleUtil.maxIndex(cycle));
+        }
+        Arrays.sort(newCycles, Comparator.<int[]>comparingInt(o -> o[0]).reversed());
+        return new Permutation(newCycles, maxMovedIndex);
+    }
 }

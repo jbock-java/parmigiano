@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static io.parmigiano.MyInt.box;
+import static io.parmigiano.Permutation.create;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -417,6 +418,21 @@ class PermutationTest {
         assertEquals("(1 4) (2 3)", Permutation.create(1, 4).compose(Permutation.create(2, 3)).toString());
         assertEquals("(1 3 4 2)", Permutation.create(1, 3, 4, 2).toString());
         assertEquals("id", Permutation.create(0, 1).compose(Permutation.create(0, 1)).toString());
+    }
+
+    @Test
+    void testPrint() {
+        assertEquals("create(1, 4).compose(create(2, 3))", Permutation.create(1, 4).compose(Permutation.create(2, 3)).print());
+        assertEquals("create(1, 3, 4, 2)", Permutation.create(1, 3, 4, 2).print());
+        assertEquals("identity()", Permutation.create(0, 1).compose(Permutation.create(0, 1)).print());
+    }
+    
+    @Test
+    void testNormalize() {
+        assertEquals("(4 1 3)", create(1, 3, 4).normalize().toString());
+        assertEquals("(4 1 3)", create(3, 4, 1).normalize().toString());
+        assertEquals("(4 1) (3 2)", create(2, 3).compose(create(1, 4)).normalize().toString());
+        assertEquals("(4 1) (3 2)", create(1, 4).compose(create(2, 3)).normalize().toString());
     }
 }
 
