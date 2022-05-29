@@ -1,37 +1,13 @@
 package io.parmigiano;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.IntStream;
-import java.util.stream.LongStream;
-
-import static java.util.Arrays.copyOf;
 
 /**
  * A collection of array related utilities
  */
 public final class ArrayUtil {
-
-    /** An empty array of Bytes */
-    static final Byte[] BOX_BYTE_0 = new Byte[0];
-    /** An empty array of Shorts */
-    static final Short[] BOX_SHORT_0 = new Short[0];
-    /** An empty array of Characters */
-    static final Character[] BOX_CHAR_0 = new Character[0];
-    /** An empty array of Longs */
-    static final Long[] BOX_LONG_0 = new Long[0];
-    /** An empty array of Floats */
-    static final Float[] BOX_FLOAT_0 = new Float[0];
-    /** An empty array of Doubles */
-    static final Double[] BOX_DOUBLE_0 = new Double[0];
-    /** An empty array of Integers */
-    static final Integer[] BOX_INT_0 = new Integer[0];
     /** An empty array of ints */
     public static final int[] INT_0 = new int[]{};
 
@@ -49,22 +25,6 @@ public final class ArrayUtil {
             result[i] = new int[]{a[i], i};
         return result;
     }
-
-    /**
-     * Creates an array of the numbers {@code start} to {@code end} in sequence.
-     * If {@code start == end}, an empty array is returned. If {@code end} is negative, the range
-     * will be descending.
-     * @param start a number
-     * @param end a number
-     * @param inclusive whether or not {@code end} should be included in the result
-     * @return the sequence from {@code start} to {@code end}
-     */
-    public static int[] range(int start, int end, boolean inclusive) {
-        if (!inclusive)
-            return range(start, end);
-        return range(start, end >= start ? ++end : --end);
-    }
-
 
     /**
      * Creates an array of the numbers {@code 0} (included) to {@code end} (excluded) in sequence.
@@ -136,21 +96,6 @@ public final class ArrayUtil {
     }
 
     /**
-     * Calculate the maximum of the numbers in the input.
-     * @param a an array
-     * @return the maximum of all numbers in {@code a}
-     */
-    public static int max(int[] a) {
-        if (a.length == 0)
-            throw new IllegalArgumentException("argument must not be empty");
-        int maxIndex = a[0];
-        for (int index : a)
-            maxIndex = Math.max(maxIndex, index);
-        return maxIndex;
-    }
-
-
-    /**
      * Shuffle the input array in place, using a random permutation.
      * This method will modify the input array.
      * @param a an array
@@ -166,139 +111,7 @@ public final class ArrayUtil {
             }
         }
     }
-
-    /**
-     * Produce {@code length} random numbers between {@code 0} and {@code maxNumber} (inclusive)
-     * @param maxNumber upper bound of random numbers
-     * @param length result length
-     * @return an array of random numbers
-     */
-    public static int[] randomNumbers(int maxNumber, int length) {
-        return randomNumbers(0, maxNumber, length);
-    }
-
-    /**
-     * Generate {@code length} random numbers between {@code minNumber} and {@code maxNumber} (inclusive)
-     * @param minNumber lower bound of random numbers
-     * @param maxNumber upper bound of random numbers
-     * @param length result length
-     * @return an array of random numbers
-     */
-    public static int[] randomNumbers(int minNumber, int maxNumber, int length) {
-        if (minNumber > maxNumber) {
-            throw new IllegalArgumentException("minNumber must be less than or equal to maxNumber");
-        }
-        Random random = ThreadLocalRandom.current();
-        if (maxNumber < Integer.MAX_VALUE) {
-            IntStream ints = random.ints(length, minNumber, maxNumber + 1);
-            return ints.toArray();
-        } else {
-            LongStream longs = random.longs(length, minNumber, (long) maxNumber + 1l);
-            int[] result = new int[length];
-            long[] longArray = longs.toArray();
-            for (int i = 0; i < longArray.length; i++)
-                result[i] = Math.toIntExact(longArray[i]);
-            return result;
-        }
-    }
-
-    /**
-     * Returns a sorted copy of the input.
-     * @param input an array
-     * @return a sorted copy of the input
-     */
-    public static char[] sortedCopy(char[] input) {
-        char[] sorted = Arrays.copyOf(input, input.length);
-        Arrays.sort(sorted);
-        return sorted;
-    }
-
-    /**
-     * Returns a sorted copy of the input.
-     * @param input an array
-     * @return a sorted copy of the input
-     */
-    public static short[] sortedCopy(short[] input) {
-        short[] sorted = Arrays.copyOf(input, input.length);
-        Arrays.sort(sorted);
-        return sorted;
-    }
-
-    /**
-     * Returns a sorted copy of the input.
-     * @param input an array
-     * @return a sorted copy of the input
-     */
-    public static double[] sortedCopy(double[] input) {
-        double[] sorted = Arrays.copyOf(input, input.length);
-        Arrays.sort(sorted);
-        return sorted;
-    }
-
-    /**
-     * Returns a sorted copy of the input.
-     * @param input an array
-     * @return a sorted copy of the input
-     */
-    public static float[] sortedCopy(float[] input) {
-        float[] sorted = Arrays.copyOf(input, input.length);
-        Arrays.sort(sorted);
-        return sorted;
-    }
-
-    /**
-     * Returns a sorted copy of the input.
-     * @param input an array
-     * @return a sorted copy of the input
-     */
-    public static long[] sortedCopy(long[] input) {
-        long[] sorted = Arrays.copyOf(input, input.length);
-        Arrays.sort(sorted);
-        return sorted;
-    }
-
-    /**
-     * Returns a sorted copy of the input.
-     * @param input an array
-     * @return a sorted copy of the input
-     */
-    public static byte[] sortedCopy(byte[] input) {
-        byte[] sorted = Arrays.copyOf(input, input.length);
-        Arrays.sort(sorted);
-        return sorted;
-    }
-
-    public static Comparable[] sortedCopy(Comparable[] input) {
-        Comparable[] sorted = Arrays.copyOf(input, input.length);
-        Arrays.sort(sorted);
-        return sorted;
-    }
-
-    public static <E> List<E> sortedCopy(List<E> input, Comparator<E> comp) {
-        List<E> sorted = new ArrayList<>(input);
-        Collections.sort(sorted, comp);
-        return sorted;
-    }
-
-    public static <E extends Comparable<E>> List<E> sortedCopy(List<E> input) {
-        List<E> sorted = new ArrayList<>(input);
-        Collections.sort(sorted);
-        return sorted;
-    }
-
-    /**
-     * Returns a sorted copy of the input.
-     * @param input an array
-     * @param comp a comparator
-     * @return a sorted copy of the input
-     */
-    @SuppressWarnings("unchecked")
-    public static Object[] sortedCopy(Object[] input, Comparator comp) {
-        Object[] sorted = Arrays.copyOf(input, input.length);
-        Arrays.sort(sorted, comp);
-        return sorted;
-    }
-
+    
     /**
      * Returns a sorted copy of the input.
      * @param input an array
@@ -323,11 +136,7 @@ public final class ArrayUtil {
     static void negativeFailure() {
         throw new IllegalArgumentException("negative number not allowed");
     }
-
-    static void duplicateFailure() {
-        throw new IllegalArgumentException("repeated values are not allowed");
-    }
-
+    
     /**
      * Test if input is sorted
      * @param input an array
@@ -346,221 +155,7 @@ public final class ArrayUtil {
         }
         return true;
     }
-
-    /**
-     * Test if input is sorted
-     * @param input an array
-     * @return true if the {@code input} is sorted
-     */
-    public static boolean isSorted(byte[] input) {
-        if (input.length < 2) {
-            return true;
-        }
-        byte test = input[0];
-        for (byte i : input) {
-            if (i < test) {
-                return false;
-            }
-            test = i;
-        }
-        return true;
-    }
-
-    /**
-     * Test if input is sorted
-     * @param input an array
-     * @return true if the {@code input} is sorted
-     */
-    public static boolean isSorted(short[] input) {
-        if (input.length < 2) {
-            return true;
-        }
-        short test = input[0];
-        for (short i : input) {
-            if (i < test) {
-                return false;
-            }
-            test = i;
-        }
-        return true;
-    }
-
-    /**
-     * Test if input is sorted
-     * @param input an array
-     * @return true if the {@code input} is sorted
-     */
-    public static boolean isSorted(char[] input) {
-        if (input.length < 2) {
-            return true;
-        }
-        int test = input[0];
-        for (int i : input) {
-            if (i < test) {
-                return false;
-            }
-            test = i;
-        }
-        return true;
-    }
-
-    /**
-     * Test if input is sorted
-     * @param input an array
-     * @return true if the {@code input} is sorted
-     */
-    public static boolean isSorted(float[] input) {
-        if (input.length < 2) {
-            return true;
-        }
-        float test = input[0];
-        for (float i : input) {
-            if (i < test) {
-                return false;
-            }
-            test = i;
-        }
-        return true;
-    }
-
-    /**
-     * Test if input is sorted
-     * @param input an array
-     * @return true if the {@code input} is sorted
-     */
-    public static boolean isSorted(double[] input) {
-        if (input.length < 2) {
-            return true;
-        }
-        double test = input[0];
-        for (double i : input) {
-            if (i < test) {
-                return false;
-            }
-            test = i;
-        }
-        return true;
-    }
-
-    /**
-     * Test if input is sorted
-     * @param input an array
-     * @return true if the {@code input} is sorted
-     */
-    public static boolean isSorted(long[] input) {
-        if (input.length < 2) {
-            return true;
-        }
-        long test = input[0];
-        for (long i : input) {
-            if (i < test) {
-                return false;
-            }
-            test = i;
-        }
-        return true;
-    }
-
-    /**
-     * Test if input is sorted
-     * @param input an array
-     * @return true if the {@code input} is sorted
-     * @throws java.lang.NullPointerException if the input contains null
-     */
-    @SuppressWarnings("unchecked")
-    public static boolean isSorted(Comparable[] input) {
-        if (input.length == 0) {
-            return true;
-        }
-        Comparable test = input[0];
-        if (test == null) {
-            throw new NullPointerException("null is not allowed");
-        }
-        for (Comparable i : input) {
-            if (i.compareTo(test) < 0) {
-                return false;
-            }
-            test = i;
-        }
-        return true;
-    }
-
-    /**
-     * Test if input is sorted
-     * @param input an iterable
-     * @return true if the {@code input} is sorted
-     * @throws java.lang.NullPointerException if the input contains null
-     */
-    public static <E extends Comparable<E>> boolean isSorted(Iterable<E> input) {
-        Iterator<E> iterator = input.iterator();
-        if (!iterator.hasNext()) {
-            return true;
-        }
-        E test = iterator.next();
-        if (test == null) {
-            throw new NullPointerException("null is not allowed");
-        }
-        while (iterator.hasNext()) {
-            E next = iterator.next();
-            if (next.compareTo(test) < 0) {
-                return false;
-            }
-            test = next;
-        }
-        return true;
-    }
-
-    /**
-     * Test if input is sorted
-     * @param input an iterable
-     * @return true if the {@code input} is sorted
-     * @throws java.lang.NullPointerException if the input contains null
-     */
-    public static <E> boolean isSorted(Comparator<E> comparator, Iterable<E> input) {
-        Iterator<E> iterator = input.iterator();
-        if (!iterator.hasNext()) {
-            return true;
-        }
-        E test = iterator.next();
-        if (test == null)
-            throw new NullPointerException("null is not allowed");
-        while (iterator.hasNext()) {
-            E next = iterator.next();
-            if (next == null)
-                throw new NullPointerException("null is not allowed");
-            if (comparator.compare(next, test) < 0) {
-                return false;
-            }
-            test = next;
-        }
-        return true;
-    }
-
-    /**
-     * Test if input is sorted
-     * @param input an array
-     * @param comparator a comparator
-     * @return true if the {@code input} is sorted
-     * @throws java.lang.NullPointerException if the input contains null
-     */
-    @SuppressWarnings("unchecked")
-    public static <E> boolean isSorted(Comparator<E> comparator, Object[] input) {
-        if (input.length == 0) {
-            return true;
-        }
-        Object test = input[0];
-        if (test == null) {
-            throw new NullPointerException("null is not allowed");
-        }
-        for (Object i : input) {
-            if (comparator.compare((E) i, (E) test) < 0) {
-                return false;
-            }
-            test = i;
-        }
-        return true;
-    }
-
+    
     static void checkEqualLength(List<?> a, List<?> b) {
         if (a.size() != b.size())
             lengthFailure();
@@ -637,7 +232,7 @@ public final class ArrayUtil {
                 return false;
         return true;
     }
-    
+
     /**
      * Remove an element at index {@code i}.
      * @param a an array

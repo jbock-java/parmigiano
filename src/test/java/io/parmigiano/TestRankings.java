@@ -16,11 +16,11 @@ class TestRankings {
     @Test
     void testSortRandom() {
         for (int __ = 0; __ < 100; __ += 1) {
-            int[] a = ArrayUtil.randomNumbers(100, 200);
+            int[] a = TestUtil.randomNumbers(100, 200);
             assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sorting(a).apply(a));
         }
         for (int __ = 0; __ < 100; __ += 1) {
-            int[] a = ArrayUtil.randomNumbers(100, 20);
+            int[] a = TestUtil.randomNumbers(100, 20);
             assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sorting(a).apply(a));
         }
     }
@@ -30,19 +30,19 @@ class TestRankings {
         for (int __ = 0; __ < 100; __ += 1) {
             List<String> a = TestUtil.symbols(100);
             List<String> shuffled = Permutation.random(a.size()).apply(a);
-            assertEquals(ArrayUtil.sortedCopy(a), Permutation.sorting(shuffled).apply(shuffled));
+            assertEquals(a.stream().sorted().toList(), Permutation.sorting(shuffled).apply(shuffled));
         }
     }
 
     @Test
     void testFromRandom() {
         for (int __ = 0; __ < 100; __ += 1) {
-            int[] a = ArrayUtil.randomNumbers(100, 200);
+            int[] a = TestUtil.randomNumbers(100, 200);
             int[] b = Permutation.random(a.length).apply(a);
             assertArrayEquals(b, Taking.from(a).to(b).apply(a));
         }
         for (int __ = 0; __ < 100; __ += 1) {
-            int[] a = ArrayUtil.randomNumbers(100, 20);
+            int[] a = TestUtil.randomNumbers(100, 20);
             int[] b = Permutation.random(a.length).apply(a);
             assertArrayEquals(b, Taking.from(a).to(b).apply(a));
         }
@@ -61,7 +61,7 @@ class TestRankings {
     @Test
     void testMismatch() {
         for (int __ = 0; __ < 1000; __ += 1) {
-            int[] a = ArrayUtil.randomNumbers(100, 110);
+            int[] a = TestUtil.randomNumbers(100, 110);
             int[] b = Rankings.apply(Rankings.random(a.length), a);
 
             int[] bdupes = TestUtil.duplicateIndexes(b);
@@ -102,7 +102,7 @@ class TestRankings {
     @Test
     void testSort() {
         for (int __ = 0; __ < 100; __++) {
-            int[] a = ArrayUtil.randomNumbers(100, (int) (Math.random() * 1000));
+            int[] a = TestUtil.randomNumbers(100, (int) (Math.random() * 1000));
             int[] sort = Rankings.sorting(a);
             int[] sorted = Rankings.apply(sort, a);
             int[] unsort = Rankings.invert(sort);
@@ -141,7 +141,7 @@ class TestRankings {
     @Test
     void testSorts2() {
         for (int __ = 0; __ < 100; __++) {
-            int[] a = ArrayUtil.randomNumbers(100, 100 + (int) (100 * (Math.random() - 0.8)));
+            int[] a = TestUtil.randomNumbers(100, 100 + (int) (100 * (Math.random() - 0.8)));
             int[] ranking = Rankings.sorting(a);
             assertTrue(ArrayUtil.isSorted(Rankings.apply(ranking, a)));
             assertTrue(Rankings.sorts(ranking, a));

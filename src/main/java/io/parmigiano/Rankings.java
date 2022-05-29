@@ -14,9 +14,6 @@ import static io.parmigiano.ArrayUtil.checkEqualLength;
 import static io.parmigiano.ArrayUtil.checkLength;
 import static io.parmigiano.ArrayUtil.lengthFailure;
 import static io.parmigiano.ArrayUtil.negativeFailure;
-import static io.parmigiano.ArrayUtil.range;
-import static io.parmigiano.ArrayUtil.sortedCopy;
-import static io.parmigiano.ArrayUtil.withIndex;
 import static io.parmigiano.Preconditions.checkState;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.binarySearch;
@@ -30,8 +27,6 @@ public final class Rankings {
     }
 
     private static final Comparator<int[]> COMPARE_FIRST = Comparator.comparingInt(a -> a[0]);
-
-    private static final int[] IDENTITY_0 = new int[0];
 
     /**
      * Check that the input ranking is valid. In order to be valid, each non-negative integer less than
@@ -50,15 +45,14 @@ public final class Rankings {
         }
         return true;
     }
-    
+
     /**
      * Ensure that the input is a ranking.
      * @param a an array
-     * @return the input ranking
      * @throws java.lang.IllegalArgumentException if {@code a} is not a valid ranking
      * @see #isValid
      */
-    public static int[] checkRanking(int[] a) {
+    public static void checkRanking(int[] a) {
         if (!isValid(a)) {
             String msg = "argument is not a ranking";
             if (a.length < 20) {
@@ -66,7 +60,6 @@ public final class Rankings {
             }
             throw new IllegalArgumentException(msg);
         }
-        return a;
     }
 
     /**
@@ -76,7 +69,7 @@ public final class Rankings {
      * @return the inverse ranking
      */
     public static int[] invert(int[] ranking) {
-        int[][] rankingWithIndex = withIndex(ranking);
+        int[][] rankingWithIndex = ArrayUtil.withIndex(ranking);
         Arrays.sort(rankingWithIndex, COMPARE_FIRST);
         int[] inverted = new int[ranking.length];
         for (int i = 0; i < ranking.length; i += 1)
@@ -91,7 +84,7 @@ public final class Rankings {
      * @throws IllegalArgumentException if {@code length} is negative
      */
     public static int[] random(int length) {
-        int[] a = range(length);
+        int[] a = ArrayUtil.range(length);
         ArrayUtil.shuffle(a);
         return a;
     }
@@ -134,7 +127,7 @@ public final class Rankings {
      * @param sorted a sorted array
      * @return the next offset or {@code 0} if there is no next offset
      */
-    public static int nextOffset(final int idx, int offset, final int[] sorted) {
+    public static int nextOffset(int idx, int offset, final int[] sorted) {
         if (offset >= 0) {
             int next = idx + ++offset;
             if (next >= sorted.length || sorted[next] != sorted[idx])
@@ -150,182 +143,7 @@ public final class Rankings {
         return offset;
     }
 
-    /**
-     * Find the next position, after {@code idx + offset}, of {@code sorted[idx]} in a sorted array.
-     * For a given element {@code el}, iterating this method over the {@code offset} element, starting with
-     * {@code offset = 0}, will enumerate all positions of {@code sorted[idx]} in the sorted array.
-     * @param idx the start index
-     * @param offset the current offset from the start index
-     * @param sorted a sorted array
-     * @return the next offset or {@code 0} if there is no next offset
-     */
-    public static int nextOffset(final int idx, int offset, final byte[] sorted) {
-        if (offset >= 0) {
-            int next = idx + ++offset;
-            if (next >= sorted.length || sorted[next] != sorted[idx])
-                if (idx == 0 || sorted[idx - 1] != sorted[idx])
-                    return 0;
-                else
-                    return -1;
-        } else {
-            int next = idx + --offset;
-            if (next < 0 || sorted[next] != sorted[idx])
-                return 0;
-        }
-        return offset;
-    }
-
-    /**
-     * Find the next position, after {@code idx + offset}, of {@code sorted[idx]} in a sorted array.
-     * For a given element {@code el}, iterating this method over the {@code offset} element, starting with
-     * {@code offset = 0}, will enumerate all positions of {@code sorted[idx]} in the sorted array.
-     * @param idx the start index
-     * @param offset the current offset from the start index
-     * @param sorted a sorted array
-     * @return the next offset or {@code 0} if there is no next offset
-     */
-    public static int nextOffset(final int idx, int offset, final short[] sorted) {
-        if (offset >= 0) {
-            int next = idx + ++offset;
-            if (next >= sorted.length || sorted[next] != sorted[idx])
-                if (idx == 0 || sorted[idx - 1] != sorted[idx])
-                    return 0;
-                else
-                    return -1;
-        } else {
-            int next = idx + --offset;
-            if (next < 0 || sorted[next] != sorted[idx])
-                return 0;
-        }
-        return offset;
-    }
-
-    /**
-     * Find the next position, after {@code idx + offset}, of {@code sorted[idx]} in a sorted array.
-     * For a given element {@code el}, iterating this method over the {@code offset} element, starting with
-     * {@code offset = 0}, will enumerate all positions of {@code sorted[idx]} in the sorted array.
-     * @param idx the start index
-     * @param offset the current offset from the start index
-     * @param sorted a sorted array
-     * @return the next offset or {@code 0} if there is no next offset
-     */
-    public static int nextOffset(final int idx, int offset, final long[] sorted) {
-        if (offset >= 0) {
-            int next = idx + ++offset;
-            if (next >= sorted.length || sorted[next] != sorted[idx])
-                if (idx == 0 || sorted[idx - 1] != sorted[idx])
-                    return 0;
-                else
-                    return -1;
-        } else {
-            int next = idx + --offset;
-            if (next < 0 || sorted[next] != sorted[idx])
-                return 0;
-        }
-        return offset;
-    }
-
-    /**
-     * Find the next position, after {@code idx + offset}, of {@code sorted[idx]} in a sorted array.
-     * For a given element {@code el}, iterating this method over the {@code offset} element, starting with
-     * {@code offset = 0}, will enumerate all positions of {@code sorted[idx]} in the sorted array.
-     * @param idx the start index
-     * @param offset the current offset from the start index
-     * @param sorted a sorted array
-     * @return the next offset or {@code 0} if there is no next offset
-     */
-    public static int nextOffset(final int idx, int offset, final float[] sorted) {
-        if (offset >= 0) {
-            int next = idx + ++offset;
-            if (next >= sorted.length || sorted[next] != sorted[idx])
-                if (idx == 0 || sorted[idx - 1] != sorted[idx])
-                    return 0;
-                else
-                    return -1;
-        } else {
-            int next = idx + --offset;
-            if (next < 0 || sorted[next] != sorted[idx])
-                return 0;
-        }
-        return offset;
-    }
-
-    /**
-     * Find the next position, after {@code idx + offset}, of {@code sorted[idx]} in a sorted array.
-     * For a given element {@code el}, iterating this method over the {@code offset} element, starting with
-     * {@code offset = 0}, will enumerate all positions of {@code sorted[idx]} in the sorted array.
-     * @param idx the start index
-     * @param offset the current offset from the start index
-     * @param sorted a sorted array
-     * @return the next offset or {@code 0} if there is no next offset
-     */
-    public static int nextOffset(final int idx, int offset, final double[] sorted) {
-        if (offset >= 0) {
-            int next = idx + ++offset;
-            if (next >= sorted.length || sorted[next] != sorted[idx])
-                if (idx == 0 || sorted[idx - 1] != sorted[idx])
-                    return 0;
-                else
-                    return -1;
-        } else {
-            int next = idx + --offset;
-            if (next < 0 || sorted[next] != sorted[idx])
-                return 0;
-        }
-        return offset;
-    }
-
-    /**
-     * Find the next position, after {@code idx + offset}, of {@code sorted[idx]} in a sorted array.
-     * For a given element {@code el}, iterating this method over the {@code offset} element, starting with
-     * {@code offset = 0}, will enumerate all positions of {@code sorted[idx]} in the sorted array.
-     * @param idx the start index
-     * @param offset the current offset from the start index
-     * @param sorted a sorted array
-     * @return the next offset or {@code 0} if there is no next offset
-     */
-    public static int nextOffset(final int idx, int offset, final char[] sorted) {
-        if (offset >= 0) {
-            int next = idx + ++offset;
-            if (next >= sorted.length || sorted[next] != sorted[idx])
-                if (idx == 0 || sorted[idx - 1] != sorted[idx])
-                    return 0;
-                else
-                    return -1;
-        } else {
-            int next = idx + --offset;
-            if (next < 0 || sorted[next] != sorted[idx])
-                return 0;
-        }
-        return offset;
-    }
-
-    /**
-     * Find the next position, after {@code idx + offset}, of {@code sorted[idx]} in a sorted array.
-     * For a given element {@code el}, iterating this method over the {@code offset} element, starting with
-     * {@code offset = 0}, will enumerate all positions of {@code sorted[idx]} in the sorted array.
-     * @param idx the start index
-     * @param offset the current offset from the start index
-     * @param sorted a sorted array
-     * @return the next offset or {@code 0} if there is no next offset
-     */
-    public static int nextOffset(final int idx, int offset, final Object[] sorted) {
-        if (offset >= 0) {
-            int next = idx + ++offset;
-            if (next >= sorted.length || !sorted[next].equals(sorted[idx]))
-                if (idx == 0 || !sorted[idx - 1].equals(sorted[idx]))
-                    return 0;
-                else
-                    return -1;
-        } else {
-            int next = idx + --offset;
-            if (next < 0 || !sorted[next].equals(sorted[idx]))
-                return 0;
-        }
-        return offset;
-    }
-
-    public static int nextOffset(final int idx, int offset, List<?> sorted) {
+    public static int nextOffset(int idx, int offset, List<?> sorted) {
         if (offset >= 0) {
             int next = idx + ++offset;
             if (next >= sorted.size() || !sorted.get(next).equals(sorted.get(idx)))
@@ -357,7 +175,6 @@ public final class Rankings {
      * Undo the shift
      * @param i a non-zero int
      * @return {@code i - 1} if {@code i} is positive, otherwise {@code i}
-     * @see #shift
      */
     public static int unshift(int i) {
         return i > 0 ? i - 1 : i;
@@ -369,14 +186,7 @@ public final class Rankings {
         int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
         return offset == 0 ? 0 : shift(offset);
     }
-
-    static int nextOffsetShifting(int idx, int shiftedOffset, Object[] sorted) {
-        if (shiftedOffset == 0)
-            return 1;
-        int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
-        return offset == 0 ? 0 : shift(offset);
-    }
-
+    
     static int nextOffsetShifting(int idx, int shiftedOffset, List<?> sorted) {
         if (shiftedOffset == 0)
             return 1;
@@ -407,7 +217,7 @@ public final class Rankings {
      * @see ArrayUtil#indexOf
      */
     public static int[] sorting(int[] a) {
-        int[] sorted = sortedCopy(a);
+        int[] sorted = ArrayUtil.sortedCopy(a);
         int[] ranking = new int[a.length];
         int[] offsets = new int[a.length];
         for (int i = 0; i < a.length; i++) {
@@ -419,7 +229,7 @@ public final class Rankings {
         checkRanking(ranking);
         return ranking;
     }
-    
+
     public static <E extends Comparable<E>> int[] sorting(List<E> a) {
         List<E> sorted = a.stream().sorted().toList();
         int[] ranking = new int[a.size()];
@@ -433,43 +243,17 @@ public final class Rankings {
         return ranking;
     }
 
-    /**
-     * Produce a particular ranking that sorts the input when applied to it.
-     * For each index {@code i < a.length}, the return value
-     * satisfies the following property.
-     * Let
-     * <pre><code>
-     *   int[] sorting = sorting(a);
-     *   int[] sorted = apply(sorting, a);
-     *   int[] unsort = invert(sorting);
-     *   int idx = Arrays.binarySearch(sorted, el);
-     * </code></pre>
-     * then for each index {@code i < a.length}, the following is true:
-     * <pre><code>
-     *   ArrayUtil.indexOf(a, el, 0) == unsort[idx]
-     * </code></pre>
-     * @param a an array
-     * @param comp a comparator
-     * @return a ranking that sorts the input
-     * @see ArrayUtil#indexOf
-     * @throws java.lang.NullPointerException if {@code a} is {@code null} or contains a {@code null} element
-     */
-    public static <E> int[] sorting(Object[] a, Comparator<E> comp) {
-        Object[] sorted = sortedCopy(a, comp);
-        int[] ranking = new int[a.length];
-        int[] offsets = new int[a.length];
-        for (int i = 0; i < a.length; i++) {
-            @SuppressWarnings("unchecked")
-            int idx = binarySearch(sorted, a[i], (Comparator) comp);
+    public static <E> int[] sorting(List<E> a, Comparator<E> comp) {
+        List<E> sorted = a.stream().sorted(comp).toList();
+        int[] ranking = new int[a.size()];
+        int[] offsets = new int[a.size()];
+        for (int i = 0; i < a.size(); i++) {
+            int idx = Collections.binarySearch(sorted, a.get(i), comp);
             int offset = nextOffsetShifting(idx, offsets[idx], sorted);
             ranking[i] = idx + unshift(offset);
             offsets[idx] = offset;
         }
         return ranking;
-    }
-
-    public static <E> int[] sorting(List<E> a, Comparator<E> comp) {
-        return sorting(a.toArray(), comp);
     }
 
     /* ================= from ================= */
@@ -501,7 +285,7 @@ public final class Rankings {
         return ranking;
     }
 
-    
+
     /**
      * Produce a particular ranking that produces {@code b} when applied to {@code a}.
      * @param a an array
@@ -527,7 +311,7 @@ public final class Rankings {
         }
         return ranking;
     }
-    
+
     /**
      * Check where the {@code ranking} moves the index {@code i}.
      * The following is true for all {@code j < a.length}:
@@ -548,7 +332,7 @@ public final class Rankings {
     }
 
     /* ================= apply ================= */
-    
+
     /**
      * Apply the ranking to the input array. An element at {@code i} is moved to {@code ranking[i]}.
      * Indexes that are greater or equal to the length of the ranking are not moved.
@@ -568,7 +352,7 @@ public final class Rankings {
             arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
         return result;
     }
-    
+
     /**
      * Apply the ranking to the input list. An element at {@code i} is moved to {@code ranking[i]}.
      * Indexes that are greater or equal to the length of the ranking are not moved.
@@ -584,7 +368,7 @@ public final class Rankings {
             return input;
         int length = input.size();
         checkLength(ranking.length, length);
-        ArrayList<E> result = new ArrayList<E>(length);
+        ArrayList<E> result = new ArrayList<>(length);
         for (int i = 0; i < length; i += 1)
             result.add(null);
         for (int i = 0; i < length; i += 1)
@@ -622,7 +406,7 @@ public final class Rankings {
         }
         return true;
     }
-    
+
     private static final class State {
         private final int[] prefix;
         private final int[] suffix;

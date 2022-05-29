@@ -320,7 +320,7 @@ public final class Permutation {
     }
 
     public int order() {
-        // TODO this can probably be optimized
+        // LCM?
         int i = 1;
         Permutation p = this;
         while (!p.isIdentity()) {

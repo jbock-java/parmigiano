@@ -113,7 +113,7 @@ class ArrayUtilTest {
         int radius = (int) (50 * Math.random()) + 50;
         HashSet<Integer> seen = new HashSet<Integer>(radius);
         for (int i = 0; i < 1000; i += 1) {
-            int[] ints = ArrayUtil.randomNumbers(Integer.MIN_VALUE, Integer.MIN_VALUE + radius, 100);
+            int[] ints = TestUtil.randomNumbers(Integer.MIN_VALUE, Integer.MIN_VALUE + radius, 100);
             for (int a : ints) {
                 assertTrue(a <= Integer.MIN_VALUE + radius,
                         () -> String.format("%d %d %d", radius, a, Integer.MIN_VALUE + radius));
@@ -125,7 +125,7 @@ class ArrayUtilTest {
         }
         seen = new HashSet<>(radius);
         for (int i = 0; i < 1000; i += 1) {
-            int[] ints = ArrayUtil.randomNumbers(Integer.MAX_VALUE - radius, Integer.MAX_VALUE, 100);
+            int[] ints = TestUtil.randomNumbers(Integer.MAX_VALUE - radius, Integer.MAX_VALUE, 100);
             for (int a : ints) {
                 assertTrue(a >= Integer.MAX_VALUE - radius,
                         () -> (Integer.MAX_VALUE - a) + " " + radius);
@@ -143,7 +143,7 @@ class ArrayUtilTest {
             for (int low = -10; low < 4; low++) {
                 HashSet<Integer> seen = new HashSet<Integer>(radius);
                 for (int i = 0; i < 100; i += 1) {
-                    int[] ints = ArrayUtil.randomNumbers(low, low + radius, 10);
+                    int[] ints = TestUtil.randomNumbers(low, low + radius, 10);
                     for (int a : ints) {
                         assertTrue(a <= low + radius, String.format("%d %d", low, a));
                         seen.add(a);
@@ -166,7 +166,7 @@ class ArrayUtilTest {
     void testDuplicateIndexes2() {
         for (int i = 0; i < 1000; i += 1) {
             int maxNumber = 100;
-            int[] ints = ArrayUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
+            int[] ints = TestUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
             int[] pair = TestUtil.duplicateIndexes(ints);
             assertTrue(TestUtil.count(ints, ints[pair[0]]) > 1);
             assertEquals(ints[pair[0]], ints[pair[1]]);
@@ -184,7 +184,7 @@ class ArrayUtilTest {
     void testDuplicateIndexes4() {
         for (int i = 0; i < 1000; i += 1) {
             int maxNumber = 100;
-            List<MyInt> ints = MyInt.box(ArrayUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
+            List<MyInt> ints = MyInt.box(TestUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
             int[] pair = TestUtil.duplicateIndexes(ints, MyInt.COMP);
             assertTrue(TestUtil.count(ints, ints.get(pair[0])) > 1);
             assertEquals(ints.get(pair[0]), ints.get(pair[1]));
@@ -226,12 +226,9 @@ class ArrayUtilTest {
 
     @Test
     void testRange() {
-        assertArrayEquals(new int[]{10, 9, 8, 7}, ArrayUtil.range(10, 7, true));
-        assertArrayEquals(new int[]{10, 9, 8}, ArrayUtil.range(10, 7, false));
-        assertArrayEquals(new int[]{7, 8, 9, 10}, ArrayUtil.range(7, 10, true));
-        assertArrayEquals(new int[]{7, 8, 9}, ArrayUtil.range(7, 10, false));
-        assertArrayEquals(new int[]{7}, ArrayUtil.range(7, 7, true));
-        assertArrayEquals(new int[]{}, ArrayUtil.range(7, 7, false));
+        assertArrayEquals(new int[]{10, 9, 8}, ArrayUtil.range(10, 7));
+        assertArrayEquals(new int[]{7, 8, 9}, ArrayUtil.range(7, 10));
+        assertArrayEquals(new int[]{}, ArrayUtil.range(7, 7));
     }
 
     @Test

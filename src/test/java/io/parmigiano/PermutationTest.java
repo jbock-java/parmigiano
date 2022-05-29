@@ -51,7 +51,7 @@ class PermutationTest {
     /* check defining property of apply */
     @Test
     void testApply() {
-        int[] a = ArrayUtil.randomNumbers(100, 200);
+        int[] a = TestUtil.randomNumbers(100, 200);
         Permutation p = Permutation.random((int) (a.length * Math.random()));
         int[] pa = p.apply(a);
         for (int i = 0; i < a.length; i += 1) {
@@ -63,7 +63,7 @@ class PermutationTest {
     @Test
     void testIterable() {
         for (int __ = 0; __ < 100; __++) {
-            List<MyInt> a = box(ArrayUtil.randomNumbers(100, 50 + (int) (Math.random() * 100)));
+            List<MyInt> a = box(TestUtil.randomNumbers(100, 50 + (int) (Math.random() * 100)));
             Permutation p = Permutation.random((int) (Math.random() * a.size()));
             List<MyInt> applied = p.apply(a);
             List<MyInt> arrayList = new ArrayList<MyInt>(a.size());
@@ -382,7 +382,7 @@ class PermutationTest {
     @Test
     void testSorts() {
         for (int __ = 0; __ < 100; __++) {
-            int[] a = ArrayUtil.randomNumbers(100, 50 + (int) (Math.random() * 100));
+            int[] a = TestUtil.randomNumbers(100, 50 + (int) (Math.random() * 100));
             Permutation p = Permutation.sorting(a);
             assertTrue(isSorted(p.apply(a)));
         }

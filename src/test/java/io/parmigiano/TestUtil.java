@@ -7,9 +7,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.IntStream;
 
 class TestUtil {
 
@@ -258,4 +260,31 @@ class TestUtil {
             return s.substring(0, s.length() - 1) + ((char) (last + 1));
         }
     }
+
+    /**
+     * Produce {@code length} random numbers between {@code 0} and {@code maxNumber} (inclusive)
+     * @param maxNumber upper bound of random numbers
+     * @param length result length
+     * @return an array of random numbers
+     */
+    static int[] randomNumbers(int maxNumber, int length) {
+        return randomNumbers(0, maxNumber, length);
+    }
+
+    /**
+     * Generate {@code length} random numbers between {@code minNumber} and {@code maxNumber} (inclusive)
+     * @param minNumber lower bound of random numbers
+     * @param maxNumber upper bound of random numbers
+     * @param length result length
+     * @return an array of random numbers
+     */
+    static int[] randomNumbers(int minNumber, int maxNumber, int length) {
+        if (minNumber > maxNumber) {
+            throw new IllegalArgumentException("minNumber must be less than or equal to maxNumber");
+        }
+        Random random = ThreadLocalRandom.current();
+        IntStream ints = random.ints(length, minNumber, maxNumber + 1);
+        return ints.toArray();
+    }
+
 }
