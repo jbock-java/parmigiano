@@ -124,16 +124,17 @@ class ArrayUtilTest {
             assertTrue(seen.contains(Integer.MIN_VALUE + i));
         }
         seen = new HashSet<>(radius);
+        int maxValue = (Integer.MAX_VALUE) / 2;
         for (int i = 0; i < 1000; i += 1) {
-            int[] ints = TestUtil.randomNumbers(Integer.MAX_VALUE - radius, Integer.MAX_VALUE, 100);
+            int[] ints = TestUtil.randomNumbers(maxValue - radius, maxValue, 100);
             for (int a : ints) {
-                assertTrue(a >= Integer.MAX_VALUE - radius,
-                        () -> (Integer.MAX_VALUE - a) + " " + radius);
+                assertTrue(a >= maxValue - radius,
+                        () -> (maxValue - a) + " " + radius);
                 seen.add(a);
             }
         }
         for (int i = 0; i <= radius; i++) {
-            assertTrue(seen.contains(Integer.MAX_VALUE - radius));
+            assertTrue(seen.contains(maxValue - radius));
         }
     }
 
@@ -229,28 +230,5 @@ class ArrayUtilTest {
         assertArrayEquals(new int[]{10, 9, 8}, ArrayUtil.range(10, 7));
         assertArrayEquals(new int[]{7, 8, 9}, ArrayUtil.range(7, 10));
         assertArrayEquals(new int[]{}, ArrayUtil.range(7, 7));
-    }
-
-    @Test
-    void testUnique() {
-        int[] a = {8, 5, 7, 2, 9, 4, 1, 6, 0, 3};
-        assertTrue(ArrayUtil.isUnique(a));
-    }
-
-    @Test
-    void testCut() {
-        int[] a = {8, 5, 7, 2, 9, 4, 1, 6, 0, 3};
-        assertArrayEquals(new int[]{5, 7, 2, 9, 4, 1, 6, 0, 3}, ArrayUtil.cut(a, 0));
-        assertArrayEquals(new int[]{8, 7, 2, 9, 4, 1, 6, 0, 3}, ArrayUtil.cut(a, 1));
-        assertArrayEquals(new int[]{8, 5, 7, 2, 9, 4, 1, 6, 0}, ArrayUtil.cut(a, 9));
-    }
-
-    @Test
-    void testPaste() {
-        int[] a = {8, 5, 7, 2, 9, 4, 1, 6, 0, 3};
-        assertArrayEquals(new int[]{0, 8, 5, 7, 2, 9, 4, 1, 6, 0, 3}, ArrayUtil.paste(a, 0, 0));
-        assertArrayEquals(new int[]{8, 0, 5, 7, 2, 9, 4, 1, 6, 0, 3}, ArrayUtil.paste(a, 1, 0));
-        assertArrayEquals(new int[]{8, 5, 7, 2, 9, 4, 1, 6, 0, 0, 3}, ArrayUtil.paste(a, 9, 0));
-        assertArrayEquals(new int[]{8, 5, 7, 2, 9, 4, 1, 6, 0, 3, 0}, ArrayUtil.paste(a, 10, 0));
     }
 }

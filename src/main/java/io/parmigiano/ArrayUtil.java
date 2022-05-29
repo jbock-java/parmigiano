@@ -62,24 +62,14 @@ public final class ArrayUtil {
      * Find element in array by comparing each element in sequence, starting at index {@code 0}.
      * @param a an array
      * @param el a number
-     * @param skip number of matches to skip; if {@code skip = 0} the index of the first match, if any, will be returned
      * @return the least non-negative number {@code i} so that {@code a[i] = el}, or {@code -1} if {@code el} is not
      * found in {@code a}, or if all occurences are skipped
-     * @throws java.lang.IllegalArgumentException if {@code skip < 0}
      */
-    public static int indexOf(int[] a, int el, final int skip) {
-        if (skip < 0)
-            negativeFailure();
-        int cnt = 0;
+    public static int indexOf(int[] a, int el) {
         for (int i = 0; i < a.length; i += 1)
             if (a[i] == el)
-                if (cnt++ >= skip)
                     return i;
         return -1;
-    }
-
-    static int indexOf(int[] a, int el) {
-        return indexOf(a, el, 0);
     }
 
     /**
@@ -137,25 +127,6 @@ public final class ArrayUtil {
         throw new IllegalArgumentException("negative number not allowed");
     }
     
-    /**
-     * Test if input is sorted
-     * @param input an array
-     * @return true if the {@code input} is sorted
-     */
-    public static boolean isSorted(int[] input) {
-        if (input.length < 2) {
-            return true;
-        }
-        int test = input[0];
-        for (int i : input) {
-            if (i < test) {
-                return false;
-            }
-            test = i;
-        }
-        return true;
-    }
-    
     static void checkEqualLength(List<?> a, List<?> b) {
         if (a.size() != b.size())
             lengthFailure();
@@ -164,104 +135,5 @@ public final class ArrayUtil {
     static void checkEqualLength(int[] a, int[] b) {
         if (a.length != b.length)
             lengthFailure();
-    }
-
-    static void checkEqualLength(byte[] a, byte[] b) {
-        if (a.length != b.length)
-            lengthFailure();
-    }
-
-    static void checkEqualLength(short[] a, short[] b) {
-        if (a.length != b.length)
-            lengthFailure();
-    }
-
-    static void checkEqualLength(float[] a, float[] b) {
-        if (a.length != b.length)
-            lengthFailure();
-    }
-
-    static void checkEqualLength(double[] a, double[] b) {
-        if (a.length != b.length)
-            lengthFailure();
-    }
-
-    static void checkEqualLength(long[] a, long[] b) {
-        if (a.length != b.length)
-            lengthFailure();
-    }
-
-    static void checkEqualLength(char[] a, char[] b) {
-        if (a.length != b.length)
-            lengthFailure();
-    }
-
-    static void checkEqualLength(Object[] a, Object[] b) {
-        if (a.length != b.length)
-            lengthFailure();
-    }
-
-    /* ================= isUnique ================= */
-
-    /**
-     * Test if the input contains duplicates. This method always returns the correct result,
-     * whether or not the input is sorted.
-     * @param a an array
-     * @return true if the input contains no duplicate element
-     */
-    public static boolean isUnique(int[] a) {
-        return isUnique(a, false);
-    }
-
-    /**
-     * Test if the input contains duplicates.
-     * @param a an array
-     * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
-     *                  to improve performance.
-     *                  If set to true, but the input is not sorted, this method will not return
-     *                  the correct result.
-     * @return true if the input contains no duplicate element
-     */
-    public static boolean isUnique(int[] a, boolean omitCheck) {
-        if (a.length < 2)
-            return true;
-        if (!omitCheck && !isSorted(a))
-            a = sortedCopy(a);
-        for (int i = 1; i < a.length; i++)
-            if (a[i] == a[i - 1])
-                return false;
-        return true;
-    }
-
-    /**
-     * Remove an element at index {@code i}.
-     * @param a an array
-     * @param i cut point, must be non negative and less than {@code a.length}
-     * @return an array of length {@code a.length - 1}
-     */
-    public static int[] cut(int[] a, int i) {
-        if (i < 0 || i >= a.length)
-            throw new IllegalArgumentException("i must be non negative and less than " + a.length);
-        int[] result = new int[a.length - 1];
-        System.arraycopy(a, 0, result, 0, i);
-        System.arraycopy(a, i + 1, result, i, a.length - i - 1);
-        return result;
-    }
-
-    /**
-     * Insert an element at index {@code i}.
-     * @param a an array
-     * @param i insertion point, must be non negative and not greater than {@code a.length}
-     * @param el new element to be inserted
-     * @return an array of length {@code a.length + 1}, this will have {@code el} at position {@code i}
-     */
-    public static int[] paste(int[] a, int i, int el) {
-        if (i < 0 || i > a.length)
-            throw new IllegalArgumentException("i must be non negative and not greater than " + a.length);
-        int[] result = new int[a.length + 1];
-        System.arraycopy(a, 0, result, 0, i);
-        result[i] = el;
-        System.arraycopy(a, i, result, i + 1, a.length - i);
-        return result;
     }
 }

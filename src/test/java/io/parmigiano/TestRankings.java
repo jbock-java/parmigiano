@@ -2,12 +2,15 @@ package io.parmigiano;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -36,84 +39,35 @@ class TestRankings {
 
     @Test
     void testFromRandom() {
-        for (int __ = 0; __ < 100; __ += 1) {
-            int[] a = TestUtil.randomNumbers(100, 200);
-            int[] b = Permutation.random(a.length).apply(a);
-            assertArrayEquals(b, Taking.from(a).to(b).apply(a));
-        }
-        for (int __ = 0; __ < 100; __ += 1) {
-            int[] a = TestUtil.randomNumbers(100, 20);
-            int[] b = Permutation.random(a.length).apply(a);
-            assertArrayEquals(b, Taking.from(a).to(b).apply(a));
+        for (int __ = 0; __ < 10; __ += 1) {
+            List<Integer> a = new ArrayList<>(IntStream.range(0, 100).boxed().toList());
+            Collections.shuffle(a);
+            List<Integer> b = Permutation.random(a.size()).apply(a);
+            assertEquals(b, Taking.from(a).to(b).apply(a));
         }
     }
-
-    @Test
-    void testFromStrict() {
-        for (int __ = 0; __ < 100; __ += 1) {
-            List<String> a = TestUtil.symbols(100);
-            List<String> shuffled = Permutation.random(a.size()).apply(a);
-            assertEquals(a, Taking.from(shuffled).to(a).apply(shuffled));
-        }
-    }
-
 
     @Test
     void testMismatch() {
-        for (int __ = 0; __ < 1000; __ += 1) {
-            int[] a = TestUtil.randomNumbers(100, 110);
-            int[] b = Rankings.apply(Rankings.random(a.length), a);
-
-            int[] bdupes = TestUtil.duplicateIndexes(b);
-            int[] adupes = TestUtil.duplicateIndexes(a);
-
-            int changed = -1;
-            // subtly mess things up by changing b,
-            // so that all elements in a can still be found in b,
-            // but b is not a reordering of a anymore
-            if (Math.random() < 0.5) {
-                for (int j = 0; j < b.length; j += 1) {
-                    if (b[bdupes[0]] != b[j]) {
-                        b[bdupes[0]] = b[j];
-                        changed = b[j];
-                        break;
-                    }
-                }
-            } else {
-                for (int j = 0; j < a.length; j += 1) {
-                    if (a[adupes[0]] != a[j]) {
-                        a[adupes[0]] = a[j];
-                        changed = a[j];
-                        break;
-                    }
-                }
-            }
-            int bc = TestUtil.count(b, changed);
-            int ac = TestUtil.count(a, changed);
-            assertNotEquals(bc, ac);
-            assertTrue(ac > 0);
-            assertTrue(bc > 0);
-
-            // null because b is not a rearrangement of a
-            assertThrows(IllegalArgumentException.class, () -> Rankings.from(a, b));
-        }
+        // throws because b is not a rearrangement of a
+        assertThrows(IllegalArgumentException.class, () -> Rankings.from(new int[]{1, 1, 2}, new int[]{1, 2, 2}));
     }
 
     @Test
     void testSort() {
         for (int __ = 0; __ < 100; __++) {
-            int[] a = TestUtil.randomNumbers(100, (int) (Math.random() * 1000));
+            int[] a = TestUtil.randomNumbers(100, ThreadLocalRandom.current().nextInt(1000));
             int[] sort = Rankings.sorting(a);
             int[] sorted = Rankings.apply(sort, a);
             int[] unsort = Rankings.invert(sort);
-            int[] hopefullyIdentity = Rankings.comp(sort, unsort);
-            assertTrue(ArrayUtil.isSorted(hopefullyIdentity));
-            assertTrue(ArrayUtil.isSorted(sorted));
+            int[] hopefullyIdentity = TestUtil.comp(sort, unsort);
+            assertTrue(TestUtil.isSorted(hopefullyIdentity));
+            assertTrue(TestUtil.isSorted(sorted));
             for (int el : a) {
-                assertEquals(ArrayUtil.indexOf(a, el, 0), unsort[Arrays.binarySearch(sorted, el)]);
+                assertEquals(ArrayUtil.indexOf(a, el), unsort[Arrays.binarySearch(sorted, el)]);
             }
         }
-    }
+    }   
 
     @Test
     void testNextOffset() {
@@ -134,8 +88,8 @@ class TestRankings {
     void testSorts() {
         int[] ranking = {0, 3, 1, 4, 2};
         int[] a = {0, 4, 2, 4, 3};
-        assertTrue(ArrayUtil.isSorted(Rankings.apply(ranking, a)));
-        assertTrue(Rankings.sorts(ranking, a));
+        assertTrue(TestUtil.isSorted(Rankings.apply(ranking, a)));
+        assertTrue(TestUtil.sorts(ranking, a));
     }
 
     @Test
@@ -143,8 +97,8 @@ class TestRankings {
         for (int __ = 0; __ < 100; __++) {
             int[] a = TestUtil.randomNumbers(100, 100 + (int) (100 * (Math.random() - 0.8)));
             int[] ranking = Rankings.sorting(a);
-            assertTrue(ArrayUtil.isSorted(Rankings.apply(ranking, a)));
-            assertTrue(Rankings.sorts(ranking, a));
+            assertTrue(TestUtil.isSorted(Rankings.apply(ranking, a)));
+            assertTrue(TestUtil.sorts(ranking, a));
         }
     }
 }

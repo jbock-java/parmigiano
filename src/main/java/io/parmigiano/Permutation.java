@@ -336,12 +336,12 @@ public final class Permutation {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Permutation cycles = (Permutation) o;
-        if (cycles.maxMovedIndex != maxMovedIndex) {
+        Permutation other = (Permutation) o;
+        if (other.maxMovedIndex != maxMovedIndex) {
             return false;
         }
         for (int i = 0; i < maxMovedIndex; i++) {
-            if (apply(i) != cycles.apply(i)) {
+            if (apply(i) != other.apply(i)) {
                 return false;
             }
         }

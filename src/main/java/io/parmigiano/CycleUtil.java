@@ -10,7 +10,7 @@ import static io.parmigiano.Permutation.chaseCycle;
 /**
  * A collection of methods that return cycles or operate on cycles.
  */
-public final class CycleUtil {
+final class CycleUtil {
 
     private CycleUtil() {
     }
@@ -22,7 +22,7 @@ public final class CycleUtil {
      * @param ranking a ranking
      * @return an array of all nontrivial orbits in the input ranking
      */
-    public static int[][] toOrbits(int[] ranking) {
+    static int[][] toOrbits(int[] ranking) {
         List<int[]> orbits = new ArrayList<>();
         Set<Integer> done = new HashSet<>();
         for (int i = 0; i < ranking.length; i += 1) {
@@ -39,7 +39,7 @@ public final class CycleUtil {
         return orbits.toArray(new int[0][]);
     }
 
-    public static int[] rotateToIndex(int[] a, int n) {
+    static int[] rotateToIndex(int[] a, int n) {
         if (n == 0) {
             return a;
         }
@@ -50,7 +50,7 @@ public final class CycleUtil {
         return result;
     }
 
-    public static int maxIndex(int[] a) {
+    static int maxIndex(int[] a) {
         if (a.length == 0) {
             return -1;
         }

@@ -13,6 +13,9 @@ import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
+import static io.parmigiano.ArrayUtil.lengthFailure;
+import static java.lang.System.arraycopy;
+
 class TestUtil {
 
     static Iterable<Permutation[]> cartesian(List<Permutation> a, List<Permutation> b) {
@@ -286,5 +289,78 @@ class TestUtil {
         IntStream ints = random.ints(length, minNumber, maxNumber + 1);
         return ints.toArray();
     }
+    
+    /**
+     * Check if input is sorted
+     * @param input an array
+     * @return true if the {@code input} is sorted
+     */
+    static boolean isSorted(int[] input) {
+        if (input.length < 2) {
+            return true;
+        }
+        int test = input[0];
+        for (int i : input) {
+            if (i < test) {
+                return false;
+            }
+            test = i;
+        }
+        return true;
+    }
 
+    /**
+     * Check if the input ranking will sort the input array when applied to it.
+     * This method does not check if the first argument is indeed a valid ranking, and will have unexpected results otherwise.
+     * @param a an array
+     * @param ranking a ranking
+     * @return true if the return value of {@code apply(ranking, a)} is a sorted array
+     */
+    static boolean sorts(int[] ranking, int[] a) {
+        if (a.length < ranking.length)
+            lengthFailure();
+        if (a.length < 2)
+            return true;
+        int idx = Rankings.apply(ranking, 0);
+        int test = a[0];
+        for (int i = 1; i < a.length; i++) {
+            int idx2 = Rankings.apply(ranking, i);
+            int test2 = a[i];
+            if (idx2 > idx) {
+                if (test > test2)
+                    return false;
+            } else if (test < test2)
+                return false;
+            idx = idx2;
+            test = test2;
+        }
+        return true;
+    }
+
+    /**
+     * Multiply two rankings.
+     * @param lhs a ranking
+     * @param rhs another ranking
+     * @return the product of the input rankings
+     */
+    static int[] comp(int[] lhs, int[] rhs) {
+        if (lhs.length >= rhs.length) {
+            if (rhs.length == 0)
+                return lhs;
+            int[] result = new int[lhs.length];
+            for (int i = 0; i < rhs.length; i++)
+                result[i] = lhs[rhs[i]];
+            if (lhs.length > rhs.length)
+                arraycopy(lhs, rhs.length, result, rhs.length, lhs.length - rhs.length);
+            return result;
+        }
+        if (lhs.length == 0)
+            return rhs;
+        int[] result = new int[rhs.length];
+        for (int i = 0; i < rhs.length; i++) {
+            int n = rhs[i];
+            result[i] = n >= lhs.length ? n : lhs[n];
+        }
+        return result;
+    }
 }

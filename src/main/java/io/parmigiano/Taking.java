@@ -4,7 +4,7 @@ import java.util.List;
 
 public final class Taking {
 
-    public record TakingBuilderList<E extends Comparable<E>>(List<E> from) {
+    public record TakingBuilderList<E>(List<E> from) {
         public Permutation to(List<E> to) {
             return Permutation.fromRanking(Rankings.from(from, to));
         }
