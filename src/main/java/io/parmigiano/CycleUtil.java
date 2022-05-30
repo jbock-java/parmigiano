@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import static io.parmigiano.Permutation.chaseCycle;
+import static io.parmigiano.Rankings.checkRanking;
 
 /**
  * A collection of methods that return cycles or operate on cycles.
@@ -14,15 +15,15 @@ final class CycleUtil {
 
     private CycleUtil() {
     }
-    
+
     /**
      * Find all nontrivial cycles in the input ranking.
-     * This method does not check if the input is indeed a valid ranking and will have unexpected results otherwise.
      *
      * @param ranking a ranking
      * @return an array of all nontrivial orbits in the input ranking
      */
     static int[][] toOrbits(int[] ranking) {
+        checkRanking(ranking);
         List<int[]> orbits = new ArrayList<>();
         Set<Integer> done = new HashSet<>();
         for (int i = 0; i < ranking.length; i += 1) {
@@ -57,7 +58,7 @@ final class CycleUtil {
         int result = 0;
         for (int i = 0; i < a.length; i++) {
             if (a[i] > a[result]) {
-                result = i; 
+                result = i;
             }
         }
         return result;

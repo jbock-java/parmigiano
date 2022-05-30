@@ -55,7 +55,7 @@ public final class Permutation {
         return IDENTITY;
     }
 
-    static Permutation fromRanking(int... ranking) {
+    private static Permutation fromRanking(int... ranking) {
         if (ranking.length == 0) {
             return IDENTITY;
         }
@@ -177,7 +177,7 @@ public final class Permutation {
                 n = n == cycle[j] ? cycle[j + 1] : n == cycle[j + 1] ? cycle[j] : n;
         return n;
     }
-    
+
     /**
      * Composing with another permutation creates a new operation.
      *
@@ -308,9 +308,9 @@ public final class Permutation {
     }
 
     public static <E extends Comparable<E>> Permutation sorting(List<E> input) {
-        return Permutation.fromRanking(Rankings.sorting(input));
+        return fromRanking(Rankings.sorting(input));
     }
-    
+
     public static <E> Permutation sorting(List<E> input, Comparator<E> comparator) {
         return fromRanking(Rankings.sorting(input, comparator));
     }
@@ -366,8 +366,8 @@ public final class Permutation {
         }
         return Arrays.stream(cycles)
                 .map(Arrays::stream)
-                .map(s ->  s.mapToObj(Integer::toString))
-                .map(s ->  s.collect(joining(" ", "(", ")")))
+                .map(s -> s.mapToObj(Integer::toString))
+                .map(s -> s.collect(joining(" ", "(", ")")))
                 .collect(joining(" "));
     }
 
@@ -399,5 +399,17 @@ public final class Permutation {
         }
         Arrays.sort(newCycles, Comparator.<int[]>comparingInt(o -> o[0]).reversed());
         return new Permutation(newCycles, maxMovedIndex);
+    }
+
+    public record TakingBuilderList<E>(List<E> from) {
+        public Permutation to(List<E> to) {
+            return Permutation.fromRanking(Rankings.from(from, to));
+        }
+    }
+
+    public record TakingBuilderInt(int[] from) {
+        public Permutation to(int[] to) {
+            return Permutation.fromRanking(Rankings.from(from, to));
+        }
     }
 }

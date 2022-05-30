@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static io.parmigiano.MyInt.box;
 import static io.parmigiano.Permutation.create;
@@ -26,14 +27,14 @@ class PermutationTest {
     /* Check example from constructor javadoc */
     @Test
     void testAbc() {
-        Permutation p = Permutation.fromRanking(1, 2, 0);
+        Permutation p = Permutation.create(0, 1, 2);
         assertEquals("cab", p.apply("abc"));
     }
 
     @Test
     void testComp() {
-        Permutation p = Permutation.fromRanking(1, 2, 0);
-        assertEquals(Permutation.fromRanking(1, 2, 0), p);
+        Permutation p = Permutation.create(0, 1, 2);
+        assertEquals(Permutation.create(0, 1, 2), p);
         assertEquals(List.of("c", "a", "b"), p.apply(TestUtil.symbols(3)));
         assertEquals(List.of("b", "c", "a"), p.compose(p).apply(TestUtil.symbols(3)));
     }
@@ -52,7 +53,7 @@ class PermutationTest {
     @Test
     void testApply() {
         int[] a = TestUtil.randomNumbers(100, 200);
-        Permutation p = Permutation.random((int) (a.length * Math.random()));
+        Permutation p = Permutation.random(ThreadLocalRandom.current().nextInt(a.length));
         int[] pa = p.apply(a);
         for (int i = 0; i < a.length; i += 1) {
             int pi = p.apply(i);
@@ -63,7 +64,7 @@ class PermutationTest {
     @Test
     void testIterable() {
         for (int __ = 0; __ < 100; __++) {
-            List<MyInt> a = box(TestUtil.randomNumbers(100, 50 + (int) (Math.random() * 100)));
+            List<MyInt> a = box(TestUtil.randomNumbers(100, 50 + ThreadLocalRandom.current().nextInt(100)));
             Permutation p = Permutation.random((int) (Math.random() * a.size()));
             List<MyInt> applied = p.apply(a);
             List<MyInt> arrayList = new ArrayList<MyInt>(a.size());
@@ -89,35 +90,9 @@ class PermutationTest {
         }
     }
 
-    /* gaps in ranking */
-    @Test
-    void testInvalidGap() {
-        assertThrows(ArrayIndexOutOfBoundsException.class, () -> Permutation.fromRanking(1, 2, 0, 5));
-    }
-
-    /* missing zero in ranking */
-    @Test
-    void testInvalidMissingZero() {
-        assertThrows(ArrayIndexOutOfBoundsException.class, () -> Permutation.fromRanking(1, 2, 3));
-    }
-
-    /* duplicates in ranking */
-    @Test
-    void testInvalidDuplicate() {
-        int[] ranking = {1, 2, 0, 2, 3};
-        assertFalse(Rankings.isValid(ranking));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> Permutation.fromRanking(ranking));
-    }
-
-    /* negative number in ranking */
-    @Test
-    void testInvalidNegative() {
-        assertThrows(ArrayIndexOutOfBoundsException.class, () -> Permutation.fromRanking(-1, 0, 1));
-    }
-
     @Test
     void testInvert() {
-        Permutation p = Permutation.fromRanking(1, 2, 0);
+        Permutation p = Permutation.create(0, 1, 2);
         assertTrue(Permutation.product(p.invert(), p).isIdentity());
         assertTrue(Permutation.product(p, p.invert()).isIdentity());
         assertTrue(Permutation.product(p, p.pow(2)).isIdentity());
@@ -138,8 +113,8 @@ class PermutationTest {
     @Test
     void testIdentity() {
         assertTrue(Permutation.identity().isIdentity());
-        Assertions.assertTrue(Permutation.fromRanking(0, 1, 2, 3, 4).isIdentity());
-        Assertions.assertTrue(Permutation.fromRanking(0, 1, 2, 3, 4).invert().isIdentity());
+        Assertions.assertTrue(Permutation.create().isIdentity());
+        Assertions.assertTrue(Permutation.create().invert().isIdentity());
     }
 
     /* test defining property of identity */
@@ -426,7 +401,7 @@ class PermutationTest {
         assertEquals("create(1, 3, 4, 2)", Permutation.create(1, 3, 4, 2).print());
         assertEquals("identity()", Permutation.create(0, 1).compose(Permutation.create(0, 1)).print());
     }
-    
+
     @Test
     void testNormalize() {
         assertEquals("(4 1 3)", create(1, 3, 4).normalize().toString());

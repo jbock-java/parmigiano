@@ -54,10 +54,10 @@ class ArrayUtilTest {
 
     @Test
     void testClosed() {
-        Permutation id = Permutation.fromRanking(0, 1, 2, 3);
-        Permutation p = Permutation.fromRanking(1, 0, 2, 3);
-        Permutation k = Permutation.fromRanking(0, 1, 3, 2);
-        Permutation p2 = Permutation.fromRanking(1, 2, 0, 3);
+        Permutation id = Permutation.identity();
+        Permutation p = Permutation.create(0, 1);
+        Permutation k = Permutation.create(2, 3);
+        Permutation p2 = Permutation.create(0, 1, 2);
         Assertions.assertTrue(TestUtil.isClosed(List.of(id)));
         Assertions.assertTrue(TestUtil.isClosed(List.of(id, p)));
         Assertions.assertTrue(TestUtil.isClosed(List.of(id, p2, p2.pow(2))));
@@ -208,21 +208,21 @@ class ArrayUtilTest {
     void testFindCommutator() {
         Permutation p = Permutation.create(1, 2);
         Permutation q = Permutation.create(0, 1);
-        assertEquals(Permutation.fromRanking(1, 2, 0), Permutation.product(p.invert(), q.invert(), p, q));
+        assertEquals(Permutation.create(0, 1, 2), Permutation.product(p.invert(), q.invert(), p, q));
     }
 
     @Test
     void testEvenCommutator() {
         Permutation p = Permutation.create(0, 4, 1);
         Permutation q = Permutation.create(0, 3, 2, 1, 4);
-        assertEquals(Permutation.fromRanking(1, 2, 0), Permutation.product(p.invert(), q.invert(), p, q));
+        assertEquals(Permutation.create(0, 1, 2), Permutation.product(p.invert(), q.invert(), p, q));
     }
 
     @Test
     void testEvenCommutator2() {
         Permutation p = Permutation.create(0, 3, 1);
         Permutation q = Permutation.create(0, 4, 2, 1, 3);
-        assertEquals(Permutation.fromRanking(1, 2, 0), Permutation.product(p.invert(), q.invert(), p, q));
+        assertEquals(Permutation.create(0, 1, 2), Permutation.product(p.invert(), q.invert(), p, q));
     }
 
     @Test

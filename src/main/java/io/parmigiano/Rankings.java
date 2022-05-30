@@ -27,36 +27,20 @@ final class Rankings {
     private static final Comparator<int[]> COMPARE_FIRST = Comparator.comparingInt(a -> a[0]);
 
     /**
-     * Check that the input ranking is valid. In order to be valid, each non-negative integer less than
-     * {@code a.length} must appear exactly once.
-     * @param a an array
-     * @return true if a is a ranking
-     */
-    static boolean isValid(int[] a) {
-        boolean[] used = new boolean[a.length];
-        for (int i : a) {
-            if (i < 0 || i >= a.length)
-                return false;
-            if (used[i])
-                return false;
-            used[i] = true;
-        }
-        return true;
-    }
-
-    /**
      * Ensure that the input is a ranking.
      * @param a an array
      * @throws java.lang.IllegalArgumentException if {@code a} is not a valid ranking
-     * @see #isValid
      */
     static void checkRanking(int[] a) {
-        if (!isValid(a)) {
-            String msg = "argument is not a ranking";
-            if (a.length < 110) {
-                msg += ": " + Arrays.toString(a);
-            }
-            throw new IllegalArgumentException(msg);
+        boolean[] used = new boolean[a.length];
+        for (int i : a) {
+            if (i < 0)
+                throw new IllegalArgumentException("found negative number in ranking: " + i);
+            if (i >= a.length)
+                throw new IllegalArgumentException("out-of-bounds value in ranking: " + i);
+            if (used[i])
+                throw new IllegalArgumentException("duplicate number in ranking: " + i);
+            used[i] = true;
         }
     }
 
