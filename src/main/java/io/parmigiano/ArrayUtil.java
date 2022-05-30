@@ -3,13 +3,14 @@ package io.parmigiano;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A collection of array related utilities
  */
-public final class ArrayUtil {
+final class ArrayUtil {
     /** An empty array of ints */
-    public static final int[] INT_0 = new int[]{};
+    private static final int[] INT_0 = new int[]{};
 
     private ArrayUtil() {
     }
@@ -19,7 +20,7 @@ public final class ArrayUtil {
      * @param a an array of length {@code n}
      * @return a two dimensional array of length {@code n} which contains the  [element, index] pairs in {@code a}
      */
-    public static int[][] withIndex(int[] a) {
+    static int[][] withIndex(int[] a) {
         int[][] result = new int[a.length][];
         for (int i = 0; i < a.length; i += 1)
             result[i] = new int[]{a[i], i};
@@ -33,7 +34,7 @@ public final class ArrayUtil {
      * @param end a number
      * @return an array of length {@code | end | }
      */
-    public static int[] range(int end) {
+    static int[] range(int end) {
         return range(0, end);
     }
 
@@ -45,7 +46,7 @@ public final class ArrayUtil {
      * @return an array of length {@code | start - end | }
      * @throws java.lang.IllegalArgumentException if {@code end} is negative
      */
-    public static int[] range(int start, int end) {
+    static int[] range(int start, int end) {
         if (start == end)
             return INT_0;
         int[] result = new int[Math.abs(start - end)];
@@ -65,23 +66,23 @@ public final class ArrayUtil {
      * @return the least non-negative number {@code i} so that {@code a[i] = el}, or {@code -1} if {@code el} is not
      * found in {@code a}, or if all occurences are skipped
      */
-    public static int indexOf(int[] a, int el) {
+    static int indexOf(int[] a, int el) {
         for (int i = 0; i < a.length; i += 1)
             if (a[i] == el)
-                    return i;
+                return i;
         return -1;
     }
 
     /**
      * Add a fixed number to each element of given array.
      * @param a an array of numbers
-     * @param k a number
      * @return the array {@code b} defined as {@code b[i] = a[i] + k}
      */
-    public static int[] add(int[] a, int k) {
+    static int[] decrement(int[] a) {
         int[] result = new int[a.length];
-        for (int i = 0; i < a.length; i += 1)
-            result[i] = a[i] + k;
+        for (int i = 0; i < a.length; i += 1) {
+            result[i] = a[i] - 1;
+        }
         return result;
     }
 
@@ -90,8 +91,8 @@ public final class ArrayUtil {
      * This method will modify the input array.
      * @param a an array
      */
-    public static void shuffle(int[] a) {
-        Random r = new Random();
+    static void shuffle(int[] a) {
+        Random r = ThreadLocalRandom.current();
         for (int i = a.length - 1; i > 0; i--) {
             int j = r.nextInt(i + 1);
             if (j != i) {
@@ -101,13 +102,13 @@ public final class ArrayUtil {
             }
         }
     }
-    
+
     /**
      * Returns a sorted copy of the input.
      * @param input an array
      * @return a sorted copy of the input
      */
-    public static int[] sortedCopy(int[] input) {
+    static int[] sortedCopy(int[] input) {
         int[] sorted = Arrays.copyOf(input, input.length);
         Arrays.sort(sorted);
         return sorted;
@@ -126,7 +127,7 @@ public final class ArrayUtil {
     static void negativeFailure() {
         throw new IllegalArgumentException("negative number not allowed");
     }
-    
+
     static void checkEqualLength(List<?> a, List<?> b) {
         if (a.size() != b.size())
             lengthFailure();

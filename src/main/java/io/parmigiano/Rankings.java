@@ -77,41 +77,46 @@ final class Rankings {
      * Find the next position, after {@code idx + offset}, of {@code sorted[idx]} in a sorted array.
      * For a given element {@code el}, iterating this method over the {@code offset} element, starting with
      * {@code offset = 0}, will enumerate all positions of {@code sorted[idx]} in the sorted array.
+     *
      * @param idx the start index
      * @param offset the current offset from the start index
      * @param sorted a sorted array
      * @return the next offset or {@code 0} if there is no next offset
      */
-    static int nextOffset(int idx, int offset, final int[] sorted) {
-        if (offset >= 0) {
-            int next = idx + ++offset;
-            if (next >= sorted.length || sorted[next] != sorted[idx])
-                if (idx == 0 || sorted[idx - 1] != sorted[idx])
-                    return 0;
-                else
-                    return -1;
-        } else {
-            int next = idx + --offset;
-            if (next < 0 || sorted[next] != sorted[idx])
-                return 0;
+    static int nextOffset(int[] sorted, int idx, int offset) {
+        if (offset < 0) {
+            int next = idx + offset - 1;
+            if (next >= 0 && sorted[next] == sorted[idx]) {
+                return offset - 1; // decrement offset
+            }
+            return 0; // done
         }
-        return offset;
+        int next = idx + offset + 1;
+        if (next < sorted.length && sorted[next] == sorted[idx]) {
+            return offset + 1; // increment offset
+        }
+        if (idx > 0 && sorted[idx - 1] == sorted[idx]) {
+            return -1; // continue with negative offset
+        }
+        return 0; // done
     }
 
-    static <E> int nextOffset(int idx, int offset, List<E> sorted, BiPredicate<E, E> equality) {
-        if (offset >= 0) {
-            int next = idx + ++offset;
-            if (next >= sorted.size() || !equality.test(sorted.get(next), sorted.get(idx)))
-                if (idx == 0 || !equality.test(sorted.get(idx - 1), sorted.get(idx)))
-                    return 0;
-                else
-                    return -1;
-        } else {
-            int next = idx + --offset;
-            if (next < 0 || !equality.test(sorted.get(next), sorted.get(idx)))
-                return 0;
+    static <E> int nextOffset(List<E> sorted, int idx, int offset, BiPredicate<E, E> equality) {
+        if (offset < 0) {
+            int next = idx + offset - 1;
+            if (next >= 0 && equality.test(sorted.get(next), sorted.get(idx))) {
+                return offset - 1; // decrement offset
+            }
+            return 0; // done
         }
-        return offset;
+        int next = idx + offset + 1;
+        if (next < sorted.size() && equality.test(sorted.get(next), sorted.get(idx))) {
+            return offset + 1; // increment offset
+        }
+        if (idx > 0 && equality.test(sorted.get(idx - 1), sorted.get(idx))) {
+            return -1; // continue with negative offset
+        }
+        return 0; // done
     }
 
     /* ================= shift ================= */
@@ -127,11 +132,15 @@ final class Rankings {
 
     /**
      * Undo the shift
-     * @param i a non-zero int
-     * @return {@code i - 1} if {@code i} is positive, otherwise {@code i}
+     * @param shifted a non-zero number
+     * @return {@code shifted - 1} if {@code shifted} is positive, otherwise {@code shifted}
+     * @throws IllegalArgumentException if the input is zero
      */
-    static int unshift(int i) {
-        return i > 0 ? i - 1 : i;
+    static int unshift(int shifted) {
+        if (shifted == 0) {
+            throw new IllegalArgumentException("zero is not allowed");
+        }
+        return shifted > 0 ? shifted - 1 : shifted;
     }
 
     /* ================= sorting ================= */
@@ -163,11 +172,11 @@ final class Rankings {
             int idx = binarySearch(sorted, a[i]);
             if (offsets[idx] == 0) {
                 ranking[i] = idx;
-                offsets[idx] = 1;
+                offsets[idx] = 1; // shift(0)
             } else {
                 // a contains duplicates
                 int offset = unshift(offsets[idx]);
-                int newOffset = nextOffset(idx, offset, sorted);
+                int newOffset = nextOffset(sorted, idx, offset);
                 ranking[i] = idx + newOffset;
                 offsets[idx] = shift(newOffset);
             }
@@ -184,14 +193,14 @@ final class Rankings {
             int idx = Collections.binarySearch(sorted, a.get(i));
             if (offsets[idx] == 0) {
                 ranking[i] = idx;
-                offsets[idx] = 1;
+                offsets[idx] = 1; // shift(0)
             } else {
                 // a contains duplicates
                 int offset = unshift(offsets[idx]);
                 int newOffset = nextOffset(
+                        sorted,
                         idx,
                         offset,
-                        sorted,
                         (e1, e2) -> e1.compareTo(e2) == 0);
                 ranking[i] = idx + newOffset;
                 offsets[idx] = shift(newOffset);
@@ -208,14 +217,14 @@ final class Rankings {
             int idx = Collections.binarySearch(sorted, a.get(i), comp);
             if (offsets[idx] == 0) {
                 ranking[i] = idx;
-                offsets[idx] = 1;
+                offsets[idx] = 1; // shift(0)
             } else {
                 // a contains duplicates
                 int offset = unshift(offsets[idx]);
                 int newOffset = nextOffset(
+                        sorted,
                         idx,
                         offset,
-                        sorted,
                         (e1, e2) -> comp.compare(e1, e2) == 0);
                 ranking[i] = idx + newOffset;
                 offsets[idx] = shift(newOffset);
@@ -311,7 +320,7 @@ final class Rankings {
      */
     static Stream<int[]> symmetricGroup(int n) {
         int[] start = new int[n];
-        for (int i = 0; i < n; i += 1) {
+        for (int i = 0; i < n; i++) {
             start[i] = i + 1;
         }
         Stack<State> stack = new Stack<>();
@@ -332,15 +341,17 @@ final class Rankings {
                         arraycopy(state.prefix, 0, newPrefix, 0, state.prefix.length);
                         newPrefix[state.prefix.length] = state.suffix[i];
                         int[] newSuffix = new int[state.suffix.length - 1];
-                        if (i != 0)
+                        if (i != 0) {
                             arraycopy(state.suffix, 0, newSuffix, 0, i);
-                        if (i < state.suffix.length - 1)
+                        }
+                        if (i < state.suffix.length - 1) {
                             arraycopy(state.suffix, i + 1, newSuffix, i, state.suffix.length - 1 - i);
+                        }
                         stack.push(new State(newPrefix, newSuffix));
                     }
                     state = stack.pop();
                 }
-                return ArrayUtil.add(state.prefix, -1);
+                return ArrayUtil.decrement(state.prefix);
             }
         };
         return StreamSupport.stream(it.spliterator(), false);
