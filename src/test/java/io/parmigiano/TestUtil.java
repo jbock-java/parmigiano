@@ -11,6 +11,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BiPredicate;
 import java.util.stream.IntStream;
 
 import static io.parmigiano.ArrayUtil.lengthFailure;
@@ -131,10 +132,10 @@ class TestUtil {
         return c;
     }
     
-    static <E> int count(List<E> a, E i) {
+    static <E> int count(List<E> a, E i, BiPredicate<E, E> equality) {
         int c = 0;
         for (E j : a)
-            if (j.equals(i))
+            if (equality.test(j, i))
                 c += 1;
         return c;
     }

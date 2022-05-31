@@ -7,9 +7,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static io.parmigiano.Permutation.symmetricGroup;
 import static io.parmigiano.TestUtil.commutator;
+import static io.parmigiano.TestUtil.factorial;
 import static io.parmigiano.TestUtil.isClosed;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -94,9 +96,9 @@ class ArrayUtilTest {
 
     @Test
     void testCommutatorEven() {
-        for (int i = 3; i < 7; i += 1) {
+        for (int i = 2; i < 6; i++) {
             List<Permutation> sym = symmetricGroup(i);
-            assertEquals(TestUtil.factorial(i), sym.size());
+            assertEquals(factorial(i), sym.size());
             assertEquals(0, TestUtil.signatureSum(sym));
             assertEquals(sym.size() / 2, TestUtil.signatureSum(commutator(sym)));
         }
@@ -104,17 +106,17 @@ class ArrayUtilTest {
 
     @Test
     void testDistinctInts() {
-        for (int i = 0; i < 1000; i += 1) {
-            int[] ints = Rankings.random((int) (Math.random() * 1024));
+        for (int i = 0; i < 100; i++) {
+            int[] ints = Rankings.random(ThreadLocalRandom.current().nextInt(1024));
             assertTrue(TestUtil.isDistinct(ints));
         }
     }
 
     @Test
     void testRandomExtreme() {
-        int radius = (int) (50 * Math.random()) + 50;
+        int radius = ThreadLocalRandom.current().nextInt(50) + 50;
         Set<Integer> seen = new HashSet<>(radius);
-        for (int i = 0; i < 1000; i += 1) {
+        for (int i = 0; i < 100; i += 1) {
             int[] ints = TestUtil.randomNumbers(Integer.MIN_VALUE, Integer.MIN_VALUE + radius, 100);
             for (int a : ints) {
                 assertTrue(a <= Integer.MIN_VALUE + radius,
@@ -126,8 +128,8 @@ class ArrayUtilTest {
             assertTrue(seen.contains(Integer.MIN_VALUE + i));
         }
         seen = new HashSet<>(radius);
-        int maxValue = (Integer.MAX_VALUE) / 2;
-        for (int i = 0; i < 1000; i += 1) {
+        int maxValue = Integer.MAX_VALUE / 2;
+        for (int i = 0; i < 100; i += 1) {
             int[] ints = TestUtil.randomNumbers(maxValue - radius, maxValue, 100);
             for (int a : ints) {
                 assertTrue(a >= maxValue - radius,
@@ -167,7 +169,7 @@ class ArrayUtilTest {
 
     @Test
     void testDuplicateIndexes2() {
-        for (int i = 0; i < 1000; i += 1) {
+        for (int i = 0; i < 100; i += 1) {
             int maxNumber = 100;
             int[] ints = TestUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
             int[] pair = TestUtil.duplicateIndexes(ints);
@@ -185,25 +187,24 @@ class ArrayUtilTest {
 
     @Test
     void testDuplicateIndexes4() {
-        for (int i = 0; i < 1000; i += 1) {
+        for (int i = 0; i < 100; i += 1) {
             int maxNumber = 100;
-            List<MyInt> ints = MyInt.box(TestUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
+            List<MyInt> ints = MyInt.box(TestUtil.randomNumbers(maxNumber, maxNumber + 2 + ThreadLocalRandom.current().nextInt(20)));
             int[] pair = TestUtil.duplicateIndexes(ints, MyInt.COMP);
-            assertTrue(TestUtil.count(ints, ints.get(pair[0])) > 1);
-            assertEquals(ints.get(pair[0]), ints.get(pair[1]));
+            assertTrue(TestUtil.count(ints, ints.get(pair[0]), (n1, n2) -> MyInt.COMP.compare(n1, n2) == 0) > 1);
+            assertEquals(0, MyInt.COMP.compare(ints.get(pair[0]), ints.get(pair[1])));
         }
     }
 
     @Test
     void testFactorial() {
-        assertEquals(1, TestUtil.factorial(0));
-        assertEquals(1, TestUtil.factorial(1));
-        assertEquals(2, TestUtil.factorial(2));
-        assertEquals(6, TestUtil.factorial(3));
-        assertEquals(24, TestUtil.factorial(4));
-        assertEquals(120, TestUtil.factorial(5));
-        assertEquals(19, TestUtil.factorial(19) / TestUtil.factorial(18));
-        assertEquals(20, TestUtil.factorial(20) / TestUtil.factorial(19));
+        assertEquals(1, factorial(0));
+        assertEquals(1, factorial(1));
+        assertEquals(2, factorial(2));
+        assertEquals(6, factorial(3));
+        assertEquals(24, factorial(4));
+        assertEquals(120, factorial(5));
+        assertEquals(8, factorial(8) / factorial(7));
     }
 
     @Test

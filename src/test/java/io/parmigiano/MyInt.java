@@ -5,7 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Example class that has a Comparator but is not directly Comparable
+ * Example class that does not implement Comparable
+ * and does not override equals or hashCode.
  */
 public class MyInt {
 
@@ -34,15 +35,5 @@ public class MyInt {
 
     public String toString() {
         return Integer.toString(n);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return (this == o) || (o != null && (o.getClass() == getClass()) && ((MyInt) o).n == n);
-    }
-
-    @Override
-    public int hashCode() {
-        return n;
     }
 }
