@@ -7,8 +7,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import static io.parmigiano.Permutation.symmetricGroup;
+import static io.parmigiano.TestUtil.commutator;
+import static io.parmigiano.TestUtil.isClosed;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -18,13 +20,13 @@ class ArrayUtilTest {
 
     @Test
     void testCombinations() {
-        List<Permutation> permutations = Permutation.symmetricGroup(3).toList();
+        List<Permutation> permutations = symmetricGroup(3);
         assertEquals(6, permutations.size());
         Set<Permutation> perms = new HashSet<>();
         for (Permutation perm : permutations) {
             assertTrue(perms.add(perm));
         }
-        for (Permutation perm : Permutation.symmetricGroup(3).collect(Collectors.toList())) {
+        for (Permutation perm : symmetricGroup(3)) {
             assertFalse(perms.add(perm));
         }
     }
@@ -33,7 +35,7 @@ class ArrayUtilTest {
     void testCartesian() {
         int total = 0;
         int offDiagonal = 0;
-        List<Permutation> a = Permutation.symmetricGroup(3).toList();
+        List<Permutation> a = symmetricGroup(3);
         for (Permutation[] permutation : TestUtil.cartesian(a, a)) {
             total += 1;
             if (permutation[0] != permutation[1]) {
@@ -46,7 +48,7 @@ class ArrayUtilTest {
 
     @Test
     void testCenter() {
-        List<Permutation> a = Permutation.symmetricGroup(5).toList();
+        List<Permutation> a = symmetricGroup(5);
         List<Permutation> center = TestUtil.center(a);
         assertEquals(1, center.size());
         assertTrue(center.get(0).isIdentity());
@@ -58,45 +60,45 @@ class ArrayUtilTest {
         Permutation p = Permutation.create(0, 1);
         Permutation k = Permutation.create(2, 3);
         Permutation p2 = Permutation.create(0, 1, 2);
-        Assertions.assertTrue(TestUtil.isClosed(List.of(id)));
-        Assertions.assertTrue(TestUtil.isClosed(List.of(id, p)));
-        Assertions.assertTrue(TestUtil.isClosed(List.of(id, p2, p2.pow(2))));
-        Assertions.assertTrue(TestUtil.isClosed(List.of(id, p, k, Permutation.product(p, k))));
-        Assertions.assertFalse(TestUtil.isClosed(List.of(id, p2)));
-        Assertions.assertFalse(TestUtil.isClosed(List.of(p)));
-        Assertions.assertFalse(TestUtil.isClosed(List.of(id, p, p2)));
+        assertTrue(isClosed(List.of(id)));
+        assertTrue(isClosed(List.of(id, p)));
+        assertTrue(isClosed(List.of(id, p2, p2.pow(2))));
+        assertTrue(isClosed(List.of(id, p, k, Permutation.product(p, k))));
+        Assertions.assertFalse(isClosed(List.of(id, p2)));
+        Assertions.assertFalse(isClosed(List.of(p)));
+        Assertions.assertFalse(isClosed(List.of(id, p, p2)));
         assertTrue(Permutation.product(p, k).pow(2).isIdentity());
     }
 
     @Test
     void testCommutator5() {
-        assertEquals(120L, Permutation.symmetricGroup(5).count());
-        Assertions.assertTrue(TestUtil.isClosed(Permutation.symmetricGroup(5).toList()));
-        assertEquals(60, TestUtil.commutator(Permutation.symmetricGroup(5).toList()).size());
-        Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(Permutation.symmetricGroup(5).toList())));
-        assertEquals(60, TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(5).toList())).size());
-        Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(5).toList()))));
+        assertEquals(120, symmetricGroup(5).size());
+        assertTrue(isClosed(symmetricGroup(5)));
+        assertEquals(60, commutator(symmetricGroup(5)).size());
+        assertTrue(isClosed(commutator(symmetricGroup(5))));
+        assertEquals(60, commutator(commutator(symmetricGroup(5))).size());
+        assertTrue(isClosed(commutator(commutator(symmetricGroup(5)))));
     }
 
     @Test
     void testCommutator4() {
-        assertEquals(24, Permutation.symmetricGroup(4).toList().size());
-        Assertions.assertTrue(TestUtil.isClosed(Permutation.symmetricGroup(4).toList()));
-        assertEquals(12, TestUtil.commutator(Permutation.symmetricGroup(4).toList()).size());
-        Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(Permutation.symmetricGroup(4).toList())));
-        assertEquals(4, TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(4).toList())).size());
-        Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(4).toList()))));
-        assertEquals(1, TestUtil.commutator(TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(4).toList()))).size());
-        Assertions.assertTrue(TestUtil.isClosed(TestUtil.commutator(TestUtil.commutator(TestUtil.commutator(Permutation.symmetricGroup(4).toList())))));
+        assertEquals(24, symmetricGroup(4).size());
+        assertTrue(isClosed(symmetricGroup(4)));
+        assertEquals(12, commutator(symmetricGroup(4)).size());
+        assertTrue(isClosed(commutator(symmetricGroup(4))));
+        assertEquals(4, commutator(commutator(symmetricGroup(4))).size());
+        assertTrue(isClosed(commutator(commutator(symmetricGroup(4)))));
+        assertEquals(1, commutator(commutator(commutator(symmetricGroup(4)))).size());
+        assertTrue(isClosed(commutator(commutator(commutator(symmetricGroup(4))))));
     }
 
     @Test
     void testCommutatorEven() {
         for (int i = 3; i < 7; i += 1) {
-            List<Permutation> sym = Permutation.symmetricGroup(i).toList();
+            List<Permutation> sym = symmetricGroup(i);
             assertEquals(TestUtil.factorial(i), sym.size());
             assertEquals(0, TestUtil.signatureSum(sym));
-            assertEquals(sym.size() / 2, TestUtil.signatureSum(TestUtil.commutator(sym)));
+            assertEquals(sym.size() / 2, TestUtil.signatureSum(commutator(sym)));
         }
     }
 
@@ -104,14 +106,14 @@ class ArrayUtilTest {
     void testDistinctInts() {
         for (int i = 0; i < 1000; i += 1) {
             int[] ints = Rankings.random((int) (Math.random() * 1024));
-            Assertions.assertTrue(TestUtil.isDistinct(ints));
+            assertTrue(TestUtil.isDistinct(ints));
         }
     }
 
     @Test
     void testRandomExtreme() {
         int radius = (int) (50 * Math.random()) + 50;
-        HashSet<Integer> seen = new HashSet<Integer>(radius);
+        Set<Integer> seen = new HashSet<>(radius);
         for (int i = 0; i < 1000; i += 1) {
             int[] ints = TestUtil.randomNumbers(Integer.MIN_VALUE, Integer.MIN_VALUE + radius, 100);
             for (int a : ints) {
@@ -142,7 +144,7 @@ class ArrayUtilTest {
     void testRandom() {
         for (int radius = 3; radius < 10; radius++) {
             for (int low = -10; low < 4; low++) {
-                HashSet<Integer> seen = new HashSet<Integer>(radius);
+                Set<Integer> seen = new HashSet<>(radius);
                 for (int i = 0; i < 100; i += 1) {
                     int[] ints = TestUtil.randomNumbers(low, low + radius, 10);
                     for (int a : ints) {

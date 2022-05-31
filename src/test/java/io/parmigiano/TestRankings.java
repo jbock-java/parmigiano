@@ -10,6 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
+import static io.parmigiano.Rankings.insert;
 import static io.parmigiano.Rankings.nextOffset;
 import static io.parmigiano.Rankings.shift;
 import static io.parmigiano.Rankings.unshift;
@@ -158,6 +159,19 @@ class TestRankings {
         assertEquals(List.of(1, 2, -1, -2, -3, -4), offsets.apply(4));
         assertEquals(List.of(1, -1, -2, -3, -4, -5), offsets.apply(5));
         assertEquals(List.of(-1, -2, -3, -4, -5, -6), offsets.apply(6));
+    }
+
+    @Test
+    void testInsert() {
+        assertArrayEquals(new int[]{1, 0}, insert(new int[]{0}, 1, 0));
+        assertArrayEquals(new int[]{0, 1}, insert(new int[]{0}, 1, 1));
+        assertArrayEquals(new int[]{2, 0, 1}, insert(new int[]{0, 1}, 2, 0));
+        assertArrayEquals(new int[]{0, 2, 1}, insert(new int[]{0, 1}, 2, 1));
+        assertArrayEquals(new int[]{0, 1, 2}, insert(new int[]{0, 1}, 2, 2));
+        assertArrayEquals(new int[]{3, 0, 1, 2}, insert(new int[]{0, 1, 2}, 3, 0));
+        assertArrayEquals(new int[]{0, 3, 1, 2}, insert(new int[]{0, 1, 2}, 3, 1));
+        assertArrayEquals(new int[]{0, 1, 3, 2}, insert(new int[]{0, 1, 2}, 3, 2));
+        assertArrayEquals(new int[]{0, 1, 2, 3}, insert(new int[]{0, 1, 2}, 3, 3));
     }
 
     @Test

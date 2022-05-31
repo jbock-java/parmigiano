@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -54,8 +53,7 @@ class FifthRootsOfUnityTest {
     @Test
     void testAll() {
         List<Root> roots = Arrays.asList(Root.values());
-        Stream<Permutation> permutationStream = Permutation.symmetricGroup(5);
-        List<List<Root>> permutations = permutationStream
+        List<List<Root>> permutations = Permutation.symmetricGroup(5).stream()
                 .map(p -> p.apply(roots))
                 .filter(r -> r.get(0).times(r.get(0)).equals(r.get(0)))
                 .filter(r -> r.get(0).times(r.get(1)).equals(r.get(1)))

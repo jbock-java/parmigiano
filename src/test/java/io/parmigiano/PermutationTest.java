@@ -11,6 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static io.parmigiano.MyInt.box;
 import static io.parmigiano.Permutation.create;
+import static io.parmigiano.Permutation.symmetricGroup;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -308,7 +309,7 @@ class PermutationTest {
     @Test
     void testCyclesAndTranspositions() {
         int sign = 0;
-        for (Permutation p : Permutation.symmetricGroup(5).toList()) {
+        for (Permutation p : symmetricGroup(5)) {
             int order = p.order();
             sign += p.signature();
             if (order > 5) {
@@ -379,13 +380,13 @@ class PermutationTest {
 
     @Test
     void testSymmetricGroupDistinct() {
-        for (int n = 1; n < 8; n++) {
-            List<Permutation> sym = Permutation.symmetricGroup(n).toList();
+        for (int n = 1; n < 6; n++) {
+            List<Permutation> sym = symmetricGroup(n);
             long count = sym.size();
             assertEquals(count, sym.stream().distinct().count());
             assertEquals(count, TestUtil.factorial(n));
         }
-        assertEquals(Permutation.symmetricGroup(9).count(), TestUtil.factorial(9));
+        assertEquals(symmetricGroup(7).size(), TestUtil.factorial(7));
     }
 
     @Test

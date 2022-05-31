@@ -1,14 +1,12 @@
 package io.parmigiano;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static io.parmigiano.ArrayUtil.checkLength;
 import static io.parmigiano.ArrayUtil.negativeFailure;
@@ -302,14 +300,13 @@ final class Rankings {
     static int[] apply(int[] ranking, int[] input) {
         checkLength(ranking.length, input.length);
         int[] result = new int[input.length];
-        for (int i = 0; i < ranking.length; i += 1)
+        for (int i = 0; i < ranking.length; i += 1) {
             result[ranking[i]] = input[i];
-        if (input.length > ranking.length)
+        }
+        if (input.length > ranking.length) {
             arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
+        }
         return result;
-    }
-
-    private record State(int[] prefix, int[] suffix) {
     }
 
     /**
@@ -318,42 +315,29 @@ final class Rankings {
      * @return all possible permutations of length {@code n}; this will contain {@code n!}
      * different permutations
      */
-    static Stream<int[]> symmetricGroup(int n) {
-        int[] start = new int[n];
-        for (int i = 0; i < n; i++) {
-            start[i] = i + 1;
+    static List<int[]> symmetricGroup(int n) {
+        List<int[]> generation = List.of(new int[]{0});
+        for (int i = 1; i < n; i++) {
+            generation = nextGeneration(generation, i);
         }
-        Stack<State> stack = new Stack<>();
-        stack.push(new State(new int[0], start));
-        Iterable<int[]> it = () -> new Iterator<>() {
+        return generation;
+    }
 
-            @Override
-            public boolean hasNext() {
-                return !stack.isEmpty();
+    private static List<int[]> nextGeneration(List<int[]> generation, int i) {
+        List<int[]> result = new ArrayList<>(generation.size() * i);
+        for (int pos = 0; pos <= i; pos++) {
+            for (int[] a : generation) {
+                result.add(insert(a, i, pos));
             }
+        }
+        return result;
+    }
 
-            @Override
-            public int[] next() {
-                State state = stack.pop();
-                while (state.suffix.length > 0) {
-                    for (int i = 0; i < state.suffix.length; i += 1) {
-                        int[] newPrefix = new int[state.prefix.length + 1];
-                        arraycopy(state.prefix, 0, newPrefix, 0, state.prefix.length);
-                        newPrefix[state.prefix.length] = state.suffix[i];
-                        int[] newSuffix = new int[state.suffix.length - 1];
-                        if (i != 0) {
-                            arraycopy(state.suffix, 0, newSuffix, 0, i);
-                        }
-                        if (i < state.suffix.length - 1) {
-                            arraycopy(state.suffix, i + 1, newSuffix, i, state.suffix.length - 1 - i);
-                        }
-                        stack.push(new State(newPrefix, newSuffix));
-                    }
-                    state = stack.pop();
-                }
-                return ArrayUtil.decrement(state.prefix);
-            }
-        };
-        return StreamSupport.stream(it.spliterator(), false);
+    static int[] insert(int[] a, int i, int pos) {
+        int[] dest = new int[a.length + 1];
+        arraycopy(a, 0, dest, 0, pos);
+        arraycopy(a, pos, dest, pos + 1, a.length - pos);
+        dest[pos] = i;
+        return dest;
     }
 }

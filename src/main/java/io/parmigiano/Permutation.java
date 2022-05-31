@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.IntUnaryOperator;
-import java.util.stream.Stream;
 
 import static io.parmigiano.ArrayUtil.checkLength;
 import static io.parmigiano.Preconditions.checkState;
@@ -315,8 +314,13 @@ public final class Permutation {
         return fromRanking(Rankings.sorting(input, comparator));
     }
 
-    public static Stream<Permutation> symmetricGroup(int n) {
-        return Rankings.symmetricGroup(n).map(Permutation::fromRanking);
+    public static List<Permutation> symmetricGroup(int n) {
+        List<int[]> rankings = Rankings.symmetricGroup(n);
+        List<Permutation> result = new ArrayList<>(rankings.size());
+        for (int[] ranking : rankings) {
+            result.add(Permutation.fromRanking(ranking));
+        }
+        return result;
     }
 
     public int order() {
