@@ -10,15 +10,8 @@ import java.util.List;
  */
 public class MyInt {
 
-    public static class MyComparator implements Comparator<MyInt> {
-        @Override
-        public int compare(MyInt a, MyInt b) {
-            return a.n - b.n;
-        }
-    }
+    public static final Comparator<MyInt> COMP = Comparator.comparingInt(a -> a.n);
 
-    public static final Comparator<MyInt> COMP = new MyComparator();
-    
     static List<MyInt> box(int[] a) {
         List<MyInt> result = new ArrayList<>(a.length);
         for (int j : a) {
