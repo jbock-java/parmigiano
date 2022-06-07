@@ -133,7 +133,6 @@ class TestRankings {
 
     @Test
     void testNextOffsetIterate() {
-        int[] a = new int[]{3, 3, 3, 3, 3, 3, 3};
         int[] sorted = {0, 1, 3, 3, 3, 3, 4, 4, 4, 5};
         IntFunction<List<Integer>> offsets = offsets(sorted);
         assertEquals(List.of(), offsets.apply(0));

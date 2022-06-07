@@ -170,6 +170,16 @@ public final class Permutation {
      * @param other another permutation
      * @return the composition or product
      */
+    public Permutation compose(int...  other) {
+        return compose(create(other));
+    }
+    
+    /**
+     * Composing with another permutation creates a new operation.
+     *
+     * @param other another permutation
+     * @return the composition or product
+     */
     public Permutation compose(Permutation other) {
         if (maxMovedIndex == 0)
             return other;

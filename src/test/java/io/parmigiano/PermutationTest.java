@@ -68,7 +68,7 @@ class PermutationTest {
             List<MyInt> a = box(TestUtil.randomNumbers(100, 50 + ThreadLocalRandom.current().nextInt(100)));
             Permutation p = Permutation.random((int) (Math.random() * a.size()));
             List<MyInt> applied = p.apply(a);
-            List<MyInt> arrayList = new ArrayList<MyInt>(a.size());
+            List<MyInt> arrayList = new ArrayList<>(a.size());
             List<MyInt> linkedList = new LinkedList<>();
             arrayList.addAll(a);
             linkedList.addAll(a);

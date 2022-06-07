@@ -26,9 +26,9 @@ class KleinFourTest {
                 });
         assertEquals(6, cosets.size());
         assertTrue(cosets.contains(Set.of(
-                Permutation.create(0, 1).compose(Permutation.create(2, 3)),
-                Permutation.create(0, 2).compose(Permutation.create(1, 3)),
-                Permutation.create(0, 3).compose(Permutation.create(1, 2)),
+                Permutation.create(0, 1).compose(2, 3),
+                Permutation.create(0, 2).compose(1, 3),
+                Permutation.create(0, 3).compose(1, 2),
                 Permutation.identity())));
         assertTrue(cosets.contains(Set.of(
                 Permutation.create(0, 1),
@@ -59,9 +59,9 @@ class KleinFourTest {
 
     private List<Permutation> klein() {
         List<Permutation> result = new ArrayList<>();
-        result.add(Permutation.create(0, 1).compose(Permutation.create(2, 3)));
-        result.add(Permutation.create(0, 3).compose(Permutation.create(1, 2)));
-        result.add(Permutation.create(0, 2).compose(Permutation.create(1, 3)));
+        result.add(Permutation.create(0, 1).compose(2, 3));
+        result.add(Permutation.create(0, 3).compose(1, 2));
+        result.add(Permutation.create(0, 2).compose(1, 3));
         result.add(Permutation.identity());
         return result;
     }
