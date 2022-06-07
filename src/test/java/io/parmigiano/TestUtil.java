@@ -76,7 +76,7 @@ class TestUtil {
             };
         };
     }
-    
+
     static <E> Iterable<E> distinct(Iterable<E> input) {
         return () -> {
             final HashSet<E> set = new HashSet<>();
@@ -131,7 +131,7 @@ class TestUtil {
                 c += 1;
         return c;
     }
-    
+
     static <E> int count(List<E> a, E i, BiPredicate<E, E> equality) {
         int c = 0;
         for (E j : a)
@@ -185,7 +185,7 @@ class TestUtil {
         }
         throw new IllegalArgumentException("no duplicates found");
     }
-    
+
     static <E> int[] duplicateIndexes(List<E> input, Comparator<E> comp) {
         Map<E, Integer> test = new TreeMap<>(comp);
         int start = ThreadLocalRandom.current().nextInt(input.size()); // start at random index
@@ -199,7 +199,7 @@ class TestUtil {
         }
         throw new IllegalArgumentException("no duplicates found");
     }
-    
+
     /**
      * Calculates the factorial.
      * @param n a nonnegative number
@@ -290,7 +290,7 @@ class TestUtil {
         IntStream ints = random.ints(length, minNumber, maxNumber + 1);
         return ints.toArray();
     }
-    
+
     /**
      * Check if input is sorted
      * @param input an array
@@ -361,6 +361,27 @@ class TestUtil {
         for (int i = 0; i < rhs.length; i++) {
             int n = rhs[i];
             result[i] = n >= lhs.length ? n : lhs[n];
+        }
+        return result;
+    }
+
+    /**
+     * Apply the ranking to the input array. An element at {@code i} is moved to {@code ranking[i]}.
+     * Indexes that are greater or equal to the length of the ranking are not moved.
+     * This method does not validate that the first argument is indeed a ranking.
+     * @param ranking a ranking
+     * @param input an input array
+     * @return the result of applying the ranking to the input
+     * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
+     * @throws java.lang.ArrayIndexOutOfBoundsException can be thrown if the {@code ranking} argument is not a ranking
+     */
+    static int[] applyRanking(int[] ranking, int[] input) {
+        if (ranking.length < input.length)
+            throw new IllegalArgumentException("not enough input: minimum input length is " + input.length
+                    + ", but input length is " + ranking.length);
+        int[] result = new int[input.length];
+        for (int i = 0; i < ranking.length; i += 1) {
+            result[ranking[i]] = input[i];
         }
         return result;
     }

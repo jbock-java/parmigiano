@@ -6,9 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiPredicate;
-import java.util.stream.Stream;
 
-import static io.parmigiano.ArrayUtil.checkLength;
 import static io.parmigiano.ArrayUtil.negativeFailure;
 import static io.parmigiano.Preconditions.checkState;
 import static java.lang.System.arraycopy;
@@ -160,7 +158,6 @@ final class Rankings {
      * </code></pre>
      * @param a an array
      * @return a ranking that sorts the input
-     * @see #apply(int[], int[])
      */
     static int[] sorting(int[] a) {
         int[] sorted = ArrayUtil.sortedCopy(a);
@@ -240,7 +237,6 @@ final class Rankings {
      * @return a ranking that produces {@code b} when applied to {@code a}
      * @throws java.lang.IllegalArgumentException if {@code b} can not be obtained by rearranging {@code a}
      * @throws java.lang.NullPointerException if any argument is {@code null}
-     * @see #apply(int[], int[])
      */
     static int[] from(int[] a, int[] b) {
         ArrayUtil.checkEqualLength(a, b);
@@ -283,30 +279,6 @@ final class Rankings {
         if (i >= ranking.length)
             return i;
         return ranking[i];
-    }
-
-    /* ================= apply ================= */
-
-    /**
-     * Apply the ranking to the input array. An element at {@code i} is moved to {@code ranking[i]}.
-     * Indexes that are greater or equal to the length of the ranking are not moved.
-     * This method does not validate that the first argument is indeed a ranking.
-     * @param ranking a ranking
-     * @param input an input array
-     * @return the result of applying the ranking to the input
-     * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
-     * @throws java.lang.ArrayIndexOutOfBoundsException can be thrown if the {@code ranking} argument is not a ranking
-     */
-    static int[] apply(int[] ranking, int[] input) {
-        checkLength(ranking.length, input.length);
-        int[] result = new int[input.length];
-        for (int i = 0; i < ranking.length; i += 1) {
-            result[ranking[i]] = input[i];
-        }
-        if (input.length > ranking.length) {
-            arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
-        }
-        return result;
     }
 
     /**

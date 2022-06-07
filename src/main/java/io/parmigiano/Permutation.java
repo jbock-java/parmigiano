@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.IntUnaryOperator;
 
-import static io.parmigiano.ArrayUtil.checkLength;
 import static io.parmigiano.Preconditions.checkState;
 import static java.util.stream.Collectors.joining;
 
@@ -81,39 +80,6 @@ public final class Permutation {
         return fromRanking(Rankings.random(length));
     }
 
-    private void clobber(int[] array) {
-        checkLength(maxMovedIndex, array.length);
-        for (int[] cycle : cycles) {
-            for (int j = cycle.length - 2; j >= 0; j--) {
-                int temp = array[cycle[j + 1]];
-                array[cycle[j + 1]] = array[cycle[j]];
-                array[cycle[j]] = temp;
-            }
-        }
-    }
-
-    private void clobber(char[] array) {
-        checkLength(maxMovedIndex, array.length);
-        for (int[] cycle : cycles) {
-            for (int j = cycle.length - 2; j >= 0; j--) {
-                char temp = array[cycle[j + 1]];
-                array[cycle[j + 1]] = array[cycle[j]];
-                array[cycle[j]] = temp;
-            }
-        }
-    }
-
-    private <E> void clobber(List<E> list) {
-        checkLength(maxMovedIndex, list.size());
-        for (int[] cycle : cycles) {
-            for (int j = cycle.length - 2; j >= 0; j--) {
-                E temp = list.get(cycle[j + 1]);
-                list.set(cycle[j + 1], list.get(cycle[j]));
-                list.set(cycle[j], temp);
-            }
-        }
-    }
-
     /**
      * Apply this operation to produce a new array. This method does not modify the input.
      *
@@ -123,7 +89,14 @@ public final class Permutation {
      */
     public int[] apply(int[] a) {
         int[] copy = Arrays.copyOf(a, a.length);
-        clobber(copy);
+        ArrayUtil.checkLength(maxMovedIndex, copy.length);
+        for (int[] cycle : cycles) {
+            for (int j = cycle.length - 2; j >= 0; j--) {
+                int temp = copy[cycle[j + 1]];
+                copy[cycle[j + 1]] = copy[cycle[j]];
+                copy[cycle[j]] = temp;
+            }
+        }
         return copy;
     }
 
@@ -136,14 +109,28 @@ public final class Permutation {
      */
     public <E> List<E> apply(List<E> a) {
         List<E> copy = new ArrayList<>(a);
-        clobber(copy);
+        ArrayUtil.checkLength(maxMovedIndex, copy.size());
+        for (int[] cycle : cycles) {
+            for (int j = cycle.length - 2; j >= 0; j--) {
+                E temp = copy.get(cycle[j + 1]);
+                copy.set(cycle[j + 1], copy.get(cycle[j]));
+                copy.set(cycle[j], temp);
+            }
+        }
         return copy;
     }
 
     public String apply(String s) {
         char[] dst = new char[s.length()];
         s.getChars(0, s.length(), dst, 0);
-        clobber(dst);
+        ArrayUtil.checkLength(maxMovedIndex, dst.length);
+        for (int[] cycle : cycles) {
+            for (int j = cycle.length - 2; j >= 0; j--) {
+                char temp = dst[cycle[j + 1]];
+                dst[cycle[j + 1]] = dst[cycle[j]];
+                dst[cycle[j]] = temp;
+            }
+        }
         return new String(dst);
     }
 

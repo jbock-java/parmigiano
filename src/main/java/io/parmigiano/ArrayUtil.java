@@ -118,9 +118,9 @@ final class ArrayUtil {
         throw new IllegalArgumentException("length mismatch");
     }
 
-    static void checkLength(int rankingLength, int inputLength) {
-        if (inputLength < rankingLength)
-            throw new IllegalArgumentException("not enough input: minimum input length is " + rankingLength
+    static void checkLength(int maxMovedIndex, int inputLength) {
+        if (inputLength < maxMovedIndex)
+            throw new IllegalArgumentException("not enough input: minimum input length is " + maxMovedIndex
                     + ", but input length is " + inputLength);
     }
 

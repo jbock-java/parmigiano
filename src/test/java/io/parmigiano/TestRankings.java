@@ -63,7 +63,7 @@ class TestRankings {
         for (int __ = 0; __ < 100; __++) {
             int[] a = TestUtil.randomNumbers(100, ThreadLocalRandom.current().nextInt(1000));
             int[] sort = Rankings.sorting(a);
-            int[] sorted = Rankings.apply(sort, a);
+            int[] sorted = TestUtil.applyRanking(sort, a);
             int[] unsort = Rankings.invert(sort);
             int[] hopefullyIdentity = TestUtil.comp(sort, unsort);
             assertTrue(TestUtil.isSorted(hopefullyIdentity));
@@ -81,7 +81,7 @@ class TestRankings {
             Collections.shuffle(rr);
             int[] a = rr.stream().mapToInt(i -> i).toArray();
             int[] sort = Rankings.sorting(a);
-            int[] sorted = Rankings.apply(sort, a);
+            int[] sorted = TestUtil.applyRanking(sort, a);
             int[] unsort = Rankings.invert(sort);
             int[] hopefullyIdentity = TestUtil.comp(sort, unsort);
             assertTrue(TestUtil.isSorted(hopefullyIdentity));
@@ -96,7 +96,7 @@ class TestRankings {
     void testSort2() {
         int[] a = new int[]{2, 3, 5, 2};
         int[] sort = Rankings.sorting(a);
-        int[] sorted = Rankings.apply(sort, a);
+        int[] sorted = TestUtil.applyRanking(sort, a);
         int[] unsort = Rankings.invert(sort);
         int[] hopefullyIdentity = TestUtil.comp(sort, unsort);
         assertTrue(TestUtil.isSorted(hopefullyIdentity));
@@ -203,7 +203,7 @@ class TestRankings {
     void testSorts() {
         int[] ranking = {0, 3, 1, 4, 2};
         int[] a = {0, 4, 2, 4, 3};
-        assertTrue(TestUtil.isSorted(Rankings.apply(ranking, a)));
+        assertTrue(TestUtil.isSorted(TestUtil.applyRanking(ranking, a)));
         assertTrue(TestUtil.sorts(ranking, a));
     }
 
@@ -212,7 +212,7 @@ class TestRankings {
         for (int __ = 0; __ < 100; __++) {
             int[] a = TestUtil.randomNumbers(100, ThreadLocalRandom.current().nextInt(100) + 20);
             int[] ranking = Rankings.sorting(a);
-            assertTrue(TestUtil.isSorted(Rankings.apply(ranking, a)));
+            assertTrue(TestUtil.isSorted(TestUtil.applyRanking(ranking, a)));
             assertTrue(TestUtil.sorts(ranking, a));
         }
     }
