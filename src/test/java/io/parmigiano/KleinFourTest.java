@@ -25,6 +25,13 @@ class KleinFourTest {
     }
 
     @Test
+    void funProduct() {
+        assertEquals(
+                Permutation.create(0, 1, 2, 3),
+                Permutation.create(0, 1).compose(2, 3).compose(1, 3));
+    }
+
+    @Test
     void testCosetsInS4() {
         Set<Set<Permutation>> cosets = new LinkedHashSet<>();
         symmetricGroup(4)
