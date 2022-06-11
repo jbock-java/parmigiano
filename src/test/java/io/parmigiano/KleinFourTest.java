@@ -36,35 +36,21 @@ class KleinFourTest {
         Set<Set<Permutation>> cosets = new LinkedHashSet<>();
         symmetricGroup(4)
                 .stream()
+                .filter(p -> p.signature() == 1) // A(4)
                 .map(this::leftKlein)
                 .map(Set::copyOf)
                 .forEach(cosets::add);
-        assertEquals(6, cosets.size());
+        assertEquals(3, cosets.size());
         assertTrue(cosets.contains(Set.copyOf(klein)));
-        assertTrue(cosets.contains(Set.of(
-                Permutation.create(0, 1),
-                Permutation.create(2, 3),
-                Permutation.create(0, 2, 1, 3),
-                Permutation.create(0, 3, 1, 2))));
-        assertTrue(cosets.contains(Set.of(
-                Permutation.create(0, 2),
-                Permutation.create(1, 3),
-                Permutation.create(0, 1, 2, 3),
-                Permutation.create(0, 3, 2, 1))));
-        assertTrue(cosets.contains(Set.of(
-                Permutation.create(0, 3),
-                Permutation.create(1, 2),
-                Permutation.create(0, 1, 3, 2),
-                Permutation.create(0, 2, 3, 1))));
         assertTrue(cosets.contains(Set.of(
                 Permutation.create(0, 1, 3),
                 Permutation.create(0, 2, 1),
                 Permutation.create(0, 3, 2),
                 Permutation.create(1, 2, 3))));
         assertTrue(cosets.contains(Set.of(
+                Permutation.create(0, 3, 1),
                 Permutation.create(0, 1, 2),
                 Permutation.create(0, 2, 3),
-                Permutation.create(0, 3, 1),
                 Permutation.create(1, 3, 2))));
     }
 
