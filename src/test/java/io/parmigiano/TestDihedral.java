@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Set;
 
 import static io.parmigiano.Permutation.create;
+import static io.parmigiano.Permutation.identity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TestDihedral {
 
@@ -17,6 +19,20 @@ class TestDihedral {
         Permutation p = create(0, 1, 2, 3);
         Permutation q = create(0, 2);
         assertEquals(8, span(p, q).size());
+    }
+
+    @Test
+    void testDihedral() {
+        Set<Permutation> d4 = span(create(1, 2), create(1, 3, 2, 4));
+        assertEquals(8, d4.size());
+        assertTrue(d4.contains(Permutation.create(1, 3).compose(2, 4)));
+        assertTrue(d4.contains(Permutation.create(1, 2).compose(3, 4)));
+        assertTrue(d4.contains(Permutation.create(1, 4).compose(2, 3)));
+        assertTrue(d4.contains(Permutation.create(1, 2)));
+        assertTrue(d4.contains(Permutation.create(3, 4)));
+        assertTrue(d4.contains(Permutation.create(1, 3, 2, 4)));
+        assertTrue(d4.contains(Permutation.create(1, 4, 2, 3)));
+        assertTrue(d4.contains(identity()));
     }
 
     @Test
