@@ -1,13 +1,17 @@
 ### Defining a 3-cycle
 
+````java
 Permutation p = Permutation.create(0, 1, 2);
-Permutation.apply(List.of("a", "b", "c"));
+p.apply(List.of("a", "b", "c"));
 // => ["c", "a", "b"]
+````
 
 ### Composition
 
+````java
 Permutation.create(0, 1).compose(2, 3);
 // => (0 1) (2 3)
+````
 
 ### Getting all permutations of 5 Elements
 
@@ -15,6 +19,4 @@ Permutation.create(0, 1).compose(2, 3);
 Permutation.symmetricGroup(5).count();
 // => 120
 ````
-
-
 
