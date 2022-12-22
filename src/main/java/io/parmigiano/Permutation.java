@@ -6,8 +6,8 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.IntUnaryOperator;
 
+import static io.parmigiano.CycleUtil.chaseCycle;
 import static io.parmigiano.Preconditions.checkState;
 import static java.util.stream.Collectors.joining;
 
@@ -25,7 +25,7 @@ public final class Permutation {
         this(cycles, maxIndex(cycles));
     }
 
-    private Permutation create(int[][] cycles) {
+    private Permutation fromCycles(int[][] cycles) {
         if (cycles.length == 0) {
             return IDENTITY;
         }
@@ -37,11 +37,20 @@ public final class Permutation {
         this.cycles = cycles;
     }
 
-    public static Permutation create(int... cycle) {
-        if (cycle.length <= 1) {
-            return IDENTITY;
-        }
+    public static Permutation cycle(int i1, int i2, int... more) {
+        int[] cycle = new int[more.length + 2];
+        cycle[0] = i1;
+        cycle[1] = i2;
+        System.arraycopy(more, 0, cycle, 2, more.length);
         return new Permutation(new int[][]{cycle});
+    }
+
+    public static Permutation cycle(int i1, int i2) {
+        checkState(i1 >= 0, "negative index: %d", i1);
+        checkState(i2 >= 0, "negative index: %d", i2);
+        checkState(i1 != i2, "duplicate index: %d", i1);
+        int[] cycle = {i1, i2};
+        return new Permutation(new int[][]{cycle}, Math.max(i1, i2));
     }
 
     /**
@@ -152,28 +161,18 @@ public final class Permutation {
     }
 
     /**
-     * Move an index back. This method will not fail if the input is negative, but just return it unchanged.
-     *
-     * @param n a number
-     * @return the moved index
-     */
-    public int unApply(int n) {
-        for (int[] cycle : cycles)
-            for (int j = 0; j < cycle.length - 1; j++)
-                n = n == cycle[j] ? cycle[j + 1] : n == cycle[j + 1] ? cycle[j] : n;
-        return n;
-    }
-
-    /**
      * Composing with another permutation creates a new operation.
      *
      * @param other another permutation
      * @return the composition or product
      */
-    public Permutation compose(int...  other) {
-        return compose(create(other));
+    public Permutation compose(int i1, int i2, int... other) {
+        if (other.length == 0) {
+            return compose(cycle(i1, i2));
+        }
+        return compose(cycle(i1, i2, other));
     }
-    
+
     /**
      * Composing with another permutation creates a new operation.
      *
@@ -200,7 +199,7 @@ public final class Permutation {
             allCycles.add(newCycle.stream().mapToInt(p -> p).toArray());
         }
         int[][] ints = allCycles.toArray(new int[0][]);
-        return create(ints);
+        return fromCycles(ints);
     }
 
     private static int maxIndex(int[][] ints) {
@@ -217,26 +216,6 @@ public final class Permutation {
             }
         }
         return result;
-    }
-
-    static List<Integer> chaseCycle(int i, IntUnaryOperator op) {
-        int j = op.applyAsInt(i);
-        if (i == j) {
-            return List.of();
-        }
-        List<Integer> acc = new ArrayList<>();
-        acc.add(i);
-        acc.add(j);
-        return chaseCycle(j, op, acc);
-    }
-
-    static List<Integer> chaseCycle(int i, IntUnaryOperator op, List<Integer> acc) {
-        int j = op.applyAsInt(i);
-        if (acc.contains(j)) {
-            return acc;
-        }
-        acc.add(j);
-        return chaseCycle(j, op, acc);
     }
 
     /**

@@ -59,9 +59,9 @@ class ArrayUtilTest {
     @Test
     void testClosed() {
         Permutation id = Permutation.identity();
-        Permutation p = Permutation.create(0, 1);
-        Permutation k = Permutation.create(2, 3);
-        Permutation p2 = Permutation.create(0, 1, 2);
+        Permutation p = Permutation.cycle(0, 1);
+        Permutation k = Permutation.cycle(2, 3);
+        Permutation p2 = Permutation.cycle(0, 1, 2);
         assertTrue(isClosed(List.of(id)));
         assertTrue(isClosed(List.of(id, p)));
         assertTrue(isClosed(List.of(id, p2, p2.pow(2))));
@@ -209,23 +209,23 @@ class ArrayUtilTest {
 
     @Test
     void testFindCommutator() {
-        Permutation p = Permutation.create(1, 2);
-        Permutation q = Permutation.create(0, 1);
-        assertEquals(Permutation.create(0, 1, 2), Permutation.product(p.invert(), q.invert(), p, q));
+        Permutation p = Permutation.cycle(1, 2);
+        Permutation q = Permutation.cycle(0, 1);
+        assertEquals(Permutation.cycle(0, 1, 2), Permutation.product(p.invert(), q.invert(), p, q));
     }
 
     @Test
     void testEvenCommutator() {
-        Permutation p = Permutation.create(0, 4, 1);
-        Permutation q = Permutation.create(0, 3, 2, 1, 4);
-        assertEquals(Permutation.create(0, 1, 2), Permutation.product(p.invert(), q.invert(), p, q));
+        Permutation p = Permutation.cycle(0, 4, 1);
+        Permutation q = Permutation.cycle(0, 3, 2, 1, 4);
+        assertEquals(Permutation.cycle(0, 1, 2), Permutation.product(p.invert(), q.invert(), p, q));
     }
 
     @Test
     void testEvenCommutator2() {
-        Permutation p = Permutation.create(0, 3, 1);
-        Permutation q = Permutation.create(0, 4, 2, 1, 3);
-        assertEquals(Permutation.create(0, 1, 2), Permutation.product(p.invert(), q.invert(), p, q));
+        Permutation p = Permutation.cycle(0, 3, 1);
+        Permutation q = Permutation.cycle(0, 4, 2, 1, 3);
+        assertEquals(Permutation.cycle(0, 1, 2), Permutation.product(p.invert(), q.invert(), p, q));
     }
 
     @Test

@@ -10,13 +10,14 @@ class CyclesTest {
     @Test
     void testUnApply() {
         Permutation p = Permutation.random(100);
+        Permutation q = p.invert();
         for (int i = 0; i <= p.maxMovedIndex(); i++)
-            assertEquals(i, p.unApply(p.apply(i)));
+            assertEquals(i, q.apply(p.apply(i)));
     }
 
     @Test
     void testApply() {
-        Permutation cycle = Permutation.create(0, 1);
+        Permutation cycle = Permutation.cycle(0, 1);
         Assertions.assertEquals(1, cycle.maxMovedIndex());
         Assertions.assertEquals(0, cycle.apply(1));
         Assertions.assertEquals(1, cycle.apply(0));

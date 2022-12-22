@@ -4,13 +4,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.IntUnaryOperator;
 
-import static io.parmigiano.Permutation.chaseCycle;
 import static io.parmigiano.Rankings.checkRanking;
 
-/**
- * A collection of methods that return cycles or operate on cycles.
- */
 final class CycleUtil {
 
     private CycleUtil() {
@@ -62,5 +59,25 @@ final class CycleUtil {
             }
         }
         return result;
+    }
+
+    static List<Integer> chaseCycle(int i, IntUnaryOperator op) {
+        int j = op.applyAsInt(i);
+        if (i == j) {
+            return List.of();
+        }
+        List<Integer> acc = new ArrayList<>();
+        acc.add(i);
+        acc.add(j);
+        return chaseCycle(j, op, acc);
+    }
+
+    static List<Integer> chaseCycle(int i, IntUnaryOperator op, List<Integer> acc) {
+        int j = op.applyAsInt(i);
+        if (acc.contains(j)) {
+            return acc;
+        }
+        acc.add(j);
+        return chaseCycle(j, op, acc);
     }
 }

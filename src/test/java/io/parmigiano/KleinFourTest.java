@@ -15,39 +15,39 @@ class KleinFourTest {
 
     private final List<Permutation> klein = List.of(
             Permutation.identity(),
-            Permutation.create(0, 1).compose(2, 3),
-            Permutation.create(0, 2).compose(1, 3),
-            Permutation.create(0, 3).compose(1, 2));
+            Permutation.cycle(0, 1).compose(2, 3),
+            Permutation.cycle(0, 2).compose(1, 3),
+            Permutation.cycle(0, 3).compose(1, 2));
 
     private final Set<Permutation> coset_a1 = Set.of(
-            Permutation.create(0, 1, 2),
-            Permutation.create(0, 2, 3),
-            Permutation.create(0, 3, 1),
-            Permutation.create(1, 3, 2));
+            Permutation.cycle(0, 1, 2),
+            Permutation.cycle(0, 2, 3),
+            Permutation.cycle(0, 3, 1),
+            Permutation.cycle(1, 3, 2));
 
     private final Set<Permutation> coset_a2 = Set.of(
-            Permutation.create(0, 1, 3),
-            Permutation.create(0, 2, 1),
-            Permutation.create(0, 3, 2),
-            Permutation.create(1, 2, 3));
+            Permutation.cycle(0, 1, 3),
+            Permutation.cycle(0, 2, 1),
+            Permutation.cycle(0, 3, 2),
+            Permutation.cycle(1, 2, 3));
 
     private final Set<Permutation> coset_na0 = Set.of(
-            Permutation.create(0, 1),
-            Permutation.create(2, 3),
-            Permutation.create(0, 2, 1, 3),
-            Permutation.create(0, 3, 1, 2));
+            Permutation.cycle(0, 1),
+            Permutation.cycle(2, 3),
+            Permutation.cycle(0, 2, 1, 3),
+            Permutation.cycle(0, 3, 1, 2));
 
     private final Set<Permutation> coset_na1 = Set.of(
-            Permutation.create(0, 2),
-            Permutation.create(1, 3),
-            Permutation.create(0, 1, 2, 3),
-            Permutation.create(0, 3, 2, 1));
+            Permutation.cycle(0, 2),
+            Permutation.cycle(1, 3),
+            Permutation.cycle(0, 1, 2, 3),
+            Permutation.cycle(0, 3, 2, 1));
 
     private final Set<Permutation> coset_na2 = Set.of(
-            Permutation.create(0, 3),
-            Permutation.create(1, 2),
-            Permutation.create(0, 1, 3, 2),
-            Permutation.create(0, 2, 3, 1));
+            Permutation.cycle(0, 3),
+            Permutation.cycle(1, 2),
+            Permutation.cycle(0, 1, 3, 2),
+            Permutation.cycle(0, 2, 3, 1));
 
     @Test
     void leftCosetEqualRightCoset() {
@@ -61,8 +61,8 @@ class KleinFourTest {
     @Test
     void funProduct() {
         assertEquals(
-                Permutation.create(0, 1, 2, 3),
-                Permutation.create(0, 1).compose(2, 3).compose(1, 3));
+                Permutation.cycle(0, 1, 2, 3),
+                Permutation.cycle(0, 1).compose(2, 3).compose(1, 3));
     }
 
     @Test
@@ -77,7 +77,7 @@ class KleinFourTest {
         assertTrue(cosets.contains(Set.copyOf(klein)));
         assertTrue(cosets.contains(coset_a2));
         assertTrue(cosets.contains(coset_a1));
-        assertEquals(coset_a1, Set.copyOf(leftCoset(Permutation.create(0, 1, 2))));
+        assertEquals(coset_a1, Set.copyOf(leftCoset(Permutation.cycle(0, 1, 2))));
     }
 
     @Test
@@ -92,7 +92,7 @@ class KleinFourTest {
         assertTrue(cosets.contains(coset_na0));
         assertTrue(cosets.contains(coset_na2));
         assertTrue(cosets.contains(coset_na1));
-        assertEquals(coset_na0, Set.copyOf(leftCoset(Permutation.create(0, 1))));
+        assertEquals(coset_na0, Set.copyOf(leftCoset(Permutation.cycle(0, 1))));
     }
 
     private List<Permutation> leftCoset(Permutation g) {
