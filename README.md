@@ -20,3 +20,5 @@ Permutation.symmetricGroup(5).count();
 // => 120
 ````
 
+Permutation bros:
+* https://github.com/cicirello/JavaPermutationTools
