@@ -1,7 +1,7 @@
-### Defining a 3-cycle
+### Cycle based
 
 ````java
-Permutation.cycle(0, 1).apply(List.of("a", "b", "c"))
+Permutation.cycle(0, 1).apply(List.of("a", "b", "c"));
 // => ["b", "a", "c"]
 ````
 
