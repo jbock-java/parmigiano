@@ -1,15 +1,14 @@
 ### Defining a 3-cycle
 
 ````java
-Permutation p = Permutation.create(0, 1, 2);
-p.apply(List.of("a", "b", "c"));
-// => ["c", "a", "b"]
+Permutation.cycle(0, 1).apply(List.of("a", "b", "c"))
+// => ["b", "a", "c"]
 ````
 
 ### Composition
 
 ````java
-Permutation.create(0, 1).compose(2, 3);
+Permutation.cycle(0, 1).compose(2, 3);
 // => (0 1) (2 3)
 ````
 
@@ -20,5 +19,6 @@ Permutation.symmetricGroup(5).count();
 // => 120
 ````
 
-Permutation bros:
+Permutation group:
+
 * https://github.com/cicirello/JavaPermutationTools
