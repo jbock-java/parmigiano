@@ -273,7 +273,7 @@ class PermutationTest {
 
     @Test
     void testFromQuickly() {
-        Permutation p = Taking.from(new int[]{1, 2, 3}).to(new int[]{2, 3, 1});
+        Permutation p = Permutation.taking(new int[]{1, 2, 3}).to(new int[]{2, 3, 1});
         assertEquals(List.of("b", "c", "a"), p.apply(TestUtil.symbols(3)));
     }
 
@@ -287,7 +287,7 @@ class PermutationTest {
         } while (random.isIdentity());
         int[] b = random.apply(a);
         assertFalse(Arrays.equals(a, b));
-        assertArrayEquals(Taking.from(a).to(b).apply(a), b);
+        assertArrayEquals(Permutation.taking(a).to(b).apply(a), b);
     }
 
     /* check defining property of from again, on non comparable objects, possibly with null */

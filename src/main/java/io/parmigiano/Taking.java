@@ -5,6 +5,10 @@ import io.parmigiano.Permutation.TakingBuilderList;
 
 import java.util.List;
 
+/**
+ * @deprecated use {@link Permutation#taking}
+ */
+@Deprecated(forRemoval = true)
 public final class Taking {
 
     public static TakingBuilderInt from(int[] a) {

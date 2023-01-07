@@ -381,15 +381,23 @@ public final class Permutation {
         return new Permutation(newCycles, maxMovedIndex);
     }
 
+    public static TakingBuilderInt taking(int[] a) {
+        return new TakingBuilderInt(a);
+    }
+
+    public static <E extends Comparable<E>> TakingBuilderList<E> taking(List<E> a) {
+        return new TakingBuilderList<>(a);
+    }
+
     public record TakingBuilderList<E>(List<E> from) {
         public Permutation to(List<E> to) {
-            return Permutation.fromRanking(Rankings.from(from, to));
+            return fromRanking(Rankings.from(from, to));
         }
     }
 
     public record TakingBuilderInt(int[] from) {
         public Permutation to(int[] to) {
-            return Permutation.fromRanking(Rankings.from(from, to));
+            return fromRanking(Rankings.from(from, to));
         }
     }
 }
