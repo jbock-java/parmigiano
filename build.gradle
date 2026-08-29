@@ -8,10 +8,8 @@ group = 'io.github.jbock-java'
 
 compileJava {
     options.encoding = 'UTF-8'
-    sourceCompatibility = '17'
-    targetCompatibility = '17'
-    options.compilerArgs << '--release'
-    options.compilerArgs << '17'
+    sourceCompatibility = '25'
+    targetCompatibility = '25'
 }
 
 repositories {
@@ -28,8 +26,9 @@ tasks.withType(GenerateModuleMetadata) {
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.9.0')
+    testImplementation(platform('org.junit:junit-bom:6.1.2'))
     testImplementation('org.junit.jupiter:junit-jupiter')
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 jar {

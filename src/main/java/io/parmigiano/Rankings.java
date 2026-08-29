@@ -1,10 +1,6 @@
 package io.parmigiano;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiPredicate;
 
 import static io.parmigiano.ArrayUtil.negativeFailure;
@@ -24,25 +20,32 @@ final class Rankings {
 
     /**
      * Ensure that the input is a ranking.
+     *
      * @param a an array
      * @throws java.lang.IllegalArgumentException if {@code a} is not a valid ranking
      */
     static void checkRanking(int[] a) {
         boolean[] used = new boolean[a.length];
         for (int i : a) {
-            if (i < 0)
-                throw new IllegalArgumentException("found negative number in ranking: " + i);
-            if (i >= a.length)
-                throw new IllegalArgumentException("out-of-bounds value in ranking: " + i);
-            if (used[i])
-                throw new IllegalArgumentException("duplicate number in ranking: " + i);
+            if (i < 0) throw new IllegalArgumentException("found negative number in ranking: " + i);
+            if (i >= a.length) throw new IllegalArgumentException("out-of-bounds value in ranking: " + i);
+            if (used[i]) throw new IllegalArgumentException("duplicate number in ranking: " + i);
             used[i] = true;
         }
+    }
+
+    static int[] identityRanking(int n) {
+        int[] result = new int[n];
+        for (int i = 0; i < n; i++) {
+            result[i] = i;
+        }
+        return result;
     }
 
     /**
      * Calculate the inverse ranking.
      * This method does not check if the input is indeed a ranking and may have unexpected results otherwise.
+     *
      * @param ranking a ranking
      * @return the inverse ranking
      */
@@ -57,6 +60,7 @@ final class Rankings {
 
     /**
      * Generate a random ranking of given length.
+     *
      * @param length a non-negative integer
      * @return a random ranking
      * @throws IllegalArgumentException if {@code length} is negative
@@ -74,7 +78,7 @@ final class Rankings {
      * For a given element {@code el}, iterating this method over the {@code offset} element, starting with
      * {@code offset = 0}, will enumerate all positions of {@code sorted[idx]} in the sorted array.
      *
-     * @param idx the start index
+     * @param idx    the start index
      * @param offset the current offset from the start index
      * @param sorted a sorted array
      * @return the next offset or {@code 0} if there is no next offset
@@ -119,6 +123,7 @@ final class Rankings {
 
     /**
      * Encode an int as a non-zero int
+     *
      * @param i an int
      * @return {@code i + 1} if {@code i} is non-negative, otherwise {@code i}
      */
@@ -128,6 +133,7 @@ final class Rankings {
 
     /**
      * Undo the shift
+     *
      * @param shifted a non-zero number
      * @return {@code shifted - 1} if {@code shifted} is positive, otherwise {@code shifted}
      * @throws IllegalArgumentException if the input is zero
@@ -156,6 +162,7 @@ final class Rankings {
      * <pre><code>
      *   ArrayUtil.indexOf(a, el, 0) == unsort[idx]
      * </code></pre>
+     *
      * @param a an array
      * @return a ranking that sorts the input
      */
@@ -192,11 +199,7 @@ final class Rankings {
             } else {
                 // a contains duplicates
                 int offset = unshift(offsets[idx]);
-                int newOffset = nextOffset(
-                        sorted,
-                        idx,
-                        offset,
-                        (e1, e2) -> e1.compareTo(e2) == 0);
+                int newOffset = nextOffset(sorted, idx, offset, (e1, e2) -> e1.compareTo(e2) == 0);
                 ranking[i] = idx + newOffset;
                 offsets[idx] = shift(newOffset);
             }
@@ -216,11 +219,7 @@ final class Rankings {
             } else {
                 // a contains duplicates
                 int offset = unshift(offsets[idx]);
-                int newOffset = nextOffset(
-                        sorted,
-                        idx,
-                        offset,
-                        (e1, e2) -> comp.compare(e1, e2) == 0);
+                int newOffset = nextOffset(sorted, idx, offset, (e1, e2) -> comp.compare(e1, e2) == 0);
                 ranking[i] = idx + newOffset;
                 offsets[idx] = shift(newOffset);
             }
@@ -232,11 +231,12 @@ final class Rankings {
 
     /**
      * Produce a particular ranking that produces {@code b} when applied to {@code a}.
+     *
      * @param a an array
      * @param b an array
      * @return a ranking that produces {@code b} when applied to {@code a}
      * @throws java.lang.IllegalArgumentException if {@code b} can not be obtained by rearranging {@code a}
-     * @throws java.lang.NullPointerException if any argument is {@code null}
+     * @throws java.lang.NullPointerException     if any argument is {@code null}
      */
     static int[] from(int[] a, int[] b) {
         ArrayUtil.checkEqualLength(a, b);
@@ -269,20 +269,20 @@ final class Rankings {
      *   apply(ranking, a)[apply(ranking, j)] == a[j];
      * </pre></code>
      * This method does not check whether the input ranking is valid.
-     * @param i a non negative number
+     *
+     * @param i a non-negative number
      * @return the moved index
      * @throws java.lang.IllegalArgumentException if {@code i} is negative
      */
     static int apply(int[] ranking, int i) {
-        if (i < 0)
-            negativeFailure();
-        if (i >= ranking.length)
-            return i;
+        if (i < 0) negativeFailure();
+        if (i >= ranking.length) return i;
         return ranking[i];
     }
 
     /**
      * Returns all possible permutations of given length
+     *
      * @param n length of permutations to generate
      * @return all possible permutations of length {@code n}; this will contain {@code n!}
      * different permutations

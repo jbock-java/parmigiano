@@ -1,11 +1,6 @@
 package io.parmigiano;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static io.parmigiano.CycleUtil.chaseCycle;
 import static io.parmigiano.Preconditions.checkState;
@@ -62,7 +57,7 @@ public final class Permutation {
         return IDENTITY;
     }
 
-    private static Permutation fromRanking(int... ranking) {
+    public static Permutation fromRanking(int... ranking) {
         if (ranking.length == 0) {
             return IDENTITY;
         }
@@ -75,6 +70,11 @@ public final class Permutation {
             newCycles[i] = reverse(cycles[i]);
         }
         return new Permutation(newCycles, maxMovedIndex);
+    }
+
+    public int[] toRanking() {
+        int[] ints = Rankings.identityRanking(maxMovedIndex + 1);
+        return Rankings.invert(apply(ints));
     }
 
     private static int[] reverse(int[] cycle) {

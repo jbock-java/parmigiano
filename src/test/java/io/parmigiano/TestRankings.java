@@ -10,16 +10,17 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
-import static io.parmigiano.Rankings.insert;
-import static io.parmigiano.Rankings.nextOffset;
-import static io.parmigiano.Rankings.shift;
-import static io.parmigiano.Rankings.unshift;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static io.parmigiano.Rankings.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class TestRankings {
+
+    @Test
+    void testInvertRanking() {
+        int[] ranking = new int[]{1, 2, 0};
+        int[] inverted = Rankings.invert(ranking);
+        assertArrayEquals(new int[]{2, 0, 1}, inverted);
+    }
 
     @Test
     void testSortRandom() {
@@ -48,7 +49,7 @@ class TestRankings {
             List<Integer> a = new ArrayList<>(IntStream.range(0, 100).boxed().toList());
             Collections.shuffle(a);
             List<Integer> b = Permutation.random(a.size()).apply(a);
-            assertEquals(b, Taking.from(a).to(b).apply(a));
+            assertEquals(b, Permutation.taking(a).to(b).apply(a));
         }
     }
 
@@ -89,6 +90,18 @@ class TestRankings {
             for (int el : a) {
                 assertEquals(ArrayUtil.indexOf(a, el), unsort[Arrays.binarySearch(sorted, el)]);
             }
+        }
+    }
+
+    @Test
+    void testConvertRankingToPermutation() {
+        for (int __ = 0; __ < 100; __++) {
+            List<Integer> rr = new ArrayList<>(IntStream.range(0, 100).boxed().toList());
+            Collections.shuffle(rr);
+            int[] ranking = rr.stream().mapToInt(i -> i).toArray();
+            Permutation p = Permutation.fromRanking(ranking);
+            int[] converted = embed(p.toRanking(), 100);
+            assertArrayEquals(ranking, converted);
         }
     }
 
@@ -214,5 +227,17 @@ class TestRankings {
             assertTrue(TestUtil.isSorted(TestUtil.applyRanking(ranking, a)));
             assertTrue(TestUtil.sorts(ranking, a));
         }
+    }
+
+    static int[] embed(int[] ranking, int n) {
+        if (ranking.length >= n) {
+            return ranking;
+        }
+        int[] result = new int[n];
+        System.arraycopy(ranking, 0, result, 0, ranking.length);
+        for (int i = ranking.length; i < n; i++) {
+            result[i] = i;
+        }
+        return result;
     }
 }
