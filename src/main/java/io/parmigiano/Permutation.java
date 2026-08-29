@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.IntUnaryOperator;
 
-import static io.parmigiano.CycleUtil.chaseCycle;
 import static java.util.stream.Collectors.joining;
 
 /**
@@ -50,10 +50,11 @@ public final class Permutation {
     }
 
     public static Permutation fromRanking(int... ranking) {
-        if (ranking.length == 0) {
+        int[][] cyclops = CycleUtil.toCycles(ranking);
+        if (cyclops.length == 0) {
             return IDENTITY;
         }
-        return new Permutation(CycleUtil.toCycles(ranking));
+        return new Permutation(cyclops);
     }
 
     public Permutation invert() {
@@ -201,25 +202,29 @@ public final class Permutation {
             return this;
         }
         int max = Math.max(maxMovedIndex, other.maxMovedIndex);
-        List<int[]> newCycles = new ArrayList<>();
+        List<int[]> result = new ArrayList<>((max + 1) / 2);
         boolean[] done = new boolean[max + 1];
+        int[] acc = new int[max + 1];
+        IntUnaryOperator op = n -> apply(other.apply(n));
         for (int i = 0; i < max; i++) {
             if (done[i]) {
                 continue;
             }
-            List<Integer> newCycle = chaseCycle(i, n -> apply(other.apply(n)));
-            if (newCycle.isEmpty()) {
+            acc[0] = i;
+            int len = CycleUtil.chaseCycle(acc, op);
+            if (len == 1) {
                 continue;
             }
-            for (Integer j : newCycle) {
-                done[j] = true;
+            int[] newc = Arrays.copyOf(acc, len);
+            for (int j = 0; j < len; j++) {
+                done[newc[j]] = true;
             }
-            newCycles.add(newCycle.stream().mapToInt(Integer::intValue).toArray());
+            result.add(newc);
         }
-        if (newCycles.isEmpty()) {
+        if (result.isEmpty()) {
             return IDENTITY;
         }
-        return new Permutation(newCycles.toArray(new int[0][]));
+        return new Permutation(result.toArray(new int[0][]));
     }
 
     private static int maxIndex(int[][] cycles) {
@@ -361,11 +366,7 @@ public final class Permutation {
         if (isIdentity()) {
             return "id";
         }
-        return Arrays.stream(cycles)
-                .map(Arrays::stream)
-                .map(s -> s.mapToObj(Integer::toString))
-                .map(s -> s.collect(joining(" ", "(", ")")))
-                .collect(joining(" "));
+        return Arrays.stream(cycles).map(Arrays::stream).map(s -> s.mapToObj(Integer::toString)).map(s -> s.collect(joining(" ", "(", ")"))).collect(joining(" "));
     }
 
     public String print() {
@@ -376,16 +377,11 @@ public final class Permutation {
         if (cycles.length == 1) {
             return receiver;
         }
-        return receiver + Arrays.stream(cycles)
-                .skip(1)
-                .map(Permutation::printCycle)
-                .collect(joining(").compose(", ".compose(", ")"));
+        return receiver + Arrays.stream(cycles).skip(1).map(Permutation::printCycle).collect(joining(").compose(", ".compose(", ")"));
     }
 
     private static String printCycle(int[] cycle) {
-        return Arrays.stream(cycle)
-                .mapToObj(Integer::toString)
-                .collect(joining(", ", "create(", ")"));
+        return Arrays.stream(cycle).mapToObj(Integer::toString).collect(joining(", ", "create(", ")"));
     }
 
     public Permutation normalize() {

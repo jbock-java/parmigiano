@@ -1,6 +1,7 @@
 package io.parmigiano;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.IntUnaryOperator;
 
@@ -19,18 +20,22 @@ final class CycleUtil {
     static int[][] toCycles(int[] ranking) {
         List<int[]> result = new ArrayList<>(ranking.length / 2);
         boolean[] done = new boolean[ranking.length];
+        int[] acc = new int[ranking.length];
+        IntUnaryOperator op = n -> ranking[n];
         for (int i = 0; i < ranking.length; i += 1) {
             if (done[i]) {
                 continue;
             }
-            List<Integer> newCycle = chaseCycle(i, n -> ranking[n]);
-            if (newCycle.isEmpty()) {
+            acc[0] = i;
+            int len = chaseCycle(acc, op);
+            if (len == 1) {
                 continue;
             }
-            for (Integer j : newCycle) {
-                done[j] = true;
+            int[] newc = Arrays.copyOf(acc, len);
+            for (int j = 0; j < len; j++) {
+                done[newc[j]] = true;
             }
-            result.add(newCycle.stream().mapToInt(Integer::intValue).toArray());
+            result.add(newc);
         }
         return result.toArray(new int[0][]);
     }
@@ -59,23 +64,14 @@ final class CycleUtil {
         return result;
     }
 
-    static List<Integer> chaseCycle(int i, IntUnaryOperator op) {
-        int j = op.applyAsInt(i);
-        if (i == j) {
-            return List.of();
+    static int chaseCycle(int[] acc, IntUnaryOperator op) {
+        int pos = 0;
+        while (true) {
+            int j = op.applyAsInt(acc[pos++]);
+            if (j == acc[0]) {
+                return pos;
+            }
+            acc[pos] = j;
         }
-        List<Integer> acc = new ArrayList<>();
-        acc.add(i);
-        acc.add(j);
-        return chaseCycle(j, op, acc);
-    }
-
-    static List<Integer> chaseCycle(int i, IntUnaryOperator op, List<Integer> acc) {
-        int j = op.applyAsInt(i);
-        if (acc.contains(j)) {
-            return acc;
-        }
-        acc.add(j);
-        return chaseCycle(j, op, acc);
     }
 }

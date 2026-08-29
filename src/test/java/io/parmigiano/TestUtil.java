@@ -384,8 +384,4 @@ class TestUtil {
         Collections.shuffle(rr);
         return rr.stream().mapToInt(Integer::intValue).toArray();
     }
-
-    static Permutation randomPermutation(int n) {
-        return Permutation.fromRanking(randomRanking(n));
-    }
 }

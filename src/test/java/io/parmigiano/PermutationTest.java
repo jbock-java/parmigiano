@@ -413,9 +413,9 @@ class PermutationTest {
 
     @Test
     void testInverseApply() {
-        int[] input = Rankings.identityRanking(100);
-        for (int __ = 0; __ < 100; __++) {
-            Permutation p = TestUtil.randomPermutation(100);
+        int[] input = Rankings.identityRanking(50);
+        for (int __ = 0; __ < 1000; __++) {
+            Permutation p = Permutation.random(ThreadLocalRandom.current().nextInt(50));
             assertArrayEquals(p.invert().apply(input), p.inverseApply(input));
         }
     }
