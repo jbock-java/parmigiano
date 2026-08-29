@@ -3,12 +3,9 @@ package io.parmigiano;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static io.parmigiano.CycleUtil.chaseCycle;
-import static io.parmigiano.Preconditions.checkState;
 import static java.util.stream.Collectors.joining;
 
 /**
@@ -16,20 +13,13 @@ import static java.util.stream.Collectors.joining;
  */
 public final class Permutation {
 
-    private static final Permutation IDENTITY = new Permutation(new int[0][]);
+    private static final Permutation IDENTITY = new Permutation(new int[0][], 0);
 
     private final int maxMovedIndex;
     private final int[][] cycles;
 
     private Permutation(int[][] cycles) {
         this(cycles, maxIndex(cycles));
-    }
-
-    private Permutation fromCycles(int[][] cycles) {
-        if (cycles.length == 0) {
-            return IDENTITY;
-        }
-        return new Permutation(cycles);
     }
 
     private Permutation(int[][] cycles, int maxMovedIndex) {
@@ -46,9 +36,6 @@ public final class Permutation {
     }
 
     public static Permutation cycle(int i1, int i2) {
-        checkState(i1 >= 0, "negative index: %d", i1);
-        checkState(i2 >= 0, "negative index: %d", i2);
-        checkState(i1 != i2, "duplicate index: %d", i1);
         int[] cycle = {i1, i2};
         return new Permutation(new int[][]{cycle}, Math.max(i1, i2));
     }
@@ -66,7 +53,7 @@ public final class Permutation {
         if (ranking.length == 0) {
             return IDENTITY;
         }
-        return new Permutation(CycleUtil.toOrbits(ranking));
+        return new Permutation(CycleUtil.toCycles(ranking));
     }
 
     public Permutation invert() {
@@ -104,12 +91,12 @@ public final class Permutation {
     public int[] apply(int[] a) {
         ArrayUtil.checkLength(maxMovedIndex, a.length);
         int[] result = Arrays.copyOf(a, a.length);
-        for (int[] cycle : cycles) {
-            for (int j = cycle.length - 2; j >= 0; j--) {
-                int temp = result[cycle[j + 1]];
-                result[cycle[j + 1]] = result[cycle[j]];
-                result[cycle[j]] = temp;
+        for (int[] c : cycles) {
+            int tmp = result[c[c.length - 1]];
+            for (int j = c.length - 2; j >= 0; j--) {
+                result[c[j + 1]] = result[c[j]];
             }
+            result[c[0]] = tmp;
         }
         return result;
     }
@@ -124,12 +111,12 @@ public final class Permutation {
     public int[] inverseApply(int[] a) {
         ArrayUtil.checkLength(maxMovedIndex, a.length);
         int[] result = Arrays.copyOf(a, a.length);
-        for (int[] cycle : cycles) {
-            for (int j = 0; j < cycle.length - 1; j++) {
-                int temp = result[cycle[j + 1]];
-                result[cycle[j + 1]] = result[cycle[j]];
-                result[cycle[j]] = temp;
+        for (int[] c : cycles) {
+            int tmp = result[c[0]];
+            for (int j = 0; j < c.length - 1; j++) {
+                result[c[j]] = result[c[j + 1]];
             }
+            result[c[c.length - 1]] = tmp;
         }
         return result;
     }
@@ -179,9 +166,11 @@ public final class Permutation {
         if (n > maxMovedIndex) {
             return n;
         }
-        for (int[] cycle : cycles)
-            for (int j = cycle.length - 2; j >= 0; j--)
+        for (int[] cycle : cycles) {
+            for (int j = cycle.length - 2; j >= 0; j--) {
                 n = n == cycle[j] ? cycle[j + 1] : n == cycle[j + 1] ? cycle[j] : n;
+            }
+        }
         return n;
     }
 
@@ -205,39 +194,39 @@ public final class Permutation {
      * @return the composition or product
      */
     public Permutation compose(Permutation other) {
-        if (maxMovedIndex == 0)
+        if (maxMovedIndex == 0) {
             return other;
-        if (other.maxMovedIndex == 0)
+        }
+        if (other.maxMovedIndex == 0) {
             return this;
+        }
         int max = Math.max(maxMovedIndex, other.maxMovedIndex);
-        List<int[]> allCycles = new ArrayList<>();
-        Set<Integer> done = new HashSet<>();
+        List<int[]> newCycles = new ArrayList<>();
+        boolean[] done = new boolean[max + 1];
         for (int i = 0; i < max; i++) {
-            if (done.contains(i)) {
+            if (done[i]) {
                 continue;
             }
             List<Integer> newCycle = chaseCycle(i, n -> apply(other.apply(n)));
             if (newCycle.isEmpty()) {
                 continue;
             }
-            done.addAll(newCycle);
-            allCycles.add(newCycle.stream().mapToInt(p -> p).toArray());
+            for (Integer j : newCycle) {
+                done[j] = true;
+            }
+            newCycles.add(newCycle.stream().mapToInt(Integer::intValue).toArray());
         }
-        int[][] ints = allCycles.toArray(new int[0][]);
-        return fromCycles(ints);
+        if (newCycles.isEmpty()) {
+            return IDENTITY;
+        }
+        return new Permutation(newCycles.toArray(new int[0][]));
     }
 
-    private static int maxIndex(int[][] ints) {
+    private static int maxIndex(int[][] cycles) {
         int result = 0;
-        Set<Integer> seen = new HashSet<>();
-        for (int[] a : ints) {
-            if (a.length == 0) {
-                continue;
-            }
-            for (int i : a) {
-                checkState(i >= 0, "negative index: %d", i);
-                checkState(seen.add(i), "duplicate index: %d", i);
-                result = Math.max(result, i);
+        for (int[] c : cycles) {
+            for (int j : c) {
+                result = Math.max(result, j);
             }
         }
         return result;
@@ -251,8 +240,9 @@ public final class Permutation {
      */
     public static Permutation product(Permutation... permutations) {
         Permutation result = identity();
-        for (Permutation permutation : permutations)
+        for (Permutation permutation : permutations) {
             result = result.compose(permutation);
+        }
         return result;
     }
 
@@ -297,9 +287,11 @@ public final class Permutation {
      */
     public int signature() {
         int evenLengthCycles = 0;
-        for (int[] cycle : cycles)
-            if (cycle.length % 2 == 0)
+        for (int[] cycle : cycles) {
+            if (cycle.length % 2 == 0) {
                 evenLengthCycles++;
+            }
+        }
         return evenLengthCycles % 2 == 0 ? 1 : -1;
     }
 

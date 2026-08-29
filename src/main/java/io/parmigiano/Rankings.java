@@ -15,7 +15,7 @@ import static java.util.Arrays.binarySearch;
 /**
  * A collection of methods that return rankings, or operate on rankings.
  */
-final class Rankings {
+public final class Rankings {
 
     private Rankings() {
     }
@@ -28,17 +28,23 @@ final class Rankings {
      * @param a an array
      * @throws java.lang.IllegalArgumentException if {@code a} is not a valid ranking
      */
-    static void checkRanking(int[] a) {
+    public static void checkRanking(int[] a) {
         boolean[] used = new boolean[a.length];
         for (int i : a) {
-            if (i < 0) throw new IllegalArgumentException("found negative number in ranking: " + i);
-            if (i >= a.length) throw new IllegalArgumentException("out-of-bounds value in ranking: " + i);
-            if (used[i]) throw new IllegalArgumentException("duplicate number in ranking: " + i);
+            if (i < 0) {
+                throw new IllegalArgumentException("negative number in ranking: " + i);
+            }
+            if (i >= a.length) {
+                throw new IllegalArgumentException("out-of-bounds number in ranking: " + i);
+            }
+            if (used[i]) {
+                throw new IllegalArgumentException("duplicate number in ranking: " + i);
+            }
             used[i] = true;
         }
     }
 
-    static int[] identityRanking(int n) {
+    public static int[] identityRanking(int n) {
         int[] result = new int[n];
         for (int i = 0; i < n; i++) {
             result[i] = i;
@@ -53,7 +59,7 @@ final class Rankings {
      * @param ranking a ranking
      * @return the inverse ranking
      */
-    static int[] invert(int[] ranking) {
+    public static int[] invert(int[] ranking) {
         int[][] rankingWithIndex = ArrayUtil.withIndex(ranking);
         Arrays.sort(rankingWithIndex, COMPARE_FIRST);
         int[] inverted = new int[ranking.length];
@@ -69,7 +75,7 @@ final class Rankings {
      * @return a random ranking
      * @throws IllegalArgumentException if {@code length} is negative
      */
-    static int[] random(int length) {
+    public static int[] random(int length) {
         int[] a = ArrayUtil.range(length);
         ArrayUtil.shuffle(a);
         return a;
@@ -87,7 +93,7 @@ final class Rankings {
      * @param sorted a sorted array
      * @return the next offset or {@code 0} if there is no next offset
      */
-    static int nextOffset(int[] sorted, int idx, int offset) {
+    public static int nextOffset(int[] sorted, int idx, int offset) {
         if (offset < 0) {
             int next = idx + offset - 1;
             if (next >= 0 && sorted[next] == sorted[idx]) {
@@ -105,7 +111,7 @@ final class Rankings {
         return 0; // done
     }
 
-    static <E> int nextOffset(List<E> sorted, int idx, int offset, BiPredicate<E, E> equality) {
+    public static <E> int nextOffset(List<E> sorted, int idx, int offset, BiPredicate<E, E> equality) {
         if (offset < 0) {
             int next = idx + offset - 1;
             if (next >= 0 && equality.test(sorted.get(next), sorted.get(idx))) {

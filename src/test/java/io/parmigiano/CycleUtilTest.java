@@ -25,13 +25,13 @@ class CycleUtilTest {
     /* gaps in ranking */
     @Test
     void testInvalidGap() {
-        assertThrows(IllegalArgumentException.class, () -> CycleUtil.toOrbits(new int[]{1, 2, 0, 5}));
+        assertThrows(IllegalArgumentException.class, () -> Rankings.checkRanking(new int[]{1, 2, 0, 5}));
     }
 
     /* missing zero in ranking */
     @Test
     void testInvalidMissingZero() {
-        assertThrows(IllegalArgumentException.class, () -> CycleUtil.toOrbits(new int[]{1, 2, 3}));
+        assertThrows(IllegalArgumentException.class, () -> Rankings.checkRanking(new int[]{1, 2, 3}));
     }
 
     /* duplicates in ranking */
@@ -39,12 +39,11 @@ class CycleUtilTest {
     void testInvalidDuplicate() {
         int[] ranking = {1, 2, 0, 2, 3};
         assertThrows(IllegalArgumentException.class, () -> Rankings.checkRanking(ranking));
-        assertThrows(IllegalArgumentException.class, () -> CycleUtil.toOrbits(ranking));
     }
 
     /* negative number in ranking */
     @Test
     void testInvalidNegative() {
-        assertThrows(IllegalArgumentException.class, () -> CycleUtil.toOrbits(new int[]{-1, 0, 1}));
+        assertThrows(IllegalArgumentException.class, () -> Rankings.checkRanking(new int[]{-1, 0, 1}));
     }
 }

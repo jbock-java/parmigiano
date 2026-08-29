@@ -1,12 +1,8 @@
 package io.parmigiano;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.IntUnaryOperator;
-
-import static io.parmigiano.Rankings.checkRanking;
 
 final class CycleUtil {
 
@@ -17,24 +13,26 @@ final class CycleUtil {
      * Find all nontrivial cycles in the input ranking.
      *
      * @param ranking a ranking
-     * @return an array of all nontrivial orbits in the input ranking
+     *
+     * @return cycles of length 2 or greater
      */
-    static int[][] toOrbits(int[] ranking) {
-        checkRanking(ranking);
-        List<int[]> orbits = new ArrayList<>();
-        Set<Integer> done = new HashSet<>();
+    static int[][] toCycles(int[] ranking) {
+        List<int[]> result = new ArrayList<>(ranking.length / 2);
+        boolean[] done = new boolean[ranking.length];
         for (int i = 0; i < ranking.length; i += 1) {
-            if (done.contains(i)) {
+            if (done[i]) {
                 continue;
             }
             List<Integer> newCycle = chaseCycle(i, n -> ranking[n]);
             if (newCycle.isEmpty()) {
                 continue;
             }
-            done.addAll(newCycle);
-            orbits.add(newCycle.stream().mapToInt(p -> p).toArray());
+            for (Integer j : newCycle) {
+                done[j] = true;
+            }
+            result.add(newCycle.stream().mapToInt(Integer::intValue).toArray());
         }
-        return orbits.toArray(new int[0][]);
+        return result.toArray(new int[0][]);
     }
 
     static int[] rotateToIndex(int[] a, int n) {
