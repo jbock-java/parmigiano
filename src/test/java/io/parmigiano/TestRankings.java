@@ -10,8 +10,14 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
-import static io.parmigiano.Rankings.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static io.parmigiano.Rankings.insert;
+import static io.parmigiano.Rankings.nextOffset;
+import static io.parmigiano.Rankings.shift;
+import static io.parmigiano.Rankings.unshift;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TestRankings {
 
@@ -78,9 +84,7 @@ class TestRankings {
     @Test
     void testSortUnique() {
         for (int __ = 0; __ < 100; __++) {
-            List<Integer> rr = new ArrayList<>(IntStream.range(0, 100).boxed().toList());
-            Collections.shuffle(rr);
-            int[] a = rr.stream().mapToInt(i -> i).toArray();
+            int[] a = TestUtil.randomRanking(100);
             int[] sort = Rankings.sorting(a);
             int[] sorted = TestUtil.applyRanking(sort, a);
             int[] unsort = Rankings.invert(sort);

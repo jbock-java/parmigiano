@@ -2,6 +2,7 @@ package io.parmigiano;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,34 +21,33 @@ import static java.lang.System.arraycopy;
 class TestUtil {
 
     static Iterable<Permutation[]> cartesian(List<Permutation> a, List<Permutation> b) {
-        return () ->
-                new Iterator<>() {
-                    int idxa = 0;
-                    int idxb = 0;
+        return () -> new Iterator<>() {
+            int idxa = 0;
+            int idxb = 0;
 
-                    @Override
-                    public boolean hasNext() {
-                        return idxa < a.size();
-                    }
+            @Override
+            public boolean hasNext() {
+                return idxa < a.size();
+            }
 
-                    @Override
-                    public Permutation[] next() {
-                        Permutation pa = a.get(idxa);
-                        Permutation pb = b.get(idxb);
-                        if (b.size() - idxb == 1) {
-                            idxb = 0;
-                            idxa += 1;
-                        } else {
-                            idxb += 1;
-                        }
-                        return new Permutation[]{pa, pb};
-                    }
+            @Override
+            public Permutation[] next() {
+                Permutation pa = a.get(idxa);
+                Permutation pb = b.get(idxb);
+                if (b.size() - idxb == 1) {
+                    idxb = 0;
+                    idxa += 1;
+                } else {
+                    idxb += 1;
+                }
+                return new Permutation[]{pa, pb};
+            }
 
-                    @Override
-                    public void remove() {
-                        throw new IllegalAccessError();
-                    }
-                };
+            @Override
+            public void remove() {
+                throw new IllegalAccessError();
+            }
+        };
 
     }
 
@@ -109,8 +109,7 @@ class TestUtil {
         outer:
         for (Permutation a : input) {
             for (Permutation b : input)
-                if (!a.compose(b).equals(b.compose(a)))
-                    continue outer;
+                if (!a.compose(b).equals(b.compose(a))) continue outer;
             result.add(a);
         }
         return result;
@@ -119,24 +118,21 @@ class TestUtil {
     static boolean isClosed(List<Permutation> permutations) {
         Set<Permutation> set = new HashSet<>(permutations);
         for (Permutation[] p : cartesian(permutations, permutations))
-            if (!set.contains(p[0].compose(p[1])) || !set.contains(p[1].compose(p[0])))
-                return false;
+            if (!set.contains(p[0].compose(p[1])) || !set.contains(p[1].compose(p[0]))) return false;
         return true;
     }
 
     static int count(int[] a, int i) {
         int c = 0;
         for (int j : a)
-            if (j == i)
-                c += 1;
+            if (j == i) c += 1;
         return c;
     }
 
     static <E> int count(List<E> a, E i, BiPredicate<E, E> equality) {
         int c = 0;
         for (E j : a)
-            if (equality.test(j, i))
-                c += 1;
+            if (equality.test(j, i)) c += 1;
         return c;
     }
 
@@ -150,14 +146,12 @@ class TestUtil {
     static boolean isDistinct(int[] input) {
         int max = 0;
         for (int i : input) {
-            if (i < 0)
-                ArrayUtil.negativeFailure();
+            if (i < 0) ArrayUtil.negativeFailure();
             max = Math.max(max, i);
         }
         boolean[] test = new boolean[max + 1];
         for (int i : input) {
-            if (test[i])
-                return false;
+            if (test[i]) return false;
             test[i] = true;
         }
         return true;
@@ -165,6 +159,7 @@ class TestUtil {
 
     /**
      * Find a pair of duplicate indexes.
+     *
      * @param input some numbers
      * @return A pair {@code i, j} of indexes so that {@code input[i] == input[j]}
      * @throws java.lang.IllegalArgumentException if no duplicates were found in {@code input}
@@ -177,10 +172,8 @@ class TestUtil {
         int[] test = new int[max + 1];
         Arrays.fill(test, -1);
         for (int __ : input) {
-            if (test[input[start]] == -1)
-                test[input[start]] = start;
-            else
-                return new int[]{test[input[start]], start};
+            if (test[input[start]] == -1) test[input[start]] = start;
+            else return new int[]{test[input[start]], start};
             start = (start + 1) % input.length;
         }
         throw new IllegalArgumentException("no duplicates found");
@@ -202,6 +195,7 @@ class TestUtil {
 
     /**
      * Calculates the factorial.
+     *
      * @param n a nonnegative number
      * @return the factorial of {@code n}
      * @throws java.lang.IllegalArgumentException if n is negative
@@ -226,6 +220,7 @@ class TestUtil {
      * strings starting with {@code "aa"}, in lexicographic order.
      * Note that the array returned by this method is sorted if and only if {@code n < 27},
      * because {@code "b".compareTo("aa") > 0}.
+     *
      * @param n length of array to generate
      * @return a list of distinct strings of length n
      */
@@ -241,6 +236,7 @@ class TestUtil {
 
     /**
      * Utility method used by symbols method.
+     *
      * @param s a string
      * @return a string that's different from {@code s}
      */
@@ -248,8 +244,7 @@ class TestUtil {
         char last = s.charAt(s.length() - 1);
         if (last == 'z') {
             int nflip = 1;
-            while (s.length() > nflip && s.charAt(s.length() - 1 - nflip) == 'z')
-                nflip += 1;
+            while (s.length() > nflip && s.charAt(s.length() - 1 - nflip) == 'z') nflip += 1;
             if (nflip == s.length()) {
                 StringBuilder news = new StringBuilder();
                 news.append("a".repeat(nflip));
@@ -267,8 +262,9 @@ class TestUtil {
 
     /**
      * Produce {@code length} random numbers between {@code 0} and {@code maxNumber} (inclusive)
+     *
      * @param maxNumber upper bound of random numbers
-     * @param length result length
+     * @param length    result length
      * @return an array of random numbers
      */
     static int[] randomNumbers(int maxNumber, int length) {
@@ -277,9 +273,10 @@ class TestUtil {
 
     /**
      * Generate {@code length} random numbers between {@code minNumber} and {@code maxNumber} (inclusive)
+     *
      * @param minNumber lower bound of random numbers
      * @param maxNumber upper bound of random numbers
-     * @param length result length
+     * @param length    result length
      * @return an array of random numbers
      */
     static int[] randomNumbers(int minNumber, int maxNumber, int length) {
@@ -293,6 +290,7 @@ class TestUtil {
 
     /**
      * Check if input is sorted
+     *
      * @param input an array
      * @return true if the {@code input} is sorted
      */
@@ -313,25 +311,22 @@ class TestUtil {
     /**
      * Check if the input ranking will sort the input array when applied to it.
      * This method does not check if the first argument is indeed a valid ranking, and will have unexpected results otherwise.
-     * @param a an array
+     *
+     * @param a       an array
      * @param ranking a ranking
      * @return true if the return value of {@code apply(ranking, a)} is a sorted array
      */
     static boolean sorts(int[] ranking, int[] a) {
-        if (a.length < ranking.length)
-            lengthFailure();
-        if (a.length < 2)
-            return true;
+        if (a.length < ranking.length) lengthFailure();
+        if (a.length < 2) return true;
         int idx = Rankings.apply(ranking, 0);
         int test = a[0];
         for (int i = 1; i < a.length; i++) {
             int idx2 = Rankings.apply(ranking, i);
             int test2 = a[i];
             if (idx2 > idx) {
-                if (test > test2)
-                    return false;
-            } else if (test < test2)
-                return false;
+                if (test > test2) return false;
+            } else if (test < test2) return false;
             idx = idx2;
             test = test2;
         }
@@ -340,23 +335,21 @@ class TestUtil {
 
     /**
      * Multiply two rankings.
+     *
      * @param lhs a ranking
      * @param rhs another ranking
      * @return the product of the input rankings
      */
     static int[] comp(int[] lhs, int[] rhs) {
         if (lhs.length >= rhs.length) {
-            if (rhs.length == 0)
-                return lhs;
+            if (rhs.length == 0) return lhs;
             int[] result = new int[lhs.length];
             for (int i = 0; i < rhs.length; i++)
                 result[i] = lhs[rhs[i]];
-            if (lhs.length > rhs.length)
-                arraycopy(lhs, rhs.length, result, rhs.length, lhs.length - rhs.length);
+            if (lhs.length > rhs.length) arraycopy(lhs, rhs.length, result, rhs.length, lhs.length - rhs.length);
             return result;
         }
-        if (lhs.length == 0)
-            return rhs;
+        if (lhs.length == 0) return rhs;
         int[] result = new int[rhs.length];
         for (int i = 0; i < rhs.length; i++) {
             int n = rhs[i];
@@ -369,20 +362,30 @@ class TestUtil {
      * Apply the ranking to the input array. An element at {@code i} is moved to {@code ranking[i]}.
      * Indexes that are greater or equal to the length of the ranking are not moved.
      * This method does not validate that the first argument is indeed a ranking.
+     *
      * @param ranking a ranking
-     * @param input an input array
+     * @param input   an input array
      * @return the result of applying the ranking to the input
-     * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
+     * @throws java.lang.IllegalArgumentException       if the length of {@code input} is less than the length of {@code ranking}
      * @throws java.lang.ArrayIndexOutOfBoundsException can be thrown if the {@code ranking} argument is not a ranking
      */
     static int[] applyRanking(int[] ranking, int[] input) {
         if (ranking.length < input.length)
-            throw new IllegalArgumentException("not enough input: minimum input length is " + input.length
-                    + ", but input length is " + ranking.length);
+            throw new IllegalArgumentException("not enough input: minimum input length is " + input.length + ", but input length is " + ranking.length);
         int[] result = new int[input.length];
         for (int i = 0; i < ranking.length; i += 1) {
             result[ranking[i]] = input[i];
         }
         return result;
+    }
+
+    static int[] randomRanking(int n) {
+        List<Integer> rr = new ArrayList<>(IntStream.range(0, n).boxed().toList());
+        Collections.shuffle(rr);
+        return rr.stream().mapToInt(Integer::intValue).toArray();
+    }
+
+    static Permutation randomPermutation(int n) {
+        return Permutation.fromRanking(randomRanking(n));
     }
 }

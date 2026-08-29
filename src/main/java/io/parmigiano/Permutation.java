@@ -1,6 +1,11 @@
 package io.parmigiano;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static io.parmigiano.CycleUtil.chaseCycle;
 import static io.parmigiano.Preconditions.checkState;
@@ -74,7 +79,7 @@ public final class Permutation {
 
     public int[] toRanking() {
         int[] ints = Rankings.identityRanking(maxMovedIndex + 1);
-        return Rankings.invert(apply(ints));
+        return inverseApply(ints);
     }
 
     private static int[] reverse(int[] cycle) {
@@ -90,23 +95,43 @@ public final class Permutation {
     }
 
     /**
-     * Apply this operation to produce a new array. This method does not modify the input.
+     * Apply this operation to produce a new array. The input array is not modified.
      *
      * @param a an array of length not less than {@code this.length()}
      * @return the result of applying this permutation to {@code a}
-     * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
+     * @throws IllegalArgumentException if {@code a.length < this.length()}
      */
     public int[] apply(int[] a) {
-        int[] copy = Arrays.copyOf(a, a.length);
-        ArrayUtil.checkLength(maxMovedIndex, copy.length);
+        ArrayUtil.checkLength(maxMovedIndex, a.length);
+        int[] result = Arrays.copyOf(a, a.length);
         for (int[] cycle : cycles) {
             for (int j = cycle.length - 2; j >= 0; j--) {
-                int temp = copy[cycle[j + 1]];
-                copy[cycle[j + 1]] = copy[cycle[j]];
-                copy[cycle[j]] = temp;
+                int temp = result[cycle[j + 1]];
+                result[cycle[j + 1]] = result[cycle[j]];
+                result[cycle[j]] = temp;
             }
         }
-        return copy;
+        return result;
+    }
+
+    /**
+     * Apply the inverse of this permutation to produce a new array.
+     *
+     * @param a an array of length not less than {@code this.length()}
+     * @return the result of applying the inverse permutation to {@code a}
+     * @throws IllegalArgumentException if {@code a.length < this.length()}
+     */
+    public int[] inverseApply(int[] a) {
+        ArrayUtil.checkLength(maxMovedIndex, a.length);
+        int[] result = Arrays.copyOf(a, a.length);
+        for (int[] cycle : cycles) {
+            for (int j = 0; j < cycle.length - 1; j++) {
+                int temp = result[cycle[j + 1]];
+                result[cycle[j + 1]] = result[cycle[j]];
+                result[cycle[j]] = temp;
+            }
+        }
+        return result;
     }
 
     /**
@@ -114,7 +139,7 @@ public final class Permutation {
      *
      * @param a a list of size not less than {@code this.length()}
      * @return the result of applying this permutation to {@code a}
-     * @throws java.lang.IllegalArgumentException if {@code a.size() < this.length()}
+     * @throws IllegalArgumentException if {@code a.size() < this.length()}
      */
     public <E> List<E> apply(List<E> a) {
         List<E> copy = new ArrayList<>(a);

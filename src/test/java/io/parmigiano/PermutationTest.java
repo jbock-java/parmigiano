@@ -410,5 +410,14 @@ class PermutationTest {
         assertEquals("(4 1) (3 2)", cycle(2, 3).compose(cycle(1, 4)).normalize().toString());
         assertEquals("(4 1) (3 2)", cycle(1, 4).compose(cycle(2, 3)).normalize().toString());
     }
+
+    @Test
+    void testInverseApply() {
+        int[] input = Rankings.identityRanking(100);
+        for (int __ = 0; __ < 100; __++) {
+            Permutation p = TestUtil.randomPermutation(100);
+            assertArrayEquals(p.invert().apply(input), p.inverseApply(input));
+        }
+    }
 }
 
