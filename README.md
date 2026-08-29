@@ -1,4 +1,4 @@
-[![parmigiano](https://maven-badges.herokuapp.com/maven-central/io.github.jbock-java/parmigiano/badge.svg?subject=parmigiano)](https://maven-badges.herokuapp.com/maven-central/io.github.jbock-java/parmigiano)
+[![parmigiano](https://img.shields.io/maven-central/v/io.github.jbock-java/parmigiano?label=parmigiano)](https://central.sonatype.com/artifact/io.github.jbock-java/parmigiano)
 
 This library does finite permutations in Java.
 
