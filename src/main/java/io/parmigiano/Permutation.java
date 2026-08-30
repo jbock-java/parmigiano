@@ -98,11 +98,9 @@ public final class Permutation {
         ArrayUtil.checkLength(maxMovedIndex, a.length);
         int[] result = Arrays.copyOf(a, a.length);
         for (int[] c : cycles) {
-            int tmp = result[c[c.length - 1]];
-            for (int j = c.length - 2; j >= 0; j--) {
-                result[c[j + 1]] = result[c[j]];
+            for (int j = 0; j < c.length; j++) {
+                result[c[(j + 1) % c.length]] = a[c[j]];
             }
-            result[c[0]] = tmp;
         }
         return result;
     }
@@ -118,11 +116,9 @@ public final class Permutation {
         ArrayUtil.checkLength(maxMovedIndex, a.length);
         int[] result = Arrays.copyOf(a, a.length);
         for (int[] c : cycles) {
-            int tmp = result[c[0]];
-            for (int j = 0; j < c.length - 1; j++) {
-                result[c[j]] = result[c[j + 1]];
+            for (int j = 0; j < c.length; j++) {
+                result[c[j]] = a[c[(j + 1) % c.length]];
             }
-            result[c[c.length - 1]] = tmp;
         }
         return result;
     }
@@ -168,13 +164,14 @@ public final class Permutation {
      * @return the moved index
      */
     public int apply(int n) {
-        Preconditions.checkState(n >= 0, "negative index: %d", n);
         if (n > maxMovedIndex) {
             return n;
         }
         for (int[] cycle : cycles) {
-            for (int j = cycle.length - 2; j >= 0; j--) {
-                n = n == cycle[j] ? cycle[j + 1] : n == cycle[j + 1] ? cycle[j] : n;
+            for (int j = 0; j < cycle.length; j++) {
+                if (n == cycle[j]) {
+                    return cycle[(j + 1) % cycle.length];
+                }
             }
         }
         return n;

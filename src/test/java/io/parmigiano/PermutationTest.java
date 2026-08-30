@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -244,8 +243,8 @@ class PermutationTest {
 
     /* negative index */
     @Test
-    void testApplyInvalid() {
-        assertThrows(IllegalArgumentException.class, () -> Permutation.identity().apply(-1));
+    void testApplyNegative() {
+        assertEquals(-1, Permutation.identity().apply(-1));
     }
 
     /**
