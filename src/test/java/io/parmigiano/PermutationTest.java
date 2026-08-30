@@ -281,10 +281,10 @@ class PermutationTest {
     private void testFromQuickly2() {
         int size = 2048;
         int[] a = Rankings.random(size);
-        Permutation random;
-        do {
+        Permutation random = Permutation.identity();
+        while (random.isIdentity()) {
             random = Permutation.random((int) (Math.random() * size));
-        } while (random.isIdentity());
+        }
         int[] b = random.apply(a);
         assertFalse(Arrays.equals(a, b));
         assertArrayEquals(Permutation.taking(a).to(b).apply(a), b);

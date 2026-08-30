@@ -73,6 +73,9 @@ public final class Permutation {
     }
 
     private static int[] reverse(int[] cycle) {
+        if (cycle.length == 2) {
+            return cycle;
+        }
         int[] inverse = new int[cycle.length];
         for (int i = 0; i < cycle.length; i++) {
             inverse[i] = cycle[cycle.length - 1 - i];
