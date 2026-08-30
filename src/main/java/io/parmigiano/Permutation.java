@@ -1,5 +1,7 @@
 package io.parmigiano;
 
+import io.parmigiano.CycleUtil.CycleResult;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -18,10 +20,6 @@ public final class Permutation {
     private final int maxMovedIndex;
     private final int[][] cycles;
 
-    private Permutation(int[][] cycles) {
-        this(cycles, maxIndex(cycles));
-    }
-
     private Permutation(int[][] cycles, int maxMovedIndex) {
         this.maxMovedIndex = maxMovedIndex;
         this.cycles = cycles;
@@ -32,7 +30,11 @@ public final class Permutation {
         cycle[0] = i1;
         cycle[1] = i2;
         System.arraycopy(more, 0, cycle, 2, more.length);
-        return new Permutation(new int[][]{cycle});
+        int max = 0;
+        for (int j : cycle) {
+            max = Math.max(max, j);
+        }
+        return new Permutation(new int[][]{cycle}, max);
     }
 
     public static Permutation cycle(int i1, int i2) {
@@ -50,11 +52,11 @@ public final class Permutation {
     }
 
     public static Permutation fromRanking(int... ranking) {
-        int[][] cyclops = CycleUtil.toCycles(ranking);
-        if (cyclops.length == 0) {
+        CycleResult cyclops = CycleUtil.toCycles(ranking);
+        if (cyclops.lengths.length == 0 || cyclops.lengths[0] == 0) {
             return IDENTITY;
         }
-        return new Permutation(cyclops);
+        return new Permutation(cyclops.toCycles(), cyclops.max);
     }
 
     public Permutation invert() {
@@ -195,18 +197,22 @@ public final class Permutation {
      * @return the composition or product
      */
     public Permutation compose(Permutation other) {
-        if (maxMovedIndex == 0) {
+        if (isIdentity()) {
             return other;
         }
-        if (other.maxMovedIndex == 0) {
+        if (other.isIdentity()) {
             return this;
         }
-        int max = Math.max(maxMovedIndex, other.maxMovedIndex);
-        List<int[]> result = new ArrayList<>((max + 1) / 2);
-        boolean[] done = new boolean[max + 1];
-        int[] acc = new int[max + 1];
+        int maxmov = Math.max(maxMovedIndex, other.maxMovedIndex);
+        int[] cycles = new int[maxmov + 1];
+        int[] lengths = new int[(maxmov + 1) / 2];
+        int max = 0;
+        boolean[] done = new boolean[maxmov + 1];
+        int[] acc = new int[maxmov + 1];
         IntUnaryOperator op = n -> apply(other.apply(n));
-        for (int i = 0; i < max; i++) {
+        int cyclesPos = 0;
+        int lengthsPos = 0;
+        for (int i = 0; i < maxmov; i++) {
             if (done[i]) {
                 continue;
             }
@@ -217,24 +223,18 @@ public final class Permutation {
             }
             int[] newc = Arrays.copyOf(acc, len);
             for (int j = 0; j < len; j++) {
+                max = Math.max(max, newc[j]);
                 done[newc[j]] = true;
             }
-            result.add(newc);
+            System.arraycopy(acc, 0, cycles, cyclesPos, len);
+            cyclesPos += len;
+            lengths[lengthsPos++] = len;
         }
-        if (result.isEmpty()) {
+        CycleResult cyclops = new CycleResult(max, lengths, cycles);
+        if (cyclops.lengths.length == 0 || cyclops.lengths[0] == 0) {
             return IDENTITY;
         }
-        return new Permutation(result.toArray(new int[0][]));
-    }
-
-    private static int maxIndex(int[][] cycles) {
-        int result = 0;
-        for (int[] c : cycles) {
-            for (int j : c) {
-                result = Math.max(result, j);
-            }
-        }
-        return result;
+        return new Permutation(cyclops.toCycles(), cyclops.max);
     }
 
     /**
@@ -252,7 +252,7 @@ public final class Permutation {
     }
 
     public boolean isIdentity() {
-        return cycles.length == 0;
+        return maxMovedIndex == 0;
     }
 
     public Permutation pow(int n) {

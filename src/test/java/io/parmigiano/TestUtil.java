@@ -108,8 +108,11 @@ class TestUtil {
         List<Permutation> result = new ArrayList<>();
         outer:
         for (Permutation a : input) {
-            for (Permutation b : input)
-                if (!a.compose(b).equals(b.compose(a))) continue outer;
+            for (Permutation b : input) {
+                if (!a.compose(b).equals(b.compose(a))) {
+                    continue outer;
+                }
+            }
             result.add(a);
         }
         return result;
