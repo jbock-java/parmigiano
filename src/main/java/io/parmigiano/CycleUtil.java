@@ -48,24 +48,10 @@ final class CycleUtil {
         return new Permutation(lengths, cycles, max);
     }
 
-    static int[] rotateToIndex(int[] a, int n) {
-        if (n == 0) {
-            return a;
-        }
-        int[] result = new int[a.length];
-        for (int i = 0; i < a.length; i++) {
-            result[(a.length + (i - n)) % a.length] = a[i];
-        }
-        return result;
-    }
-
-    static int maxIndex(int[] a) {
-        if (a.length == 0) {
-            return -1;
-        }
+    static int maxOff(int[] a, int off, int len) {
         int result = 0;
-        for (int i = 0; i < a.length; i++) {
-            if (a[i] > a[result]) {
+        for (int i = 0; i < len; i++) {
+            if (a[off + i] > a[off + result]) {
                 result = i;
             }
         }

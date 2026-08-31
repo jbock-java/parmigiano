@@ -1,7 +1,6 @@
 package io.parmigiano;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -403,7 +402,6 @@ class PermutationTest {
         assertEquals("identity()", Permutation.cycle(0, 1).compose(Permutation.cycle(0, 1)).print());
     }
 
-    @Disabled("see todo in normalize method")
     @Test
     void testNormalize() {
         assertEquals("(4 1 3)", cycle(1, 3, 4).normalize().toString());

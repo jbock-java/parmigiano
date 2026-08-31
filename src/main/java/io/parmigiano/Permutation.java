@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.IntUnaryOperator;
 
+import static java.lang.Math.floorMod;
 import static java.util.stream.Collectors.joining;
 
 /**
@@ -99,7 +100,7 @@ public final class Permutation {
                 break;
             }
             for (int j = 0; j < len; j++) {
-                result[cycles[off + (j + 1) % len]] = a[cycles[off + j]];
+                result[cycles[off + j]] = a[cycles[off + floorMod(j - 1, len)]];
             }
             off += len;
         }
@@ -146,7 +147,7 @@ public final class Permutation {
                 break;
             }
             for (int j = 0; j < len; j++) {
-                result[cycles[off + (j + 1) % len]] = a[cycles[off + j]];
+                result[cycles[off + j]] = a[cycles[off + floorMod(j - 1, len)]];
             }
             off += len;
         }
@@ -165,7 +166,7 @@ public final class Permutation {
                 break;
             }
             for (int j = 0; j < len; j++) {
-                result[cycles[off + (j + 1) % len]] = a.charAt(cycles[off + j]);
+                result[cycles[off + j]] = a.charAt(cycles[off + floorMod(j - 1, len)]);
             }
             off += len;
         }
@@ -402,11 +403,15 @@ public final class Permutation {
                 .collect(joining(" "));
     }
 
+    // todo this is inefficient
     private int[][] classicCycles() {
         int[][] result = new int[lengths.length][];
         int off = 0;
         for (int i = 0; i < lengths.length; i++) {
             int len = lengths[i];
+            if (len == 0) {
+                break;
+            }
             result[i] = Arrays.copyOfRange(cycles, off, off + len);
             off += len;
         }
@@ -435,15 +440,19 @@ public final class Permutation {
     }
 
     public Permutation normalize() {
-        int[][] newCycles = new int[cycles.length][];
-        // todo fix after change in cycle representation
-        return this;
-//        for (int i = 0; i < cycles.length; i++) {
-//            int[] cycle = cycles[i];
-//            newCycles[i] = CycleUtil.rotateToIndex(cycle, CycleUtil.maxIndex(cycle));
-//        }
-//        Arrays.sort(newCycles, Comparator.<int[]>comparingInt(o -> o[0]).reversed());
-//        return new Permutation(newCycles, maxMovedIndex);
+        int[] result = new int[cycles.length];
+        int off = 0;
+        for (int len : lengths) {
+            if (len == 0) {
+                break;
+            }
+            int n = CycleUtil.maxOff(cycles, off, len);
+            for (int j = 0; j < len; j++) {
+                result[off + j] = cycles[off + (j + n) % len];
+            }
+            off += len;
+        }
+        return new Permutation(lengths, result, maxMovedIndex);
     }
 
     public static TakingBuilderInt taking(int[] a) {
