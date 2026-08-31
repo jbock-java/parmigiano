@@ -126,35 +126,34 @@ public final class Permutation {
     /**
      * Apply this operation to produce a new list. This method does not modify the input.
      *
-     * @param a a list of size not less than {@code this.length()}
+     * @param list a list of size not less than {@code this.length()}
      * @return the result of applying this permutation to {@code a}
      * @throws IllegalArgumentException if {@code a.size() < this.length()}
      */
-    public <E> List<E> apply(List<E> a) {
-        List<E> copy = new ArrayList<>(a);
-        ArrayUtil.checkLength(maxMovedIndex, copy.size());
-        for (int[] cycle : cycles) {
-            for (int j = cycle.length - 2; j >= 0; j--) {
-                E temp = copy.get(cycle[j + 1]);
-                copy.set(cycle[j + 1], copy.get(cycle[j]));
-                copy.set(cycle[j], temp);
+    public <E> List<E> apply(List<E> list) {
+        ArrayUtil.checkLength(maxMovedIndex, list.size());
+        Object[] a = list.toArray(new Object[0]);
+        Object[] result = Arrays.copyOf(a, a.length);
+        for (int[] c : cycles) {
+            for (int j = 0; j < c.length; j++) {
+                result[c[(j + 1) % c.length]] = a[c[j]];
             }
         }
-        return copy;
+        @SuppressWarnings("unchecked")
+        E[] foo = (E[]) result;
+        return List.of(foo);
     }
 
-    public String apply(String s) {
-        char[] dst = new char[s.length()];
-        s.getChars(0, s.length(), dst, 0);
-        ArrayUtil.checkLength(maxMovedIndex, dst.length);
-        for (int[] cycle : cycles) {
-            for (int j = cycle.length - 2; j >= 0; j--) {
-                char temp = dst[cycle[j + 1]];
-                dst[cycle[j + 1]] = dst[cycle[j]];
-                dst[cycle[j]] = temp;
+    public String apply(String a) {
+        ArrayUtil.checkLength(maxMovedIndex, a.length());
+        char[] result = new char[a.length()];
+        a.getChars(0, a.length(), result, 0);
+        for (int[] c : cycles) {
+            for (int j = 0; j < c.length; j++) {
+                result[c[(j + 1) % c.length]] = a.charAt(c[j]);
             }
         }
-        return new String(dst);
+        return new String(result);
     }
 
     /**
@@ -203,16 +202,16 @@ public final class Permutation {
         if (other.isIdentity()) {
             return this;
         }
-        int maxmov = Math.max(maxMovedIndex, other.maxMovedIndex);
-        int[] cycles = new int[maxmov + 1];
-        int[] lengths = new int[(maxmov + 1) / 2];
+        int new_len = Math.max(maxMovedIndex, other.maxMovedIndex) + 1;
+        int[] cycles = new int[new_len];
+        int[] lengths = new int[(new_len) / 2];
         int max = 0;
-        boolean[] done = new boolean[maxmov + 1];
-        int[] acc = new int[maxmov + 1];
+        boolean[] done = new boolean[new_len];
+        int[] acc = new int[new_len];
         IntUnaryOperator op = n -> apply(other.apply(n));
         int cyclesPos = 0;
         int lengthsPos = 0;
-        for (int i = 0; i < maxmov; i++) {
+        for (int i = 0; i < new_len; i++) {
             if (done[i]) {
                 continue;
             }
