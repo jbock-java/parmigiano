@@ -8,38 +8,6 @@ final class CycleUtil {
     private CycleUtil() {
     }
 
-    static final class CycleResult {
-        final int max;
-        final int[] lengths;
-        final int[] cycles;
-
-        CycleResult(
-                int max,
-                int[] lengths,
-                int[] cycles) {
-            this.max = max;
-            this.lengths = lengths;
-            this.cycles = cycles;
-        }
-
-        int[][] toCycles() {
-                int[][] result = new int[lengths.length][];
-                int cyclesPos = 0;
-                int i;
-                for (i = 0; i < lengths.length; i++) {
-                    int len = lengths[i];
-                    if (len == 0) {
-                        break;
-                    }
-                    int[] cycle = new int[len];
-                    System.arraycopy(cycles, cyclesPos, cycle, 0, len);
-                    result[i] = cycle;
-                    cyclesPos += len;
-                }
-                return Arrays.copyOf(result, i);
-            }
-        }
-
     /**
      * Find all nontrivial cycles in the input ranking.
      *
@@ -47,7 +15,7 @@ final class CycleUtil {
      *
      * @return cycles of length 2 or greater
      */
-    static CycleResult toCycles(int[] ranking) {
+    static Permutation toCycles(int[] ranking) {
         int[] cycles = new int[ranking.length];
         int[] lengths = new int[ranking.length / 2];
         int max = 0;
@@ -74,7 +42,10 @@ final class CycleUtil {
             cyclesPos += len;
             lengths[lengthsPos++] = len;
         }
-        return new CycleResult(max, lengths, cycles);
+        if (lengths.length == 0 || lengths[0] == 0) {
+            return Permutation.IDENTITY;
+        }
+        return new Permutation(lengths, cycles, max);
     }
 
     static int[] rotateToIndex(int[] a, int n) {

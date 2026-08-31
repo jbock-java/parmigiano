@@ -1,7 +1,5 @@
 package io.parmigiano;
 
-import io.parmigiano.CycleUtil.CycleResult;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -15,13 +13,18 @@ import static java.util.stream.Collectors.joining;
  */
 public final class Permutation {
 
-    private static final Permutation IDENTITY = new Permutation(new int[0][], 0);
+    static final Permutation IDENTITY = new Permutation(new int[0], new int[0], 0);
 
     private final int maxMovedIndex;
-    private final int[][] cycles;
+    private final int[] lengths;
+    private final int[] cycles;
 
-    private Permutation(int[][] cycles, int maxMovedIndex) {
+    Permutation(
+            int[] lengths,
+            int[] cycles,
+            int maxMovedIndex) {
         this.maxMovedIndex = maxMovedIndex;
+        this.lengths = lengths;
         this.cycles = cycles;
     }
 
@@ -29,17 +32,18 @@ public final class Permutation {
         int[] cycle = new int[more.length + 2];
         cycle[0] = i1;
         cycle[1] = i2;
-        System.arraycopy(more, 0, cycle, 2, more.length);
-        int max = 0;
-        for (int j : cycle) {
-            max = Math.max(max, j);
+        int max = Math.max(i1, i2);
+        for (int j = 0; j < more.length; j++) {
+            int n = more[j];
+            cycle[j + 2] = n;
+            max = Math.max(max, n);
         }
-        return new Permutation(new int[][]{cycle}, max);
+        return new Permutation(new int[]{cycle.length}, cycle, max);
     }
 
     public static Permutation cycle(int i1, int i2) {
         int[] cycle = {i1, i2};
-        return new Permutation(new int[][]{cycle}, Math.max(i1, i2));
+        return new Permutation(new int[]{2}, cycle, Math.max(i1, i2));
     }
 
     /**
@@ -52,35 +56,27 @@ public final class Permutation {
     }
 
     public static Permutation fromRanking(int... ranking) {
-        CycleResult cyclops = CycleUtil.toCycles(ranking);
-        if (cyclops.lengths.length == 0 || cyclops.lengths[0] == 0) {
-            return IDENTITY;
-        }
-        return new Permutation(cyclops.toCycles(), cyclops.max);
+        return CycleUtil.toCycles(ranking);
     }
 
     public Permutation invert() {
-        int[][] newCycles = new int[cycles.length][];
-        for (int i = 0; i < cycles.length; i++) {
-            newCycles[i] = reverse(cycles[i]);
+        int[] inverse = Arrays.copyOf(cycles, cycles.length);
+        int off = 0;
+        for (int len : lengths) {
+            if (len == 0) {
+                break;
+            }
+            for (int j = 0; j < len; j++) {
+                inverse[j + off] = cycles[off + len - 1 - j];
+            }
+            off += len;
         }
-        return new Permutation(newCycles, maxMovedIndex);
+        return new Permutation(lengths, inverse, maxMovedIndex);
     }
 
     public int[] toRanking() {
         int[] ints = Rankings.identityRanking(maxMovedIndex + 1);
         return inverseApply(ints);
-    }
-
-    private static int[] reverse(int[] cycle) {
-        if (cycle.length == 2) {
-            return cycle;
-        }
-        int[] inverse = new int[cycle.length];
-        for (int i = 0; i < cycle.length; i++) {
-            inverse[i] = cycle[cycle.length - 1 - i];
-        }
-        return inverse;
     }
 
     public static Permutation random(int length) {
@@ -97,10 +93,15 @@ public final class Permutation {
     public int[] apply(int[] a) {
         ArrayUtil.checkLength(maxMovedIndex, a.length);
         int[] result = Arrays.copyOf(a, a.length);
-        for (int[] c : cycles) {
-            for (int j = 0; j < c.length; j++) {
-                result[c[(j + 1) % c.length]] = a[c[j]];
+        int off = 0;
+        for (int len : lengths) {
+            if (len == 0) {
+                break;
             }
+            for (int j = 0; j < len; j++) {
+                result[cycles[off + (j + 1) % len]] = a[cycles[off + j]];
+            }
+            off += len;
         }
         return result;
     }
@@ -115,10 +116,15 @@ public final class Permutation {
     public int[] inverseApply(int[] a) {
         ArrayUtil.checkLength(maxMovedIndex, a.length);
         int[] result = Arrays.copyOf(a, a.length);
-        for (int[] c : cycles) {
-            for (int j = 0; j < c.length; j++) {
-                result[c[j]] = a[c[(j + 1) % c.length]];
+        int off = 0;
+        for (int len : lengths) {
+            if (len == 0) {
+                break;
             }
+            for (int j = 0; j < len; j++) {
+                result[cycles[off + j]] = a[cycles[off + (j + 1) % len]];
+            }
+            off += len;
         }
         return result;
     }
@@ -134,10 +140,15 @@ public final class Permutation {
         ArrayUtil.checkLength(maxMovedIndex, list.size());
         Object[] a = list.toArray(new Object[0]);
         Object[] result = Arrays.copyOf(a, a.length);
-        for (int[] c : cycles) {
-            for (int j = 0; j < c.length; j++) {
-                result[c[(j + 1) % c.length]] = a[c[j]];
+        int off = 0;
+        for (int len : lengths) {
+            if (len == 0) {
+                break;
             }
+            for (int j = 0; j < len; j++) {
+                result[cycles[off + (j + 1) % len]] = a[cycles[off + j]];
+            }
+            off += len;
         }
         @SuppressWarnings("unchecked")
         E[] foo = (E[]) result;
@@ -148,10 +159,15 @@ public final class Permutation {
         ArrayUtil.checkLength(maxMovedIndex, a.length());
         char[] result = new char[a.length()];
         a.getChars(0, a.length(), result, 0);
-        for (int[] c : cycles) {
-            for (int j = 0; j < c.length; j++) {
-                result[c[(j + 1) % c.length]] = a.charAt(c[j]);
+        int off = 0;
+        for (int len : lengths) {
+            if (len == 0) {
+                break;
             }
+            for (int j = 0; j < len; j++) {
+                result[cycles[off + (j + 1) % len]] = a.charAt(cycles[off + j]);
+            }
+            off += len;
         }
         return new String(result);
     }
@@ -166,12 +182,17 @@ public final class Permutation {
         if (n > maxMovedIndex) {
             return n;
         }
-        for (int[] cycle : cycles) {
-            for (int j = 0; j < cycle.length; j++) {
-                if (n == cycle[j]) {
-                    return cycle[(j + 1) % cycle.length];
+        int off = 0;
+        for (int len : lengths) {
+            if (len == 0) {
+                break;
+            }
+            for (int j = 0; j < len; j++) {
+                if (n == cycles[off + j]) {
+                    return cycles[off + (j + 1) % len];
                 }
             }
+            off += len;
         }
         return n;
     }
@@ -229,11 +250,10 @@ public final class Permutation {
             cyclesPos += len;
             lengths[lengthsPos++] = len;
         }
-        CycleResult cyclops = new CycleResult(max, lengths, cycles);
-        if (cyclops.lengths.length == 0 || cyclops.lengths[0] == 0) {
+        if (lengths.length == 0 || lengths[0] == 0) {
             return IDENTITY;
         }
-        return new Permutation(cyclops.toCycles(), cyclops.max);
+        return new Permutation(lengths, cycles, max);
     }
 
     /**
@@ -281,7 +301,14 @@ public final class Permutation {
      * @return the number of cycles
      */
     public int numCycles() {
-        return cycles.length;
+        int num = 0;
+        for (int len : lengths) {
+            if (len == 0) {
+                return num;
+            }
+            num++;
+        }
+        return num;
     }
 
     /**
@@ -291,8 +318,11 @@ public final class Permutation {
      */
     public int signature() {
         int evenLengthCycles = 0;
-        for (int[] cycle : cycles) {
-            if (cycle.length % 2 == 0) {
+        for (int len : lengths) {
+            if (len == 0) {
+                break;
+            }
+            if (len % 2 == 0) {
                 evenLengthCycles++;
             }
         }
@@ -365,32 +395,55 @@ public final class Permutation {
         if (isIdentity()) {
             return "id";
         }
-        return Arrays.stream(cycles).map(Arrays::stream).map(s -> s.mapToObj(Integer::toString)).map(s -> s.collect(joining(" ", "(", ")"))).collect(joining(" "));
+        return Arrays.stream(classicCycles())
+                .map(Arrays::stream)
+                .map(s -> s.mapToObj(Integer::toString))
+                .map(s -> s.collect(joining(" ", "(", ")")))
+                .collect(joining(" "));
+    }
+
+    private int[][] classicCycles() {
+        int[][] result = new int[lengths.length][];
+        int off = 0;
+        for (int i = 0; i < lengths.length; i++) {
+            int len = lengths[i];
+            result[i] = Arrays.copyOfRange(cycles, off, off + len);
+            off += len;
+        }
+        return result;
     }
 
     public String print() {
         if (isIdentity()) {
             return "identity()";
         }
-        String receiver = printCycle(cycles[0]);
-        if (cycles.length == 1) {
+        int[][] classic = classicCycles();
+        String receiver = printCycle(classic[0]);
+        if (classic.length == 1) {
             return receiver;
         }
-        return receiver + Arrays.stream(cycles).skip(1).map(Permutation::printCycle).collect(joining(").compose(", ".compose(", ")"));
+        return receiver + Arrays.stream(classic)
+                .skip(1)
+                .map(Permutation::printCycle)
+                .collect(joining(").compose(", ".compose(", ")"));
     }
 
     private static String printCycle(int[] cycle) {
-        return Arrays.stream(cycle).mapToObj(Integer::toString).collect(joining(", ", "create(", ")"));
+        return Arrays.stream(cycle)
+                .mapToObj(Integer::toString)
+                .collect(joining(", ", "create(", ")"));
     }
 
     public Permutation normalize() {
         int[][] newCycles = new int[cycles.length][];
-        for (int i = 0; i < cycles.length; i++) {
-            int[] cycle = cycles[i];
-            newCycles[i] = CycleUtil.rotateToIndex(cycle, CycleUtil.maxIndex(cycle));
-        }
-        Arrays.sort(newCycles, Comparator.<int[]>comparingInt(o -> o[0]).reversed());
-        return new Permutation(newCycles, maxMovedIndex);
+        // todo fix after change in cycle representation
+        return this;
+//        for (int i = 0; i < cycles.length; i++) {
+//            int[] cycle = cycles[i];
+//            newCycles[i] = CycleUtil.rotateToIndex(cycle, CycleUtil.maxIndex(cycle));
+//        }
+//        Arrays.sort(newCycles, Comparator.<int[]>comparingInt(o -> o[0]).reversed());
+//        return new Permutation(newCycles, maxMovedIndex);
     }
 
     public static TakingBuilderInt taking(int[] a) {
