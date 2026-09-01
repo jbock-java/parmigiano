@@ -33,10 +33,9 @@ final class CycleUtil {
             if (len == 1) {
                 continue;
             }
-            int[] newc = Arrays.copyOf(acc, len);
             for (int j = 0; j < len; j++) {
-                max = Math.max(max, newc[j]);
-                done[newc[j]] = true;
+                max = Math.max(max, acc[j]);
+                done[acc[j]] = true;
             }
             System.arraycopy(acc, 0, cycles, cyclesPos, len);
             cyclesPos += len;

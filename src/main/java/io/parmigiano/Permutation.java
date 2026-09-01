@@ -242,10 +242,9 @@ public final class Permutation {
             if (len == 1) {
                 continue;
             }
-            int[] newc = Arrays.copyOf(acc, len);
-            for (int j = 0; j < len; j++) {
-                max = Math.max(max, newc[j]);
-                done[newc[j]] = true;
+            for (int k = 0; k < len; k++) {
+                max = Math.max(max, acc[k]);
+                done[acc[k]] = true;
             }
             System.arraycopy(acc, 0, cycles, cyclesPos, len);
             cyclesPos += len;
@@ -389,7 +388,7 @@ public final class Permutation {
     public int hashCode() {
         int result = 1;
         int[] a = Rankings.identityRanking(maxMovedIndex + 1);
-        int[] b = other.apply(a);
+        int[] b = apply(a);
         return Arrays.hashCode(b);
     }
 
@@ -405,8 +404,8 @@ public final class Permutation {
                 break;
             }
             String[] c = new String[len];
-            for (int j = 0; j < len; j++) {
-                c[j] = Integer.toString(cycles[off + j]);
+            for (int k = 0; k < len; k++) {
+                c[k] = Integer.toString(cycles[off + k]);
             }
             result[j] = String.join(" ", c);
             off += len;
