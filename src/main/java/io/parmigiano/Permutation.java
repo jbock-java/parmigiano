@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.function.IntUnaryOperator;
 
 import static java.lang.Math.floorMod;
-import static java.util.stream.Collectors.joining;
 
 /**
  * <p>An operation that shuffles a list.
@@ -393,50 +392,22 @@ public final class Permutation {
 
     @Override
     public String toString() {
-        if (isIdentity()) {
-            return "id";
-        }
-        return Arrays.stream(classicCycles())
-                .map(Arrays::stream)
-                .map(s -> s.mapToObj(Integer::toString))
-                .map(s -> s.collect(joining(" ", "(", ")")))
-                .collect(joining(" "));
-    }
-
-    // todo this is inefficient
-    private int[][] classicCycles() {
-        int[][] result = new int[lengths.length][];
+        String[] result = new String[lengths.length];
         int off = 0;
-        for (int i = 0; i < lengths.length; i++) {
+        int i = 0;
+        for (; i < lengths.length; i++) {
             int len = lengths[i];
             if (len == 0) {
                 break;
             }
-            result[i] = Arrays.copyOfRange(cycles, off, off + len);
+            String[] c = new String[len];
+            for (int j = 0; j < len; j++) {
+                c[j] = Integer.toString(cycles[off + j]);
+            }
+            result[i] = String.join(" ", c);
             off += len;
         }
-        return result;
-    }
-
-    public String print() {
-        if (isIdentity()) {
-            return "identity()";
-        }
-        int[][] classic = classicCycles();
-        String receiver = printCycle(classic[0]);
-        if (classic.length == 1) {
-            return receiver;
-        }
-        return receiver + Arrays.stream(classic)
-                .skip(1)
-                .map(Permutation::printCycle)
-                .collect(joining(").compose(", ".compose(", ")"));
-    }
-
-    private static String printCycle(int[] cycle) {
-        return Arrays.stream(cycle)
-                .mapToObj(Integer::toString)
-                .collect(joining(", ", "create(", ")"));
+        return '(' + String.join(") (", Arrays.copyOf(result, i)) + ')';
     }
 
     public Permutation normalize() {

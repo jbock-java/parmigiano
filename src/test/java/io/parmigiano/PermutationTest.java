@@ -392,14 +392,8 @@ class PermutationTest {
     void testToString() {
         assertEquals("(1 4) (2 3)", Permutation.cycle(1, 4).compose(Permutation.cycle(2, 3)).toString());
         assertEquals("(1 3 4 2)", Permutation.cycle(1, 3, 4, 2).toString());
-        assertEquals("id", Permutation.cycle(0, 1).compose(Permutation.cycle(0, 1)).toString());
-    }
-
-    @Test
-    void testPrint() {
-        assertEquals("create(1, 4).compose(create(2, 3))", Permutation.cycle(1, 4).compose(Permutation.cycle(2, 3)).print());
-        assertEquals("create(1, 3, 4, 2)", Permutation.cycle(1, 3, 4, 2).print());
-        assertEquals("identity()", Permutation.cycle(0, 1).compose(Permutation.cycle(0, 1)).print());
+        assertEquals("(0 2) (1 4 5)", new Permutation(new int[]{2, 3, 0}, new int[]{0, 2, 1, 4, 5, 0}, 5).toString());
+        assertEquals("()", Permutation.cycle(0, 1).compose(Permutation.cycle(0, 1)).toString());
     }
 
     @Test
