@@ -225,18 +225,19 @@ public final class Permutation {
         }
         int new_len = Math.max(maxMovedIndex, other.maxMovedIndex) + 1;
         int[] cycles = new int[new_len];
-        int[] lengths = new int[(new_len) / 2];
+        int[] lengths = new int[new_len / 2];
         int max = 0;
         boolean[] done = new boolean[new_len];
         int[] acc = new int[new_len];
+        // todo inefficient
         IntUnaryOperator op = n -> apply(other.apply(n));
         int cyclesPos = 0;
         int lengthsPos = 0;
-        for (int i = 0; i < new_len; i++) {
-            if (done[i]) {
+        for (int j = 0; j < new_len; j++) {
+            if (done[j]) {
                 continue;
             }
-            acc[0] = i;
+            acc[0] = j;
             int len = CycleUtil.chaseCycle(acc, op);
             if (len == 1) {
                 continue;
@@ -265,6 +266,7 @@ public final class Permutation {
     public static Permutation product(Permutation... permutations) {
         Permutation result = identity();
         for (Permutation permutation : permutations) {
+            // todo inefficient
             result = result.compose(permutation);
         }
         return result;
@@ -275,21 +277,26 @@ public final class Permutation {
     }
 
     public Permutation pow(int n) {
-        if (n == 0 || isIdentity()) {
+        if (n == 0) {
             return identity();
         }
-        Permutation seed = n < 0 ? invert() : this;
-        Permutation result = seed;
-        for (int i = 1; i < Math.abs(n); i += 1) {
-            result = result.compose(seed);
+        Permutation result = this;
+        int abs_n = Math.abs(n);
+        for (int j = 1; j < abs_n; j++) {
+            // todo inefficient
+            result = result.compose(this);
         }
-        return result;
+        if (n < 0) {
+          return result.invert();
+        } else {
+          return result;
+        }
     }
 
     /**
      * Max moved index.
      *
-     * @return the length of this operation
+     * @return the largest {@code i} such that {@code apply(i) != i}
      */
     public int maxMovedIndex() {
         return maxMovedIndex;
@@ -352,13 +359,14 @@ public final class Permutation {
 
     public int order() {
         // LCM?
-        int i = 1;
+        int j = 1;
         Permutation p = this;
         while (!p.isIdentity()) {
-            i += 1;
+            j += 1;
+            // todo inefficient
             p = p.compose(this);
         }
-        return i;
+        return j;
     }
 
     @Override
@@ -374,30 +382,15 @@ public final class Permutation {
         int[] a = Rankings.identityRanking(maxMovedIndex + 1);
         int[] b = apply(a);
         int[] c = other.apply(a);
-        for (int i = 0; i < maxMovedIndex; i++) {
-            if (b[i] != c[i]) {
-                return false;
-            }
-        }
-        return true;
+        return Arrays.equals(b, c);
     }
 
     @Override
     public int hashCode() {
         int result = 1;
-        for (int j : lengths) {
-            if (j == 0) {
-              break;
-            }
-            result = 31 * result + j;
-        }
-        for (int j : cycles) {
-            if (j == 0) {
-              break;
-            }
-            result = 37 * result + j;
-        }
-        return result;
+        int[] a = Rankings.identityRanking(maxMovedIndex + 1);
+        int[] b = other.apply(a);
+        return Arrays.hashCode(b);
     }
 
 
@@ -405,9 +398,9 @@ public final class Permutation {
     public String toString() {
         String[] result = new String[lengths.length];
         int off = 0;
-        int i = 0;
-        for (; i < lengths.length; i++) {
-            int len = lengths[i];
+        int j = 0;
+        for (; j < lengths.length; j++) {
+            int len = lengths[j];
             if (len == 0) {
                 break;
             }
@@ -415,10 +408,10 @@ public final class Permutation {
             for (int j = 0; j < len; j++) {
                 c[j] = Integer.toString(cycles[off + j]);
             }
-            result[i] = String.join(" ", c);
+            result[j] = String.join(" ", c);
             off += len;
         }
-        return '(' + String.join(") (", Arrays.copyOf(result, i)) + ')';
+        return '(' + String.join(") (", Arrays.copyOf(result, j)) + ')';
     }
 
     public Permutation normalize() {
