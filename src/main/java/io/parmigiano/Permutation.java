@@ -364,15 +364,18 @@ public final class Permutation {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null || !(o instanceof Permutation)) {
             return false;
         }
         Permutation other = (Permutation) o;
         if (other.maxMovedIndex != maxMovedIndex) {
             return false;
         }
+        int[] a = Rankings.identityRanking(maxMovedIndex + 1);
+        int[] b = apply(a);
+        int[] c = other.apply(a);
         for (int i = 0; i < maxMovedIndex; i++) {
-            if (apply(i) != other.apply(i)) {
+            if (b[i] != c[i]) {
                 return false;
             }
         }
@@ -382,9 +385,17 @@ public final class Permutation {
     @Override
     public int hashCode() {
         int result = 1;
-        for (int i = 0; i <= maxMovedIndex; i++) {
-            int apply = apply(i);
-            result = 31 * result + apply;
+        for (int j : lengths) {
+            if (j == 0) {
+              break;
+            }
+            result = 31 * result + j;
+        }
+        for (int j : cycles) {
+            if (j == 0) {
+              break;
+            }
+            result = 37 * result + j;
         }
         return result;
     }
