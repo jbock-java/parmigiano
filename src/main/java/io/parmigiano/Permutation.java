@@ -28,14 +28,9 @@ public final class Permutation {
         this.cycles = cycles;
     }
 
-    public static Permutation cycle(int i1, int i2, int... more) {
-        int[] cycle = new int[more.length + 2];
-        cycle[0] = i1;
-        cycle[1] = i2;
-        int max = Math.max(i1, i2);
-        for (int j = 0; j < more.length; j++) {
-            int n = more[j];
-            cycle[j + 2] = n;
+    public static Permutation cycle(int... cycle) {
+        int max = 0;
+        for (int n : cycle) {
             max = Math.max(max, n);
         }
         return new Permutation(new int[]{cycle.length}, cycle, max);
@@ -203,11 +198,8 @@ public final class Permutation {
      * @param other another permutation
      * @return the composition or product
      */
-    public Permutation compose(int i1, int i2, int... other) {
-        if (other.length == 0) {
-            return compose(cycle(i1, i2));
-        }
-        return compose(cycle(i1, i2, other));
+    public Permutation compose(int... other) {
+        return compose(cycle(other));
     }
 
     /**
@@ -371,10 +363,9 @@ public final class Permutation {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || !(o instanceof Permutation)) {
+        if (!(o instanceof Permutation other)) {
             return false;
         }
-        Permutation other = (Permutation) o;
         if (other.maxMovedIndex != maxMovedIndex) {
             return false;
         }

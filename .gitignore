@@ -1,11 +1,6 @@
-build
-.idea
-*.iml
+/build
+/.idea
 *~
-.gradle
+*.swp
+/.gradle
 /gradlew.bat
-/core/out
-/compiler/out
-/examples/out
-/dagger-dagger-2.37
-/dagger-dagger-2.37.tar.gz
