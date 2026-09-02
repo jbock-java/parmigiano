@@ -71,7 +71,9 @@ public final class Permutation {
 
     public int[] toRanking() {
         int[] ints = Rankings.identityRanking(maxMovedIndex + 1);
-        return inverseApply(ints);
+        int[] result = Rankings.identityRanking(maxMovedIndex + 1);
+        apply(ints, result, 1);
+        return result;
     }
 
     public static Permutation random(int length) {
@@ -89,22 +91,8 @@ public final class Permutation {
     public int[] apply(int[] a) {
         ArrayUtil.checkLength(maxMovedIndex, a.length);
         int[] result = Arrays.copyOf(a, a.length);
-        apply(a, result);
+        apply(a, result, -1);
         return result;
-    }
-
-    /**
-     * Apply this operation to the first array. The
-     * first array is not modified. The output is written to the
-     * second array. The contents of the second array are overwritten.
-     *
-     * @param a an array where {@code a.length > maxMovedIndex}
-     * @param out output array where {@code out.length >= a.length}
-     * @throws IllegalArgumentException if {@code a.length <= maxMovedIndex}
-     * or {@code out.length < a.length}
-     */
-    public void apply(int[] a, int[] out) {
-        apply(a, out, -1);
     }
 
     /**
@@ -118,22 +106,8 @@ public final class Permutation {
     public int[] inverseApply(int[] a) {
         ArrayUtil.checkLength(maxMovedIndex, a.length);
         int[] result = Arrays.copyOf(a, a.length);
-        inverseApply(a, result);
+        apply(a, result, 1);
         return result;
-    }
-
-    /**
-     * Apply the inverse of this operation to the first array. The
-     * first array is not modified. The output is written to the
-     * second array. The contents of the second array are overwritten.
-     *
-     * @param a an array where {@code a.length > maxMovedIndex}
-     * @param out output array where {@code out.length >= a.length}
-     * @throws IllegalArgumentException if {@code a.length <= maxMovedIndex}
-     * or {@code out.length < a.length}
-     */
-    public void inverseApply(int[] a, int[] out) {
-        apply(a, out, 1);
     }
 
     private void apply(int[] a, int[] out, int sign) {
@@ -294,7 +268,7 @@ public final class Permutation {
 
     public Permutation pow(int n) {
         int[] ints = Rankings.identityRanking(maxMovedIndex + 1);
-        int[] output = new int[ints.length];
+        int[] output = Rankings.identityRanking(maxMovedIndex + 1);
         int abs_n = Math.abs(n);
         int sign = Integer.signum(n);
         for (int j = 0; j < abs_n; j++) {
@@ -303,7 +277,7 @@ public final class Permutation {
             ints = output;
             output = tmp;
         }
-        return fromRanking(ints);
+        return CycleUtil.toCycles(ints);
     }
 
     /**
@@ -399,7 +373,6 @@ public final class Permutation {
 
     @Override
     public int hashCode() {
-        int result = 1;
         int[] a = Rankings.identityRanking(maxMovedIndex + 1);
         int[] b = apply(a);
         return Arrays.hashCode(b);

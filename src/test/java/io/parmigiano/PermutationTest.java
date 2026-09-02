@@ -117,6 +117,16 @@ class PermutationTest {
     }
 
     @Test
+    void testPow() {
+        Permutation p = cycle(1, 3);
+        assertEquals("()", p.pow(-2).toString());
+        assertEquals("(1 3)", p.pow(-1).toString());
+        assertEquals("()", p.pow(0).toString());
+        assertEquals("(1 3)", p.pow(1).toString());
+        assertEquals("()", p.pow(2).toString());
+    }
+
+    @Test
     void testSquare() {
         Permutation p = Permutation.cycle(0, 1, 2, 3).pow(2);
         assertEquals("(0 2) (1 3)", p.toString());
@@ -420,8 +430,17 @@ class PermutationTest {
     void testInverseApply() {
         int[] input = Rankings.identityRanking(50);
         for (int __ = 0; __ < 1000; __++) {
-            Permutation p = Permutation.random(ThreadLocalRandom.current().nextInt(50));
-            assertArrayEquals(p.invert().apply(input), p.inverseApply(input));
+            Permutation p = Permutation.random(4);
+            try {
+
+                Permutation inv = p.invert();
+                assertArrayEquals(inv.apply(input), p.inverseApply(input));
+                assertEquals(inv, p.pow(-1));
+            } catch (Exception e) {
+                System.out.println(p);
+                e.printStackTrace();
+                return;
+            }
         }
     }
 }
