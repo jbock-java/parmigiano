@@ -111,6 +111,12 @@ class PermutationTest {
     }
 
     @Test
+    void testPow1() {
+        Permutation p = Permutation.cycle(0, 1, 2, 3).pow(1);
+        assertEquals("(0 1 2 3)", p.toString());
+    }
+
+    @Test
     void testSquare() {
         Permutation p = Permutation.cycle(0, 1, 2, 3).pow(2);
         assertEquals("(0 2) (1 3)", p.toString());

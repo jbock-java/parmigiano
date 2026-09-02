@@ -79,49 +79,74 @@ public final class Permutation {
     }
 
     /**
-     * Apply this operation to produce a new array. The input array is not modified.
+     * Apply this operation to the input array. A new array is returned. the
+     * input array is not modified.
      *
-     * @param a an array of length not less than {@code this.length()}
+     * @param a an array of length at least {@link #maxMovedIndex() + 1}
      * @return the result of applying this permutation to {@code a}
-     * @throws IllegalArgumentException if {@code a.length < this.length()}
+     * @throws IllegalArgumentException if {@code a.length <= maxMovedIndex}
      */
     public int[] apply(int[] a) {
         ArrayUtil.checkLength(maxMovedIndex, a.length);
         int[] result = Arrays.copyOf(a, a.length);
-        int off = 0;
-        for (int len : lengths) {
-            if (len == 0) {
-                break;
-            }
-            for (int j = 0; j < len; j++) {
-                result[cycles[off + j]] = a[cycles[off + floorMod(j - 1, len)]];
-            }
-            off += len;
-        }
+        apply(a, result);
         return result;
     }
 
     /**
-     * Apply the inverse of this permutation to produce a new array.
+     * Apply this operation to the first array. The
+     * first array is not modified. The output is written to the
+     * second array. The contents of the second array are overwritten.
      *
-     * @param a an array of length not less than {@code this.length()}
+     * @param a an array where {@code a.length > maxMovedIndex}
+     * @param out output array where {@code out.length >= a.length}
+     * @throws IllegalArgumentException if {@code a.length <= maxMovedIndex}
+     * or {@code out.length < a.length}
+     */
+    public void apply(int[] a, int[] out) {
+        apply(a, out, -1);
+    }
+
+    /**
+     * Apply the inverse of this operation to the input array.
+     * A new array is returned. the input array is not modified.
+     *
+     * @param a an array of length at least {@link #maxMovedIndex() + 1}
      * @return the result of applying the inverse permutation to {@code a}
-     * @throws IllegalArgumentException if {@code a.length < this.length()}
+     * @throws IllegalArgumentException if {@code a.length <= maxMovedIndex}
      */
     public int[] inverseApply(int[] a) {
         ArrayUtil.checkLength(maxMovedIndex, a.length);
         int[] result = Arrays.copyOf(a, a.length);
+        inverseApply(a, result);
+        return result;
+    }
+
+    /**
+     * Apply the inverse of this operation to the first array. The
+     * first array is not modified. The output is written to the
+     * second array. The contents of the second array are overwritten.
+     *
+     * @param a an array where {@code a.length > maxMovedIndex}
+     * @param out output array where {@code out.length >= a.length}
+     * @throws IllegalArgumentException if {@code a.length <= maxMovedIndex}
+     * or {@code out.length < a.length}
+     */
+    public void inverseApply(int[] a, int[] out) {
+        apply(a, out, 1);
+    }
+
+    private void apply(int[] a, int[] out, int sign) {
         int off = 0;
         for (int len : lengths) {
             if (len == 0) {
                 break;
             }
             for (int j = 0; j < len; j++) {
-                result[cycles[off + j]] = a[cycles[off + (j + 1) % len]];
+                out[cycles[off + j]] = a[cycles[off + floorMod(j + sign, len)]];
             }
             off += len;
         }
-        return result;
     }
 
     /**
@@ -268,20 +293,17 @@ public final class Permutation {
     }
 
     public Permutation pow(int n) {
-        if (n == 0) {
-            return identity();
-        }
-        Permutation result = this;
+        int[] ints = Rankings.identityRanking(maxMovedIndex + 1);
+        int[] output = new int[ints.length];
         int abs_n = Math.abs(n);
-        for (int j = 1; j < abs_n; j++) {
-            // todo inefficient
-            result = result.compose(this);
+        int sign = Integer.signum(n);
+        for (int j = 0; j < abs_n; j++) {
+            apply(ints, output, sign);
+            int[] tmp = ints;
+            ints = output;
+            output = tmp;
         }
-        if (n < 0) {
-          return result.invert();
-        } else {
-          return result;
-        }
+        return fromRanking(ints);
     }
 
     /**
