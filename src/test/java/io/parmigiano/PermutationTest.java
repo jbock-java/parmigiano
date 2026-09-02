@@ -430,17 +430,10 @@ class PermutationTest {
     void testInverseApply() {
         int[] input = Rankings.identityRanking(50);
         for (int __ = 0; __ < 1000; __++) {
-            Permutation p = Permutation.random(4);
-            try {
-
-                Permutation inv = p.invert();
-                assertArrayEquals(inv.apply(input), p.inverseApply(input));
-                assertEquals(inv, p.pow(-1));
-            } catch (Exception e) {
-                System.out.println(p);
-                e.printStackTrace();
-                return;
-            }
+            Permutation p = Permutation.random(ThreadLocalRandom.current().nextInt(50));
+            Permutation inv = p.invert();
+            assertArrayEquals(inv.apply(input), p.inverseApply(input));
+            assertEquals(inv, p.pow(-1));
         }
     }
 }
