@@ -1,8 +1,5 @@
 package io.parmigiano;
 
-import java.util.Arrays;
-import java.util.function.IntUnaryOperator;
-
 final class CycleUtil {
 
     private CycleUtil() {
@@ -21,7 +18,6 @@ final class CycleUtil {
         int max = 0;
         boolean[] done = new boolean[ranking.length];
         int[] acc = new int[ranking.length];
-        IntUnaryOperator op = n -> ranking[n];
         int cyclesPos = 0;
         int lengthsPos = 0;
         for (int i = 0; i < ranking.length; i += 1) {
@@ -29,7 +25,7 @@ final class CycleUtil {
                 continue;
             }
             acc[0] = i;
-            int len = chaseCycle(acc, op);
+            int len = chaseCycle(acc, ranking);
             if (len == 1) {
                 continue;
             }
@@ -57,10 +53,10 @@ final class CycleUtil {
         return result;
     }
 
-    static int chaseCycle(int[] acc, IntUnaryOperator op) {
+    static int chaseCycle(int[] acc, int[] ranking) {
         int pos = 0;
         while (true) {
-            int j = op.applyAsInt(acc[pos++]);
+            int j = ranking[acc[pos++]];
             if (j == acc[0]) {
                 return pos;
             }

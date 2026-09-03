@@ -11,6 +11,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static io.parmigiano.MyInt.box;
 import static io.parmigiano.Permutation.cycle;
+import static io.parmigiano.Permutation.identity;
+import static io.parmigiano.Permutation.product;
 import static io.parmigiano.Permutation.symmetricGroup;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -181,6 +183,22 @@ class PermutationTest {
         assertEquals(List.of("c", "a", "b"), Permutation.cycle(0, 1, 2).apply(TestUtil.symbols(3)));
         assertEquals(List.of("a", "c", "b"), Permutation.product(Permutation.cycle(0, 1),
                 Permutation.product(Permutation.cycle(0, 1), Permutation.cycle(1, 2))).apply(TestUtil.symbols(3)));
+    }
+
+    @Test
+    void testSimpleProduct() {
+        Permutation a = identity();
+        Permutation b = cycle(0, 1);
+        assertEquals("(0 1)", a.compose(b).toString());
+        assertEquals("(0 1)", product(a, b).toString());
+    }
+
+    @Test
+    void testComplicatedProduct() {
+        Permutation a = cycle(0, 1);
+        Permutation b = cycle(2, 3);
+        assertEquals("(0 1) (2 3)", a.compose(b).toString());
+        assertEquals("(0 1) (2 3)", product(a, b).toString());
     }
 
     @Test

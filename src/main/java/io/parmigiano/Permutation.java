@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.IntUnaryOperator;
 
 import static java.lang.Math.floorMod;
 
@@ -71,7 +70,7 @@ public final class Permutation {
 
     public int[] toRanking() {
         int[] ints = Rankings.identityRanking(maxMovedIndex + 1);
-        int[] result = Rankings.identityRanking(maxMovedIndex + 1);
+        int[] result = new int[ints.length];
         apply(ints, result, 1);
         return result;
     }
@@ -90,7 +89,7 @@ public final class Permutation {
      */
     public int[] apply(int[] a) {
         ArrayUtil.checkLength(maxMovedIndex, a.length);
-        int[] result = Arrays.copyOf(a, a.length);
+        int[] result = new int[a.length];
         apply(a, result, -1);
         return result;
     }
@@ -105,12 +104,13 @@ public final class Permutation {
      */
     public int[] inverseApply(int[] a) {
         ArrayUtil.checkLength(maxMovedIndex, a.length);
-        int[] result = Arrays.copyOf(a, a.length);
+        int[] result = new int[a.length];
         apply(a, result, 1);
         return result;
     }
 
-    private void apply(int[] a, int[] out, int sign) {
+    public void apply(int[] a, int[] out, int sign) {
+        System.arraycopy(a, 0, out, 0, a.length);
         int off = 0;
         for (int len : lengths) {
             if (len == 0) {
@@ -208,43 +208,11 @@ public final class Permutation {
      * @return the composition or product
      */
     public Permutation compose(Permutation other) {
-        if (isIdentity()) {
-            return other;
-        }
-        if (other.isIdentity()) {
-            return this;
-        }
-        int new_len = Math.max(maxMovedIndex, other.maxMovedIndex) + 1;
-        int[] cycles = new int[new_len];
-        int[] lengths = new int[new_len / 2];
-        int max = 0;
-        boolean[] done = new boolean[new_len];
-        int[] acc = new int[new_len];
-        // todo inefficient
-        IntUnaryOperator op = n -> apply(other.apply(n));
-        int cyclesPos = 0;
-        int lengthsPos = 0;
-        for (int j = 0; j < new_len; j++) {
-            if (done[j]) {
-                continue;
-            }
-            acc[0] = j;
-            int len = CycleUtil.chaseCycle(acc, op);
-            if (len == 1) {
-                continue;
-            }
-            for (int k = 0; k < len; k++) {
-                max = Math.max(max, acc[k]);
-                done[acc[k]] = true;
-            }
-            System.arraycopy(acc, 0, cycles, cyclesPos, len);
-            cyclesPos += len;
-            lengths[lengthsPos++] = len;
-        }
-        if (lengths.length == 0 || lengths[0] == 0) {
-            return IDENTITY;
-        }
-        return new Permutation(lengths, cycles, max);
+        int[] ints = Rankings.identityRanking(Math.max(maxMovedIndex, other.maxMovedIndex) + 1);
+        int[] output = new int[ints.length];
+        apply(ints, output, 1);
+        other.apply(output, ints, 1);
+        return CycleUtil.toCycles(ints);
     }
 
     /**
@@ -268,7 +236,7 @@ public final class Permutation {
 
     public Permutation pow(int n) {
         int[] ints = Rankings.identityRanking(maxMovedIndex + 1);
-        int[] output = Rankings.identityRanking(maxMovedIndex + 1);
+        int[] output = new int[ints.length];
         int abs_n = Math.abs(n);
         int sign = Integer.signum(n);
         for (int j = 0; j < abs_n; j++) {
