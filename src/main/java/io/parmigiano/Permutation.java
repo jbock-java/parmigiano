@@ -222,12 +222,20 @@ public final class Permutation {
      * @return the composition or product
      */
     public static Permutation product(Permutation... permutations) {
-        Permutation result = identity();
+        int maxMov = 0;
         for (Permutation permutation : permutations) {
-            // todo inefficient
-            result = result.compose(permutation);
+            maxMov = Math.max(permutation.maxMovedIndex, maxMov);
         }
-        return result;
+        int[] ints = Rankings.identityRanking(maxMov + 1);
+        int[] output = new int[ints.length];
+        for (int j = 0; j < permutations.length; j++) {
+            Permutation p = permutations[j];
+            p.apply(ints, output, 1);
+            int[] tmp = ints;
+            ints = output;
+            output = tmp;
+        }
+        return CycleUtil.toCycles(ints);
     }
 
     public boolean isIdentity() {
@@ -312,16 +320,33 @@ public final class Permutation {
         return result;
     }
 
-    public int order() {
-        // LCM?
-        int j = 1;
-        Permutation p = this;
-        while (!p.isIdentity()) {
-            j += 1;
-            // todo inefficient
-            p = p.compose(this);
+    private static int gcd(int a, int b) {
+        while (b > 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
         }
-        return j;
+        return a;
+    }
+
+    private static int lcm(int a, int b) {
+        int gcd = gcd(a, b);
+        return a * (b / gcd);
+    }
+
+    public int order() {
+        if (lengths.length == 0) {
+            return 1;
+        }
+        int result = lengths[0];
+        for (int i = 1; i < lengths.length; i++) {
+            int len = lengths[i];
+            if (len == 0) {
+                return result;
+            }
+            result = lcm(result, len);
+        }
+        return result;
     }
 
     @Override

@@ -344,6 +344,18 @@ class PermutationTest {
         assertEquals("14235", Permutation.cycle(1, 2, 3).apply("12345"));
     }
 
+    @Test
+    void testOrder() {
+        Permutation p = cycle(0, 4).compose(1, 3, 2);
+        assertEquals(6, p.order());
+    }
+
+    @Test
+    void testOrder4() {
+        Permutation p = cycle(0, 4, 1, 3);
+        assertEquals(4, p.order());
+    }
+
     /* various assertions about Sym(5) */
     @Test
     void testCyclesAndTranspositions() {
@@ -363,7 +375,7 @@ class PermutationTest {
             } else if (order == 2) {
                 assertTrue(p.numCycles() <= 2);
             } else {
-                assertTrue(p.isIdentity());
+                assertTrue(p.isIdentity(), p::toString);
             }
         }
         assertEquals(0, sign);
