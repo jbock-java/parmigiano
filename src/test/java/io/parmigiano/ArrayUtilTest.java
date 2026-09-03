@@ -13,6 +13,7 @@ import static io.parmigiano.Permutation.symmetricGroup;
 import static io.parmigiano.TestUtil.commutator;
 import static io.parmigiano.TestUtil.factorial;
 import static io.parmigiano.TestUtil.isClosed;
+import static io.parmigiano.TestUtil.randomRanking;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -107,7 +108,7 @@ class ArrayUtilTest {
     @Test
     void testDistinctInts() {
         for (int i = 0; i < 100; i++) {
-            int[] ints = Rankings.random(ThreadLocalRandom.current().nextInt(1024));
+            int[] ints = randomRanking(ThreadLocalRandom.current().nextInt(1024));
             assertTrue(TestUtil.isDistinct(ints));
         }
     }

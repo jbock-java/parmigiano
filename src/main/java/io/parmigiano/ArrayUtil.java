@@ -2,8 +2,6 @@ package io.parmigiano;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A collection of array related utilities
@@ -50,12 +48,15 @@ final class ArrayUtil {
         if (start == end)
             return INT_0;
         int[] result = new int[Math.abs(start - end)];
-        if (start < end)
-            for (int i = 0; i < result.length; i++)
+        if (start < end) {
+            for (int i = 0; i < result.length; i++) {
                 result[i] = start++;
-        else
-            for (int i = 0; i < result.length; i++)
+            }
+        } else {
+            for (int i = 0; i < result.length; i++) {
                 result[i] = start--;
+            }
+        }
         return result;
     }
 
@@ -67,40 +68,12 @@ final class ArrayUtil {
      * found in {@code a}, or if all occurences are skipped
      */
     static int indexOf(int[] a, int el) {
-        for (int i = 0; i < a.length; i += 1)
-            if (a[i] == el)
-                return i;
-        return -1;
-    }
-
-    /**
-     * Add a fixed number to each element of given array.
-     * @param a an array of numbers
-     * @return the array {@code b} defined as {@code b[i] = a[i] + k}
-     */
-    static int[] decrement(int[] a) {
-        int[] result = new int[a.length];
         for (int i = 0; i < a.length; i += 1) {
-            result[i] = a[i] - 1;
-        }
-        return result;
-    }
-
-    /**
-     * Shuffle the input array in place, using a random permutation.
-     * This method will modify the input array.
-     * @param a an array
-     */
-    static void shuffle(int[] a) {
-        Random r = ThreadLocalRandom.current();
-        for (int i = a.length - 1; i > 0; i--) {
-            int j = r.nextInt(i + 1);
-            if (j != i) {
-                int tmp = a[j];
-                a[j] = a[i];
-                a[i] = tmp;
+            if (a[i] == el) {
+                return i;
             }
         }
+        return -1;
     }
 
     /**
@@ -119,9 +92,10 @@ final class ArrayUtil {
     }
 
     static void checkLength(int maxMovedIndex, int inputLength) {
-        if (inputLength < maxMovedIndex)
+        if (inputLength < maxMovedIndex) {
             throw new IllegalArgumentException("not enough input: minimum input length is " + maxMovedIndex
                     + ", but input length is " + inputLength);
+        }
     }
 
     static void negativeFailure() {
@@ -129,12 +103,14 @@ final class ArrayUtil {
     }
 
     static void checkEqualLength(List<?> a, List<?> b) {
-        if (a.size() != b.size())
+        if (a.size() != b.size()) {
             lengthFailure();
+        }
     }
 
     static void checkEqualLength(int[] a, int[] b) {
-        if (a.length != b.length)
+        if (a.length != b.length) {
             lengthFailure();
+        }
     }
 }

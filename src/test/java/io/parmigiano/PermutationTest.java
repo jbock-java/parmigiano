@@ -14,6 +14,7 @@ import static io.parmigiano.Permutation.cycle;
 import static io.parmigiano.Permutation.identity;
 import static io.parmigiano.Permutation.product;
 import static io.parmigiano.Permutation.symmetricGroup;
+import static io.parmigiano.TestUtil.randomRanking;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -44,8 +45,8 @@ class PermutationTest {
     /* check defining property of composition */
     @Test
     void testComp2() {
-        Permutation p = Permutation.random(7);
-        Permutation p2 = Permutation.random(7);
+        Permutation p = TestUtil.random(7);
+        Permutation p2 = TestUtil.random(7);
         for (int i = 0; i < 10; i += 1) {
             assertEquals(p2.apply(p.apply(i)), p2.compose(p).apply(i));
         }
@@ -55,7 +56,7 @@ class PermutationTest {
     @Test
     void testApply() {
         int[] a = TestUtil.randomNumbers(100, 200);
-        Permutation p = Permutation.random(ThreadLocalRandom.current().nextInt(a.length));
+        Permutation p = TestUtil.random(ThreadLocalRandom.current().nextInt(a.length));
         int[] pa = p.apply(a);
         for (int i = 0; i < a.length; i += 1) {
             int pi = p.apply(i);
@@ -67,7 +68,7 @@ class PermutationTest {
     void testIterable() {
         for (int __ = 0; __ < 100; __++) {
             List<MyInt> a = box(TestUtil.randomNumbers(100, 50 + ThreadLocalRandom.current().nextInt(100)));
-            Permutation p = Permutation.random((int) (Math.random() * a.size()));
+            Permutation p = TestUtil.random((int) (Math.random() * a.size()));
             List<MyInt> applied = p.apply(a);
             List<MyInt> arrayList = new ArrayList<>(a.size());
             List<MyInt> linkedList = new LinkedList<>();
@@ -260,7 +261,7 @@ class PermutationTest {
     @Test
     void testSortRandom() {
         int size = (int) (100 * Math.random());
-        int[] distinct = Rankings.random(size);
+        int[] distinct = randomRanking(size);
         int[] sorted = Arrays.copyOf(distinct, distinct.length);
         Arrays.sort(sorted);
         Permutation p = Permutation.sorting(distinct);
@@ -300,7 +301,7 @@ class PermutationTest {
     /* Another way of checking that duplicateRejectingFactory().sorting(a).apply(a) sorts a, for distinct array a */
     @Test
     void testSort1024() {
-        int[] a = Rankings.random(1024);
+        int[] a = randomRanking(1024);
         assertArrayEquals(classicSort(a), Permutation.sorting(a).apply(a));
     }
 
@@ -319,10 +320,10 @@ class PermutationTest {
     /* check defining property of from */
     private void testFromQuickly2() {
         int size = 2048;
-        int[] a = Rankings.random(size);
+        int[] a = randomRanking(size);
         Permutation random = Permutation.identity();
         while (random.isIdentity()) {
-            random = Permutation.random((int) (Math.random() * size));
+            random = TestUtil.random((int) (Math.random() * size));
         }
         int[] b = random.apply(a);
         assertFalse(Arrays.equals(a, b));
@@ -460,7 +461,7 @@ class PermutationTest {
     void testInverseApply() {
         int[] input = Rankings.identityRanking(50);
         for (int __ = 0; __ < 1000; __++) {
-            Permutation p = Permutation.random(ThreadLocalRandom.current().nextInt(50));
+            Permutation p = TestUtil.random(ThreadLocalRandom.current().nextInt(50));
             Permutation inv = p.invert();
             assertArrayEquals(inv.apply(input), p.inverseApply(input));
             assertEquals(inv, p.pow(-1));

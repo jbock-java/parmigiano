@@ -68,19 +68,6 @@ public final class Rankings {
         return inverted;
     }
 
-    /**
-     * Generate a random ranking of given length.
-     *
-     * @param length a non-negative integer
-     * @return a random ranking
-     * @throws IllegalArgumentException if {@code length} is negative
-     */
-    public static int[] random(int length) {
-        int[] a = ArrayUtil.range(length);
-        ArrayUtil.shuffle(a);
-        return a;
-    }
-
     /* ================= nextOffset ================= */
 
     /**

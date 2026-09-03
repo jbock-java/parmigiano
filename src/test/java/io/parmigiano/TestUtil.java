@@ -2,7 +2,6 @@ package io.parmigiano;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -373,8 +372,9 @@ class TestUtil {
      * @throws java.lang.ArrayIndexOutOfBoundsException can be thrown if the {@code ranking} argument is not a ranking
      */
     static int[] applyRanking(int[] ranking, int[] input) {
-        if (ranking.length < input.length)
+        if (ranking.length < input.length) {
             throw new IllegalArgumentException("not enough input: minimum input length is " + input.length + ", but input length is " + ranking.length);
+        }
         int[] result = new int[input.length];
         for (int i = 0; i < ranking.length; i += 1) {
             result[ranking[i]] = input[i];
@@ -382,9 +382,30 @@ class TestUtil {
         return result;
     }
 
-    static int[] randomRanking(int n) {
-        List<Integer> rr = new ArrayList<>(IntStream.range(0, n).boxed().toList());
-        Collections.shuffle(rr);
-        return rr.stream().mapToInt(Integer::intValue).toArray();
+    /**
+     * Shuffle the input array in place, using a random permutation.
+     * This method will modify the input array.
+     * @param a an array
+     */
+    static void shuffle(int[] a) {
+        Random r = ThreadLocalRandom.current();
+        for (int i = a.length - 1; i > 0; i--) {
+            int j = r.nextInt(i + 1);
+            if (j != i) {
+                int tmp = a[j];
+                a[j] = a[i];
+                a[i] = tmp;
+            }
+        }
+    }
+
+    static int[] randomRanking(int length) {
+        int[] a = ArrayUtil.range(length);
+        shuffle(a);
+        return a;
+    }
+
+    public static Permutation random(int length) {
+        return Permutation.fromRanking(randomRanking(length));
     }
 }

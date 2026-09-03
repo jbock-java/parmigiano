@@ -44,7 +44,7 @@ class TestRankings {
     void testSortStrict() {
         for (int __ = 0; __ < 100; __ += 1) {
             List<String> a = TestUtil.symbols(100);
-            List<String> shuffled = Permutation.random(a.size()).apply(a);
+            List<String> shuffled = TestUtil.random(a.size()).apply(a);
             assertEquals(a.stream().sorted().toList(), Permutation.sorting(shuffled).apply(shuffled));
         }
     }
@@ -54,7 +54,7 @@ class TestRankings {
         for (int __ = 0; __ < 10; __ += 1) {
             List<Integer> a = new ArrayList<>(IntStream.range(0, 100).boxed().toList());
             Collections.shuffle(a);
-            List<Integer> b = Permutation.random(a.size()).apply(a);
+            List<Integer> b = TestUtil.random(a.size()).apply(a);
             assertEquals(b, Permutation.taking(a).to(b).apply(a));
         }
     }

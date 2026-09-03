@@ -75,10 +75,6 @@ public final class Permutation {
         return result;
     }
 
-    public static Permutation random(int length) {
-        return fromRanking(Rankings.random(length));
-    }
-
     /**
      * Apply this operation to the input array. A new array is returned. the
      * input array is not modified.
