@@ -27,17 +27,16 @@ public final class Permutation {
         this.cycles = cycles;
     }
 
+    public static Permutation cycles(String s) {
+        return Parser.parse(s);
+    }
+
     public static Permutation cycle(int... cycle) {
         int max = 0;
         for (int n : cycle) {
             max = Math.max(max, n);
         }
         return new Permutation(new int[]{cycle.length}, cycle, max);
-    }
-
-    public static Permutation cycle(int i1, int i2) {
-        int[] cycle = {i1, i2};
-        return new Permutation(new int[]{2}, cycle, Math.max(i1, i2));
     }
 
     /**
@@ -192,6 +191,10 @@ public final class Permutation {
      */
     public Permutation compose(int... other) {
         return compose(cycle(other));
+    }
+
+    public Permutation compose(String s) {
+        return compose(cycles(s));
     }
 
     /**
