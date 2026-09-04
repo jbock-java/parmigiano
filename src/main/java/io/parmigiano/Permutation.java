@@ -99,10 +99,7 @@ public final class Permutation {
      * @throws IllegalArgumentException if {@code a.length <= maxMovedIndex}
      */
     public int[] inverseApply(int[] a) {
-        ArrayUtil.checkLength(maxMovedIndex, a.length);
-        int[] result = new int[a.length];
-        apply(a, result, 1);
-        return result;
+        return powApply(a, 1);
     }
 
     public void apply(int[] a, int[] out, int sign) {
@@ -224,8 +221,7 @@ public final class Permutation {
         }
         int[] ints = Rankings.identityRanking(maxMov + 1);
         int[] output = new int[ints.length];
-        for (int j = 0; j < permutations.length; j++) {
-            Permutation p = permutations[j];
+        for (Permutation p : permutations) {
             p.apply(ints, output, 1);
             int[] tmp = ints;
             ints = output;
@@ -240,16 +236,14 @@ public final class Permutation {
 
     public Permutation pow(int n) {
         int[] ints = Rankings.identityRanking(maxMovedIndex + 1);
-        int[] output = new int[ints.length];
-        int abs_n = Math.abs(n);
-        int sign = Integer.signum(n);
-        for (int j = 0; j < abs_n; j++) {
-            apply(ints, output, sign);
-            int[] tmp = ints;
-            ints = output;
-            output = tmp;
-        }
-        return CycleUtil.toCycles(ints);
+        int[] ranking = powApply(ints, n);
+        return CycleUtil.toCycles(ranking);
+    }
+
+    public int[] powApply(int[] a, int n) {
+        int[] output = new int[a.length];
+        apply(a, output, n);
+        return output;
     }
 
     /**
