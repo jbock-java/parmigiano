@@ -2,7 +2,7 @@ package io.parmigiano;
 
 import org.junit.jupiter.api.Test;
 
-import static io.parmigiano.Parser.parse;
+import static io.parmigiano.CycleParser.parse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ParserTest {

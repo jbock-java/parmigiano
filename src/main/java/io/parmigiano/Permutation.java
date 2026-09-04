@@ -28,7 +28,7 @@ public final class Permutation {
     }
 
     public static Permutation cycles(String s) {
-        return Parser.parse(s);
+        return CycleParser.parse(s);
     }
 
     public static Permutation cycle(int... cycle) {
