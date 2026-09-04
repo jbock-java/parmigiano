@@ -181,8 +181,8 @@ class PermutationTest {
         assertEquals(List.of("c", "a", "b"),
                 Permutation.product(cycles("(0 1)"), cycles("(1 2)")).apply(TestUtil.symbols(3)));
         assertEquals(List.of("c", "a", "b"), cycles("(0 1 2)").apply(TestUtil.symbols(3)));
-        assertEquals(List.of("a", "c", "b"), Permutation.product(cycles("(0 1)"),
-                Permutation.product(cycles("(0 1)"), cycles("(1 2)"))).apply(TestUtil.symbols(3)));
+        assertEquals(List.of("a", "c", "b"), 
+                cycles("(0 1) (0 1) (1 2)").apply(TestUtil.symbols(3)));
     }
 
     @Test
@@ -204,15 +204,13 @@ class PermutationTest {
     @Test
     void testCycleEquals() {
         assertTrue(Permutation.product(cycles("(1 2)"), cycles("(2 1)")).isIdentity());
-        assertEquals(cycles("(2 3)"), Permutation.product(cycles("(1 2)"),
-                Permutation.product(cycles("(1 2)"), cycles("(2 3)"))));
+        assertEquals(cycles("(2 3)"), cycles("(1 2) (1 2) (2 3)"));
     }
 
     @Test
     void testCycleLaw() {
         Permutation longest = cycles("(2 4 1 11 3)");
-        assertEquals(Permutation.product(cycles("(2 4)"),
-                cycles("(4 1 11 3)")), longest);
+        assertEquals(Permutation.product(cycles("(2 4) (4 1 11 3)")), longest);
     }
 
     @Test
