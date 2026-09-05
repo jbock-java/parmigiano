@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 final class CycleParser {
 
-    private static Permutation parse(byte[] input) {
+    static Permutation parseCycle(byte[] input) {
         Permutation result = Permutation.identity();
         int[] acc = new int[input.length / 2];
         int base = 0;
@@ -35,8 +35,8 @@ final class CycleParser {
         return result;
     }
 
-    static Permutation parse(String s) {
+    static Permutation parseCycle(String s) {
         byte[] bytes = s.getBytes();
-        return parse(bytes);
+        return parseCycle(bytes);
     }
 }

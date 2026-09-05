@@ -10,7 +10,7 @@ import static java.lang.Math.floorMod;
 /**
  * <p>An operation that shuffles a list.
  */
-public final class Permutation {
+public final class Permutation implements Expr {
 
     static final Permutation IDENTITY = new Permutation(new int[0], new int[0], 0);
 
@@ -28,7 +28,7 @@ public final class Permutation {
     }
 
     public static Permutation cycles(String s) {
-        return CycleParser.parse(s);
+        return CycleParser.parseCycle(s);
     }
 
     public static Permutation cycle(int... cycle) {

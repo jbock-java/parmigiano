@@ -350,6 +350,7 @@ class PermutationTest {
 
     @Test
     void testOrder4() {
+        System.out.println(Integer.valueOf('z'));
         Permutation p = cycles("(0 4 1 3)");
         assertEquals(4, p.order());
     }
