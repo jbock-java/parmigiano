@@ -1,20 +1,20 @@
 package io.parmigiano;
 
-sealed interface Expr permits Permutation, Expr.Symbol {
+sealed interface Expr permits Permutation, Expr.Symbol, Expr.Assignment {
 
-    sealed interface Symbolic permits Symbol, Assignment {
-    }
-
-    record Symbol(String name) implements Expr, Symbolic {
+    record Symbol(String name) implements Expr {
         public static Symbol of(String name) {
             return new Symbol(name);
         }
     }
 
-    record Assignment() implements Symbolic {
+    record Assignment(Symbol lhs, Expr rhs) implements Expr {
+        public static Assignment of(String lhs, Expr rhs) {
+            return new Assignment(Symbol.of(lhs), rhs);
+        }
     }
 
-    static Symbolic parseSymbol(byte[] input, int off) {
+    static Expr parseSymbol(byte[] input, int off) {
         int len = 0;
         boolean end = false;
         for (int j = off; j < input.length; j++) {
@@ -22,13 +22,13 @@ sealed interface Expr permits Permutation, Expr.Symbol {
             if (c == 61) { // =
                 byte[] smb = new byte[len];
                 System.arraycopy(input, off, smb, 0, len);
-                return parseAssignment(new Symbol(new String(smb)), input, j);
+                return parseAssignment(new Symbol(new String(smb)), input, j + 1);
             }
             if (c == 32) { // space
                 end = true;
                 continue;
             }
-            if (c < 97 || c >= 123) { // lowercase characters
+            if (c < 97 || c >= 123) { // lower case characters
                 throw new IllegalArgumentException("bad input: " + c);
             }
             if (end) { // input after spaces
@@ -42,6 +42,8 @@ sealed interface Expr permits Permutation, Expr.Symbol {
     }
 
     static Assignment parseAssignment(Symbol symbol, byte[] input, int off) {
-        return new Assignment();
+        byte[] rhs = new byte[input.length - off];
+        System.arraycopy(input, off, rhs, 0, input.length - off);
+        return new Assignment(symbol, Parser.parse(rhs));
     }
 }
