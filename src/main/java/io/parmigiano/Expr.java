@@ -1,6 +1,6 @@
 package io.parmigiano;
 
-sealed interface Expr permits Permutation, Expr.Symbol, Expr.Assignment {
+public sealed interface Expr permits Permutation, Expr.Symbol, Expr.Assignment {
 
     record Symbol(String name) implements Expr {
         public static Symbol of(String name) {
@@ -42,8 +42,6 @@ sealed interface Expr permits Permutation, Expr.Symbol, Expr.Assignment {
     }
 
     static Assignment parseAssignment(Symbol symbol, byte[] input, int off) {
-        byte[] rhs = new byte[input.length - off];
-        System.arraycopy(input, off, rhs, 0, input.length - off);
-        return new Assignment(symbol, Parser.parse(rhs));
+        return new Assignment(symbol, Parser.parse(input, off));
     }
 }

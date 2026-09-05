@@ -1,15 +1,17 @@
 package io.parmigiano;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 final class CycleParser {
 
-    static Permutation parseCycle(byte[] input) {
-        Permutation result = Permutation.identity();
-        int[] acc = new int[input.length / 2];
+    static List<Permutation> parseCycles(byte[] input, int off) {
+        List<Permutation> result = new ArrayList<>(input.length / 5 + 1);
+        int[] acc = new int[(input.length - off) / 2];
         int base = 0;
         int pos = 0;
-        for (int j = 0; j < input.length; j++) {
+        for (int j = off; j < input.length; j++) {
             byte c = input[j];
             if (c == '(') {
                 Arrays.fill(acc, 0);
@@ -17,8 +19,7 @@ final class CycleParser {
             } else if (c == ')') {
                 int[] cycle = new int[pos - base];
                 System.arraycopy(acc, base, cycle, 0, pos - base);
-                Permutation p = Permutation.cycle(cycle);
-                result = result.compose(p);
+                result.add(Permutation.cycle(cycle));
             } else if (c >= 48 && c < 58) {
                 int n = c - 48;
                 while (j < input.length && input[j + 1] >= 48 && input[j + 1] < 58) {
@@ -33,6 +34,15 @@ final class CycleParser {
             }
         }
         return result;
+    }
+
+    static Permutation parseCycle(byte[] input, int off) {
+        List<Permutation> permutations = parseCycles(input, off);
+        return Permutation.product(permutations);
+    }
+
+    static Permutation parseCycle(byte[] input) {
+        return parseCycle(input, 0);
     }
 
     static Permutation parseCycle(String s) {

@@ -217,7 +217,7 @@ public final class Permutation implements Expr {
      * @param permutations an array of permutations
      * @return the composition or product
      */
-    public static Permutation product(Permutation... permutations) {
+    public static Permutation product(List<Permutation> permutations) {
         int maxMov = 0;
         for (Permutation permutation : permutations) {
             maxMov = Math.max(permutation.maxMovedIndex, maxMov);
@@ -231,6 +231,10 @@ public final class Permutation implements Expr {
             output = tmp;
         }
         return CycleUtil.toCycles(ints);
+    }
+
+    public static Permutation product(Permutation... permutations) {
+        return product(List.of(permutations));
     }
 
     public boolean isIdentity() {
