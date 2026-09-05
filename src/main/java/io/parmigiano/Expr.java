@@ -6,6 +6,12 @@ public sealed interface Expr permits Permutation, Expr.Symbol, Expr.Assignment {
         public static Symbol of(String name) {
             return new Symbol(name);
         }
+
+        public static Symbol of(char[] input, int off, int len) {
+            char[] smb = new char[len];
+            System.arraycopy(input, off, smb, 0, len);
+            return new Symbol(new String(smb));
+        }
     }
 
     record Assignment(Symbol lhs, Expr rhs) implements Expr {
@@ -14,34 +20,30 @@ public sealed interface Expr permits Permutation, Expr.Symbol, Expr.Assignment {
         }
     }
 
-    static Expr parseSymbol(byte[] input, int off) {
+    static Expr parseSymbol(char[] input, int off) {
         int len = 0;
         boolean end = false;
         for (int j = off; j < input.length; j++) {
-            byte c = input[j];
-            if (c == 61) { // =
-                byte[] smb = new byte[len];
-                System.arraycopy(input, off, smb, 0, len);
-                return parseAssignment(new Symbol(new String(smb)), input, j + 1);
+            char c = input[j];
+            if (c == '=') {
+                return parseAssignment(Symbol.of(input, off, len), input, j + 1);
             }
-            if (c == 32) { // space
+            if (c == ' ') {
                 end = true;
                 continue;
             }
-            if (c < 97 || c >= 123) { // lower case characters
+            if ((c < 'a' || c > 'z') && (c < 'A' || c > 'Z')) {
                 throw new IllegalArgumentException("bad input: " + c);
             }
-            if (end) { // input after spaces
+            if (end) { // after symbol reading ended, only ' ' and '=' allowed
                 throw new IllegalArgumentException("bad input: " + c);
             }
             len++;
         }
-        byte[] smb = new byte[len];
-        System.arraycopy(input, off, smb, 0, len);
-        return new Symbol(new String(smb));
+        return Symbol.of(input, off, len);
     }
 
-    static Assignment parseAssignment(Symbol symbol, byte[] input, int off) {
+    static Assignment parseAssignment(Symbol symbol, char[] input, int off) {
         return new Assignment(symbol, Parser.parse(input, off));
     }
 }

@@ -6,13 +6,13 @@ import java.util.List;
 
 final class CycleParser {
 
-    static List<Permutation> parseCycles(byte[] input, int off) {
+    static List<Permutation> parseCycles(char[] input, int off) {
         List<Permutation> result = new ArrayList<>(input.length / 5 + 1);
         int[] acc = new int[(input.length - off) / 2];
         int base = 0;
         int pos = 0;
         for (int j = off; j < input.length; j++) {
-            byte c = input[j];
+            char c = input[j];
             if (c == '(') {
                 Arrays.fill(acc, 0);
                 base = pos;
@@ -36,17 +36,17 @@ final class CycleParser {
         return result;
     }
 
-    static Permutation parseCycle(byte[] input, int off) {
+    static Permutation parseCycle(char[] input, int off) {
         List<Permutation> permutations = parseCycles(input, off);
         return Permutation.product(permutations);
     }
 
-    static Permutation parseCycle(byte[] input) {
+    static Permutation parseCycle(char[] input) {
         return parseCycle(input, 0);
     }
 
     static Permutation parseCycle(String s) {
-        byte[] bytes = s.getBytes();
+        char[] bytes = s.toCharArray();
         return parseCycle(bytes);
     }
 }

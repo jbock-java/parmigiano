@@ -2,12 +2,12 @@ package io.parmigiano;
 
 final class Parser {
 
-    static Expr parse(byte[] input, int off) {
+    static Expr parse(char[] input, int off) {
         for (int j = off; j < input.length; j++) {
-            byte c = input[j];
-            if (c == 40 || c == 41) { // ( || )
+            char c = input[j];
+            if (c == '(' || c == ')') {
                 return CycleParser.parseCycle(input, j);
-            } else if (c >= 97 && c < 123) { // lower case characters
+            } else if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
                 return Expr.parseSymbol(input, j);
             } else if (c != ' ') {
                 throw new IllegalArgumentException("bad input: " + c);
@@ -16,12 +16,12 @@ final class Parser {
         throw new IllegalArgumentException("could not parse input");
     }
 
-    static Expr parse(byte[] input) {
+    static Expr parse(char[] input) {
         return parse(input, 0);
     }
 
     static Expr parse(String s) {
-        byte[] bytes = s.getBytes();
+        char[] bytes = s.toCharArray();
         return parse(bytes);
     }
 }
