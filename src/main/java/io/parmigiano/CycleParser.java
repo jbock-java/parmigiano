@@ -1,5 +1,7 @@
 package io.parmigiano;
 
+import io.parmigiano.Expr.Symbol;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,7 +9,7 @@ import java.util.List;
 final class CycleParser {
 
     static Expr.ListExpr parseCycles(char[] input, int off) {
-        List<Permutation> result = new ArrayList<>(input.length / 5 + 1);
+        List<Expr> result = new ArrayList<>(input.length / 5 + 1);
         int[] acc = new int[(input.length - off) / 2];
         int base = 0;
         int pos = 0;
@@ -20,9 +22,18 @@ final class CycleParser {
                 System.arraycopy(acc, base, cycle, 0, pos - base);
                 result.add(Permutation.cycle(cycle));
                 base = pos;
+            } else if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
+                if (base != pos) {
+                    throw new IllegalArgumentException("bad input: " + c);
+                }
+                int start = j;
+                while ((j + 1) < input.length && (input[j + 1] >= 'a' && input[j + 1] <= 'z' || input[j + 1] >= 'A' && input[j + 1] <= 'Z')) {
+                    j++;
+                }
+                result.add(Symbol.of(input, start, j - start + 1));
             } else if (c >= '0' && c <= '9') {
                 int n = c - '0';
-                while (j < input.length && input[j + 1] >= '0' && input[j + 1] <= '9') {
+                while ((j + 1) < input.length && input[j + 1] >= '0' && input[j + 1] <= '9') {
                     int digit = input[j + 1] - '0';
                     j++;
                     n *= 10;

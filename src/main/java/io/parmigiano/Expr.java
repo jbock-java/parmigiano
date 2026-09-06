@@ -34,24 +34,24 @@ public sealed interface Expr permits Permutation, Expr.Symbol, Expr.Assignment, 
         for (int j = off; j < input.length; j++) {
             char c = input[j];
             if (c == '=') {
-                return parseAssignment(Symbol.of(input, off, len), input, j + 1);
+                ListExpr rhs = CycleParser.parseCycles(input, j + 1);
+                return new Assignment(Symbol.of(input, off, len), rhs);
             }
             if (c == ' ') {
                 end = true;
                 continue;
             }
+            if (c == '*' || c == '(') {
+                return CycleParser.parseCycles(input, 0);
+            }
             if ((c < 'a' || c > 'z') && (c < 'A' || c > 'Z')) {
                 throw new IllegalArgumentException("bad input: " + c);
             }
-            if (end) { // after symbol reading ended, only ' ' and '=' allowed
-                throw new IllegalArgumentException("bad input: " + c);
+            if (end) {
+                return CycleParser.parseCycles(input, 0);
             }
             len++;
         }
-        return Symbol.of(input, off, len);
-    }
-
-    static Assignment parseAssignment(Symbol symbol, char[] input, int off) {
-        return new Assignment(symbol, Parser.parseExpr(input, off));
+        return CycleParser.parseCycles(input, 0);
     }
 }

@@ -13,6 +13,12 @@ tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
 }
 
+tasks.withType<Jar> {
+   manifest {
+      attributes["Main-Class"] = "io.parmigiano.Main"
+   }
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_25
     targetCompatibility = JavaVersion.VERSION_25
