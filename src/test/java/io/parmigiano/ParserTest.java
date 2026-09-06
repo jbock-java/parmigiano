@@ -1,8 +1,9 @@
 package io.parmigiano;
 
 import io.parmigiano.Expr.Assignment;
-import io.parmigiano.Expr.ListExpr;
-import io.parmigiano.Expr.Symbol;
+import io.parmigiano.LispParser.ListExpr;
+import io.parmigiano.LispParser.Symbol;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -23,10 +24,10 @@ class ParserTest {
 
     @Test
     void testParseSymbol() {
-        assertEquals(listOf("a"), parseExpr("a"));
-        assertEquals(listOf("a"), parseExpr(" a"));
-        assertEquals(listOf("a"), parseExpr("a "));
-        assertEquals(listOf("a"), parseExpr(" a "));
+        assertEquals(Symbol.of("a"), parseExpr("a"));
+        assertEquals(Symbol.of("a"), parseExpr(" a"));
+        assertEquals(Symbol.of("a"), parseExpr("a "));
+        assertEquals(Symbol.of("a"), parseExpr(" a "));
     }
 
     @Test
@@ -43,23 +44,14 @@ class ParserTest {
 
     @Test
     void testParseAssignment() {
-        Expr expr = parseExpr("a = (1 2)");
-        assertEquals(assignmentOf("a", "(1 2)"), expr);
-    }
-
-    private static ListExpr listOf(String symbol) {
-        return ListExpr.of(List.of(Symbol.of(symbol)));
+        Expr expr = Parser.parseExpr("a = (1 2)");
+        Assertions.assertInstanceOf(Assignment.class, expr);
+        Assignment a = (Assignment) expr;
+        assertEquals(Symbol.of("a"), a.lhs());
+        assertEquals(Parser.parse("(1 2)"), a.rhs().toPermutation());
     }
 
     private static ListExpr listOf(String smb1, String smb2) {
         return ListExpr.of(List.of(Symbol.of(smb1), Symbol.of(smb2)));
-    }
-
-    private static ListExpr listOf(Permutation permutation) {
-        return ListExpr.of(List.of(permutation));
-    }
-
-    private static Assignment assignmentOf(String symbol, String rhs) {
-        return Assignment.of(symbol, listOf(parse(rhs)));
     }
 }

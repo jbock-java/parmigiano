@@ -9,12 +9,70 @@ import java.util.List;
 import static java.util.stream.Collectors.joining;
 
 public final class LispParser {
-    public sealed interface LispExpr permits LispList, LispSymbol {
+    public sealed interface LispExpr extends Expr permits ListExpr, Symbol {
+        boolean isNumeric();
+
+        boolean isList();
+
+        boolean isSymbol();
+
+        int asNumber();
+
+        Permutation toPermutation();
     }
 
-    public record LispList(List<? extends LispExpr> exprs) implements LispExpr {
-        public static LispList of(List<? extends LispExpr> exprs) {
-            return new LispList(exprs);
+    public record ListExpr(List<? extends LispExpr> exprs) implements LispExpr, Expr {
+        public static ListExpr of(List<? extends LispExpr> exprs) {
+            return new ListExpr(exprs);
+        }
+
+        @Override
+        public Permutation toPermutation() {
+            List<Permutation> result = new ArrayList<>(exprs.size());
+            int[] acc = new int[exprs.size()];
+            int pos = 0;
+            for (LispExpr expr : exprs) {
+                if (expr.isNumeric()) {
+                    if (!result.isEmpty()) {
+                        throw new IllegalArgumentException("mixing numbers with lists");
+                    }
+                    acc[pos++] = expr.asNumber();
+                } else if (expr.isList()) {
+                    if (pos != 0) {
+                        throw new IllegalArgumentException("mixing numbers with lists");
+                    }
+                    result.add(expr.toPermutation());
+                } else {
+                    throw new IllegalArgumentException("not a number or list: " + expr);
+                }
+            }
+            if (pos == 0) {
+                return Permutation.product(result);
+            } else {
+                int[] cycle = new int[pos];
+                System.arraycopy(acc, 0, cycle, 0, pos);
+                return Permutation.cycle(cycle);
+            }
+        }
+
+        @Override
+        public boolean isNumeric() {
+            return false;
+        }
+
+        @Override
+        public boolean isList() {
+            return true;
+        }
+
+        @Override
+        public boolean isSymbol() {
+            return false;
+        }
+
+        @Override
+        public int asNumber() {
+            throw new UnsupportedOperationException("not a number");
         }
 
         @Override
@@ -23,15 +81,44 @@ public final class LispParser {
         }
     }
 
-    public record LispSymbol(String name) implements LispExpr {
-        public static LispSymbol of(String name) {
-            return new LispSymbol(name);
+    public record Symbol(String name) implements LispExpr, Expr {
+        public static Symbol of(String name) {
+            return new Symbol(name);
         }
 
-        public static LispSymbol of(char[] input, int off, int len) {
+        public static Symbol of(char[] input, int off, int len) {
             char[] smb = new char[len];
             System.arraycopy(input, off, smb, 0, len);
-            return new LispSymbol(new String(smb));
+            return new Symbol(new String(smb));
+        }
+
+        @Override
+        public boolean isNumeric() {
+            if (name.isEmpty()) {
+                return false;
+            }
+            char c = name.charAt(0);
+            return c >= '0' && c <= '9';
+        }
+
+        @Override
+        public boolean isList() {
+            return false;
+        }
+
+        @Override
+        public boolean isSymbol() {
+            return true;
+        }
+
+        @Override
+        public int asNumber() {
+            return Integer.parseInt(name);
+        }
+
+        @Override
+        public Permutation toPermutation() {
+            throw new UnsupportedOperationException("not a list");
         }
 
         @Override
@@ -40,18 +127,19 @@ public final class LispParser {
         }
     }
 
-    static LispList parseList(PushbackReader reader) throws IOException {
+    static ListExpr parseList(PushbackReader reader) throws IOException {
         List<LispExpr> result = new ArrayList<>();
-        int c;
-        while ((c = reader.read()) != -1) {
+        int d;
+        while ((d = reader.read()) != -1) {
+            char c = (char) d;
             if (c == ')') {
-                return LispList.of(result);
+                return ListExpr.of(result);
             } else if (c != ' ') {
                 reader.unread(c);
                 result.add(parse(reader));
             }
         }
-        throw new IllegalArgumentException("incomplete list");
+        return ListExpr.of(result);
     }
 
     static LispExpr parse(PushbackReader reader) throws IOException {
@@ -66,14 +154,14 @@ public final class LispParser {
                     c = (char) d;
                     if (c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
                         smb[len++] = c;
-                    } else if (c == ' ' || c == '(' || c == ')' || c == '=') {
+                    } else if (c == ' ' || c == '*' || c == '(' || c == ')' || c == '=') {
                         reader.unread(c);
-                        return LispSymbol.of(smb, 0, len);
+                        return Symbol.of(smb, 0, len);
                     } else {
                         throw new IllegalArgumentException("bad input: " + c);
                     }
                 }
-                return LispSymbol.of(smb, 0, len);
+                return Symbol.of(smb, 0, len);
             } else if (c == '(') {
                 return parseList(reader);
             } else if (c != ' ' && c != '*') {
@@ -83,21 +171,53 @@ public final class LispParser {
         throw new IllegalArgumentException("bad input?");
     }
 
-    public static LispExpr parse(String s) {
-        char[] chars = s.toCharArray();
-        try (PushbackReader reader = new PushbackReader(new CharArrayReader(chars))) {
-            return parse(reader);
+    private static void consumeWhitespace(PushbackReader reader) throws IOException {
+        int d;
+        while ((d = reader.read()) != -1) {
+            if (d != ' ' && d != '*') {
+                reader.unread(d);
+                return;
+            }
+        }
+    }
+
+    public static LispExpr parse(char[] input, int off) {
+        if (off != 0) {
+            char[] tmp = new char[input.length - off];
+            System.arraycopy(input, off, tmp, 0, input.length - off);
+            input = tmp;
+        }
+        List<LispExpr> acc = new ArrayList<>();
+        try (PushbackReader reader = new PushbackReader(new CharArrayReader(input))) {
+            int d;
+            while ((d = reader.read()) != -1) {
+                reader.unread(d);
+                acc.add(parse(reader));
+                consumeWhitespace(reader);
+            }
+            if (acc.isEmpty()) {
+                return ListExpr.of(List.of());
+            } else if (acc.size() == 1) {
+                return acc.getFirst();
+            } else {
+                return ListExpr.of(acc);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    public static LispExpr parse(String s) {
+        char[] chars = s.toCharArray();
+        return parse(chars, 0);
+    }
+
     public static String stringify(LispExpr expr) {
         return switch (expr) {
-            case LispList lispList -> lispList.exprs.stream()
+            case ListExpr listExpr -> listExpr.exprs.stream()
                     .map(LispParser::stringify)
                     .collect(joining(" ", "(", ")"));
-            case LispSymbol lispSymbol -> lispSymbol.name;
+            case Symbol lispSymbol -> lispSymbol.name;
         };
     }
 }

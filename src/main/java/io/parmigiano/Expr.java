@@ -1,29 +1,12 @@
 package io.parmigiano;
 
-import java.util.List;
+import io.parmigiano.LispParser.LispExpr;
+import io.parmigiano.LispParser.Symbol;
 
-public sealed interface Expr permits Permutation, Expr.Symbol, Expr.Assignment, Expr.ListExpr {
+public sealed interface Expr permits Expr.Assignment, LispParser.LispExpr, LispParser.Symbol, LispParser.ListExpr {
 
-    record Symbol(String name) implements Expr {
-        public static Symbol of(String name) {
-            return new Symbol(name);
-        }
-
-        public static Symbol of(char[] input, int off, int len) {
-            char[] smb = new char[len];
-            System.arraycopy(input, off, smb, 0, len);
-            return new Symbol(new String(smb));
-        }
-    }
-
-    record ListExpr(List<? extends Expr> exprs) implements Expr {
-        public static ListExpr of(List<? extends Expr> exprs) {
-            return new ListExpr(exprs);
-        }
-    }
-
-    record Assignment(Symbol lhs, Expr rhs) implements Expr {
-        public static Assignment of(String lhs, Expr rhs) {
+    record Assignment(Symbol lhs, LispExpr rhs) implements Expr {
+        public static Assignment of(String lhs, LispExpr rhs) {
             return new Assignment(Symbol.of(lhs), rhs);
         }
     }
@@ -34,24 +17,21 @@ public sealed interface Expr permits Permutation, Expr.Symbol, Expr.Assignment, 
         for (int j = off; j < input.length; j++) {
             char c = input[j];
             if (c == '=') {
-                ListExpr rhs = CycleParser.parseCycles(input, j + 1);
-                return new Assignment(Symbol.of(input, off, len), rhs);
+                Symbol lhs = Symbol.of(input, off, len);
+                LispExpr rhs = LispParser.parse(input, j + 1);
+                return new Assignment(lhs, rhs);
+            }
+            if (c == '*' || c == '(') {
+                return LispParser.parse(input, off);
             }
             if (c == ' ') {
                 end = true;
-                continue;
+            } else if (end) {
+                return LispParser.parse(input, off);
+            } else {
+                len++;
             }
-            if (c == '*' || c == '(') {
-                return CycleParser.parseCycles(input, 0);
-            }
-            if ((c < 'a' || c > 'z') && (c < 'A' || c > 'Z')) {
-                throw new IllegalArgumentException("bad input: " + c);
-            }
-            if (end) {
-                return CycleParser.parseCycles(input, 0);
-            }
-            len++;
         }
-        return CycleParser.parseCycles(input, 0);
+        return LispParser.parse(input, off);
     }
 }
