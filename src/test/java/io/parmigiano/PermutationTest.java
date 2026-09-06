@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static io.parmigiano.MyInt.box;
-import static io.parmigiano.Permutation.cycles;
+import static io.parmigiano.Parser.parse;
 import static io.parmigiano.Permutation.identity;
 import static io.parmigiano.Permutation.product;
 import static io.parmigiano.Permutation.symmetricGroup;
@@ -29,14 +29,14 @@ class PermutationTest {
     /* Check example from constructor javadoc */
     @Test
     void testAbc() {
-        Permutation p = cycles("(0 1 2)");
+        Permutation p = parse("(0 1 2)");
         assertEquals("cab", p.apply("abc"));
     }
 
     @Test
     void testComp() {
-        Permutation p = cycles("(0 1 2)");
-        assertEquals(cycles("(0 1 2)"), p);
+        Permutation p = parse("(0 1 2)");
+        assertEquals(parse("(0 1 2)"), p);
         assertEquals(List.of("c", "a", "b"), p.apply(TestUtil.symbols(3)));
         assertEquals(List.of("b", "c", "a"), p.compose(p).apply(TestUtil.symbols(3)));
     }
@@ -94,7 +94,7 @@ class PermutationTest {
 
     @Test
     void testInvert() {
-        Permutation p = cycles("(0 1 2)");
+        Permutation p = parse("(0 1 2)");
         assertTrue(Permutation.product(p.invert(), p).isIdentity());
         assertTrue(Permutation.product(p, p.invert()).isIdentity());
         assertTrue(Permutation.product(p, p.pow(2)).isIdentity());
@@ -114,13 +114,13 @@ class PermutationTest {
 
     @Test
     void testPow1() {
-        Permutation p = cycles("(0 1 2 3)").pow(1);
+        Permutation p = parse("(0 1 2 3)").pow(1);
         assertEquals("(0 1 2 3)", p.toString());
     }
 
     @Test
     void testPow() {
-        Permutation p = cycles("(1 3)");
+        Permutation p = parse("(1 3)");
         assertEquals("()", p.pow(-2).toString());
         assertEquals("(1 3)", p.pow(-1).toString());
         assertEquals("()", p.pow(0).toString());
@@ -130,15 +130,15 @@ class PermutationTest {
 
     @Test
     void testSquare() {
-        Permutation p = cycles("(0 1 2 3)").pow(2);
+        Permutation p = parse("(0 1 2 3)").pow(2);
         assertEquals("(0 2) (1 3)", p.toString());
     }
 
     @Test
     void testIdentity() {
         assertTrue(Permutation.identity().isIdentity());
-        assertTrue(cycles("(1 2)").compose("(1 2)").isIdentity());
-        assertFalse(cycles("(1 2)").isIdentity());
+        assertTrue(parse("(1 2)").compose("(1 2)").isIdentity());
+        assertFalse(parse("(1 2)").isIdentity());
     }
 
     /* test defining property of identity */
@@ -161,56 +161,56 @@ class PermutationTest {
 
     @Test
     void cycleEquality() {
-        assertEquals(cycles("(1 5 3 2)"), cycles("(5 3 2 1)"));
-        assertEquals(cycles("(1 5 3 2)"), cycles("(2 1 5 3)"));
-        assertNotEquals(cycles("(1 5 3 2)"), cycles("(1 5 2 3)"));
+        assertEquals(parse("(1 5 3 2)"), parse("(5 3 2 1)"));
+        assertEquals(parse("(1 5 3 2)"), parse("(2 1 5 3)"));
+        assertNotEquals(parse("(1 5 3 2)"), parse("(1 5 2 3)"));
     }
 
     @Test
     void cycleApply() {
         assertEquals(List.of("b", "c", "e", "d", "a"),
-                cycles("(0 4 2 1)").apply(TestUtil.symbols(5)));
+                parse("(0 4 2 1)").apply(TestUtil.symbols(5)));
         assertEquals(List.of("c", "b", "e", "d", "a"),
-                cycles("(0 4 2)").apply(TestUtil.symbols(5)));
+                parse("(0 4 2)").apply(TestUtil.symbols(5)));
         assertEquals(List.of("c", "a", "b"),
-                cycles("(0 1 2)").apply(TestUtil.symbols(3)));
+                parse("(0 1 2)").apply(TestUtil.symbols(3)));
     }
 
     @Test
     void testCycleApply() {
         assertEquals(List.of("c", "a", "b"),
-                Permutation.product(cycles("(0 1)"), cycles("(1 2)")).apply(TestUtil.symbols(3)));
-        assertEquals(List.of("c", "a", "b"), cycles("(0 1 2)").apply(TestUtil.symbols(3)));
+                Permutation.product(parse("(0 1)"), parse("(1 2)")).apply(TestUtil.symbols(3)));
+        assertEquals(List.of("c", "a", "b"), parse("(0 1 2)").apply(TestUtil.symbols(3)));
         assertEquals(List.of("a", "c", "b"), 
-                cycles("(0 1) (0 1) (1 2)").apply(TestUtil.symbols(3)));
+                parse("(0 1) (0 1) (1 2)").apply(TestUtil.symbols(3)));
     }
 
     @Test
     void testSimpleProduct() {
         Permutation a = identity();
-        Permutation b = cycles("(0 1)");
+        Permutation b = parse("(0 1)");
         assertEquals("(0 1)", a.compose(b).toString());
         assertEquals("(0 1)", product(a, b).toString());
     }
 
     @Test
     void testComplicatedProduct() {
-        Permutation a = cycles("(0 1)");
-        Permutation b = cycles("(2 3)");
+        Permutation a = parse("(0 1)");
+        Permutation b = parse("(2 3)");
         assertEquals("(0 1) (2 3)", a.compose(b).toString());
         assertEquals("(0 1) (2 3)", product(a, b).toString());
     }
 
     @Test
     void testCycleEquals() {
-        assertTrue(Permutation.product(cycles("(1 2)"), cycles("(2 1)")).isIdentity());
-        assertEquals(cycles("(2 3)"), cycles("(1 2) (1 2) (2 3)"));
+        assertTrue(Permutation.product(parse("(1 2)"), parse("(2 1)")).isIdentity());
+        assertEquals(parse("(2 3)"), parse("(1 2) (1 2) (2 3)"));
     }
 
     @Test
     void testCycleLaw() {
-        Permutation longest = cycles("(2 4 1 11 3)");
-        assertEquals(Permutation.product(cycles("(2 4) (4 1 11 3)")), longest);
+        Permutation longest = parse("(2 4 1 11 3)");
+        assertEquals(Permutation.product(parse("(2 4) (4 1 11 3)")), longest);
     }
 
     @Test
@@ -304,7 +304,7 @@ class PermutationTest {
 
     @Test
     void testCycleLength() {
-        Permutation swap01 = cycles("(0 1)");
+        Permutation swap01 = parse("(0 1)");
         assertEquals(1, swap01.maxMovedIndex());
     }
 
@@ -327,7 +327,7 @@ class PermutationTest {
         assertArrayEquals(Permutation.taking(a).to(b).apply(a), b);
     }
 
-    /* check defining property of from again, on non comparable objects, possibly with null */
+    /* check defining property of from again, on non-comparable objects, possibly with null */
     @Test
     void testFromALot() {
         for (int i = 0; i < 100; i += 1) {
@@ -337,21 +337,20 @@ class PermutationTest {
 
     @Test
     void testMove() {
-        assertEquals("213", cycles("(0 1)").apply("123"));
-        assertEquals("23145", cycles("(2 1 0)").apply("12345"));
-        assertEquals("14235", cycles("(1 2 3)").apply("12345"));
+        assertEquals("213", parse("(0 1)").apply("123"));
+        assertEquals("23145", parse("(2 1 0)").apply("12345"));
+        assertEquals("14235", parse("(1 2 3)").apply("12345"));
     }
 
     @Test
     void testOrder() {
-        Permutation p = cycles("(0 4) (1 3 2)");
+        Permutation p = parse("(0 4) * (1 3 2)");
         assertEquals(6, p.order());
     }
 
     @Test
     void testOrder4() {
-        System.out.println(Integer.valueOf('z'));
-        Permutation p = cycles("(0 4 1 3)");
+        Permutation p = parse("(0 4 1 3)");
         assertEquals(4, p.order());
     }
 
@@ -392,9 +391,9 @@ class PermutationTest {
     /* example from README */
     @Test
     void testPprod() {
-        Permutation c0 = cycles("(7 9)");
-        Permutation c1 = cycles("(1 4 8 10 3 6 11)");
-        Permutation c2 = cycles("(0 2 5)");
+        Permutation c0 = parse("(7 9)");
+        Permutation c1 = parse("(1 4 8 10 3 6 11)");
+        Permutation c2 = parse("(0 2 5)");
         assertEquals("Hello world!", c0.compose(c1).compose(c2).invert().apply(" !Hdellloorw"));
     }
 
@@ -441,18 +440,18 @@ class PermutationTest {
 
     @Test
     void testToString() {
-        assertEquals("(1 4) (2 3)", cycles("(1 4)").compose(cycles("(2 3)")).toString());
-        assertEquals("(1 3 4 2)", cycles("(1 3 4 2)").toString());
+        assertEquals("(1 4) (2 3)", parse("(1 4)").compose(parse("(2 3)")).toString());
+        assertEquals("(1 3 4 2)", parse("(1 3 4 2)").toString());
         assertEquals("(0 2) (1 4 5)", new Permutation(new int[]{2, 3, 0}, new int[]{0, 2, 1, 4, 5, 0}, 5).toString());
-        assertEquals("()", cycles("(0 1)").compose(cycles("(0 1)")).toString());
+        assertEquals("()", parse("(0 1)").compose(parse("(0 1)")).toString());
     }
 
     @Test
     void testNormalize() {
-        assertEquals("(4 1 3)", cycles("(1 3 4)").normalize().toString());
-        assertEquals("(4 1 3)", cycles("(3 4 1)").normalize().toString());
-        assertEquals("(4 1) (3 2)", cycles("(2 3)").compose(cycles("(1 4)")).normalize().toString());
-        assertEquals("(4 1) (3 2)", cycles("(1 4)").compose(cycles("(2 3)")).normalize().toString());
+        assertEquals("(4 1 3)", parse("(1 3 4)").normalize().toString());
+        assertEquals("(4 1 3)", parse("(3 4 1)").normalize().toString());
+        assertEquals("(4 1) (3 2)", parse("(2 3)").compose(parse("(1 4)")).normalize().toString());
+        assertEquals("(4 1) (3 2)", parse("(1 4)").compose(parse("(2 3)")).normalize().toString());
     }
 
     @Test

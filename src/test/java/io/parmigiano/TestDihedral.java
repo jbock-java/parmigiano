@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static io.parmigiano.Permutation.cycle;
+import static io.parmigiano.Parser.parse;
 import static io.parmigiano.Permutation.identity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -16,36 +16,36 @@ class TestDihedral {
 
     @Test
     void testD4() {
-        Permutation p = cycle(0, 1, 2, 3);
-        Permutation q = cycle(0, 2);
+        Permutation p = parse("(0 1 2 3)");
+        Permutation q = parse("(0 2)");
         assertEquals(8, span(p, q).size());
     }
 
     @Test
     void testDihedral() {
-        Set<Permutation> d4 = span(cycle(1, 2), cycle(1, 3, 2, 4));
+        Set<Permutation> d4 = span(parse("(1 2)"), parse("(1 3 2 4)"));
         assertEquals(8, d4.size());
-        assertTrue(d4.contains(Permutation.cycle(1, 3).compose(2, 4)));
-        assertTrue(d4.contains(Permutation.cycle(1, 2).compose(3, 4)));
-        assertTrue(d4.contains(Permutation.cycle(1, 4).compose(2, 3)));
-        assertTrue(d4.contains(Permutation.cycle(1, 2)));
-        assertTrue(d4.contains(Permutation.cycle(3, 4)));
-        assertTrue(d4.contains(Permutation.cycle(1, 3, 2, 4)));
-        assertTrue(d4.contains(Permutation.cycle(1, 4, 2, 3)));
+        assertTrue(d4.contains(parse("(1 3) (2 4)")));
+        assertTrue(d4.contains(parse("(1 2) (3 4)")));
+        assertTrue(d4.contains(parse("(1 4) (2 3)")));
+        assertTrue(d4.contains(parse("(1 2)")));
+        assertTrue(d4.contains(parse("(3 4)")));
+        assertTrue(d4.contains(parse("(1 3 2 4)")));
+        assertTrue(d4.contains(parse("(1 4 2 3)")));
         assertTrue(d4.contains(identity()));
     }
 
     @Test
     void testD5() {
-        Permutation p = cycle(0, 1, 2, 3, 4);
-        Permutation q = cycle(0, 4).compose(1, 3);
+        Permutation p = parse("(0 1 2 3 4)");
+        Permutation q = parse("(0 4) (1 3)");
         assertEquals(10, span(p, q).size());
     }
 
     @Test
     void testD6() {
-        Permutation p = cycle(0, 1, 2, 3, 4, 5);
-        Permutation q = cycle(0, 5).compose(1, 4).compose(2, 3);
+        Permutation p = parse("(0 1 2 3 4 5)");
+        Permutation q = parse("(0 5) (1 4) (2 3)");
         assertEquals(12, span(p, q).size());
     }
 

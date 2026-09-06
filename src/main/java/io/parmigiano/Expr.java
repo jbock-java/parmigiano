@@ -1,6 +1,8 @@
 package io.parmigiano;
 
-public sealed interface Expr permits Permutation, Expr.Symbol, Expr.Assignment {
+import java.util.List;
+
+public sealed interface Expr permits Permutation, Expr.Symbol, Expr.Assignment, Expr.ListExpr {
 
     record Symbol(String name) implements Expr {
         public static Symbol of(String name) {
@@ -11,6 +13,12 @@ public sealed interface Expr permits Permutation, Expr.Symbol, Expr.Assignment {
             char[] smb = new char[len];
             System.arraycopy(input, off, smb, 0, len);
             return new Symbol(new String(smb));
+        }
+    }
+
+    record ListExpr(List<? extends Expr> exprs) implements Expr {
+        public static ListExpr of(List<? extends Expr> exprs) {
+            return new ListExpr(exprs);
         }
     }
 
@@ -44,6 +52,6 @@ public sealed interface Expr permits Permutation, Expr.Symbol, Expr.Assignment {
     }
 
     static Assignment parseAssignment(Symbol symbol, char[] input, int off) {
-        return new Assignment(symbol, Parser.parse(input, off));
+        return new Assignment(symbol, Parser.parseExpr(input, off));
     }
 }

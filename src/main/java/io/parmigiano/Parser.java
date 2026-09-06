@@ -1,8 +1,8 @@
 package io.parmigiano;
 
-final class Parser {
+public final class Parser {
 
-    static Expr parse(char[] input, int off) {
+    public static Expr parseExpr(char[] input, int off) {
         for (int j = off; j < input.length; j++) {
             char c = input[j];
             if (c == '(' || c == ')') {
@@ -16,12 +16,16 @@ final class Parser {
         throw new IllegalArgumentException("could not parse input");
     }
 
-    static Expr parse(char[] input) {
-        return parse(input, 0);
+    public static Expr parseExpr(String s) {
+        char[] input = s.toCharArray();
+        return parseExpr(input, 0);
     }
 
-    static Expr parse(String s) {
-        char[] bytes = s.toCharArray();
-        return parse(bytes);
+    public static Permutation parse(String s) {
+        Expr expr = parseExpr(s);
+        if (expr instanceof Permutation p) {
+            return p;
+        }
+        throw new IllegalArgumentException("not a cycle expression");
     }
 }

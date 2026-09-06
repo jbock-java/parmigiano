@@ -5,7 +5,7 @@ import io.parmigiano.Expr.Symbol;
 import org.junit.jupiter.api.Test;
 
 import static io.parmigiano.Parser.parse;
-import static io.parmigiano.Permutation.cycles;
+import static io.parmigiano.Parser.parseExpr;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ParserTest {
@@ -20,15 +20,15 @@ class ParserTest {
 
     @Test
     void testParseSymbol() {
-        assertEquals(Symbol.of("a"), parse("a"));
-        assertEquals(Symbol.of("a"), parse(" a"));
-        assertEquals(Symbol.of("a"), parse("a "));
-        assertEquals(Symbol.of("a"), parse(" a "));
+        assertEquals(Symbol.of("a"), parseExpr("a"));
+        assertEquals(Symbol.of("a"), parseExpr(" a"));
+        assertEquals(Symbol.of("a"), parseExpr("a "));
+        assertEquals(Symbol.of("a"), parseExpr(" a "));
     }
 
     @Test
     void testParseAssignment() {
-        Expr parse = parse("a = (1 2)");
-        assertEquals(Assignment.of("a", cycles("(1 2)")), parse);
+        Expr expr = parseExpr("a = (1 2)");
+        assertEquals(Assignment.of("a", parse("(1 2)")), expr);
     }
 }

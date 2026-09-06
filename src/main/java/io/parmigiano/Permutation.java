@@ -27,11 +27,7 @@ public final class Permutation implements Expr {
         this.cycles = cycles;
     }
 
-    public static Permutation cycles(String s) {
-        return CycleParser.parseCycle(s);
-    }
-
-    public static Permutation cycle(int... cycle) {
+    static Permutation cycle(int... cycle) {
         int max = 0;
         for (int n : cycle) {
             max = Math.max(max, n);
@@ -183,18 +179,8 @@ public final class Permutation implements Expr {
         return n;
     }
 
-    /**
-     * Composing with another permutation creates a new operation.
-     *
-     * @param other another permutation
-     * @return the composition or product
-     */
-    public Permutation compose(int... other) {
-        return compose(cycle(other));
-    }
-
     public Permutation compose(String s) {
-        return compose(cycles(s));
+        return compose(Parser.parse(s));
     }
 
     /**

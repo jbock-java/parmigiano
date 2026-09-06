@@ -3,6 +3,7 @@ package io.parmigiano;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static io.parmigiano.Parser.parse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CyclesTest {
@@ -17,11 +18,11 @@ class CyclesTest {
 
     @Test
     void testApply() {
-        Permutation cycle = Permutation.cycle(0, 1);
+        Permutation cycle = parse("(0 1)");
         Assertions.assertEquals(1, cycle.maxMovedIndex());
         Assertions.assertEquals(0, cycle.apply(1));
         Assertions.assertEquals(1, cycle.apply(0));
         Assertions.assertEquals(2, cycle.apply(2));
         Assertions.assertEquals(10, cycle.apply(10));
-    }    
+    }
 }
