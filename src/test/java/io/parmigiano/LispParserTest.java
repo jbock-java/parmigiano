@@ -9,6 +9,6 @@ class LispParserTest {
 
     @Test
     void testParse() {
-        assertEquals("(1 (2 3))", parse("(1 * (2 * 3))").toString());
+        assertEquals("((1 (2 3)))", parse("(1 * (2 * 3))").toString());
     }
 }

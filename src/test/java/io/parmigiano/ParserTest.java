@@ -6,7 +6,7 @@ import io.parmigiano.LispParser.Symbol;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 import static io.parmigiano.Parser.parse;
 import static io.parmigiano.Parser.parseExpr;
@@ -25,10 +25,10 @@ class ParserTest {
 
     @Test
     void testParseSymbol() {
-        assertEquals(Symbol.of("a"), parseExpr("a"));
-        assertEquals(Symbol.of("a"), parseExpr(" a"));
-        assertEquals(Symbol.of("a"), parseExpr("a "));
-        assertEquals(Symbol.of("a"), parseExpr(" a "));
+        assertEquals(listOf("a"), parseExpr("a"));
+        assertEquals(listOf("a"), parseExpr(" a"));
+        assertEquals(listOf("a"), parseExpr("a "));
+        assertEquals(listOf("a"), parseExpr(" a "));
     }
 
     @Test
@@ -59,7 +59,7 @@ class ParserTest {
         assertThrows(RuntimeException.class, () -> parseExpr(")("));
     }
 
-    private static ListExpr listOf(String smb1, String smb2) {
-        return ListExpr.of(List.of(Symbol.of(smb1), Symbol.of(smb2)));
+    private static ListExpr listOf(String... symbols) {
+        return ListExpr.of(Stream.of(symbols).map(Symbol::of).toList());
     }
 }

@@ -10,6 +10,7 @@ import static java.util.stream.Collectors.joining;
 
 public final class LispParser {
     public sealed interface LispExpr extends Expr permits ListExpr, Symbol {
+        // todo add a Number class
         boolean isNumeric();
 
         boolean isList();
@@ -203,8 +204,6 @@ public final class LispParser {
             }
             if (acc.isEmpty()) {
                 return ListExpr.of(List.of());
-            } else if (acc.size() == 1) {
-                return acc.getFirst();
             } else {
                 return ListExpr.of(acc);
             }

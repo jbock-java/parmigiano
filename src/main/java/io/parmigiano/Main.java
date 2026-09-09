@@ -17,9 +17,14 @@ public class Main {
 
     private LispExpr resolve(LispExpr expr) {
         return switch (expr) {
-            case ListExpr listExpr -> ListExpr.of(listExpr.exprs().stream()
-                    .map(this::resolve)
-                    .toList());
+            case ListExpr listExpr -> {
+                if (listExpr.exprs().size() == 1) {
+                    yield resolve(listExpr.exprs().getFirst());
+                }
+                yield ListExpr.of(listExpr.exprs().stream()
+                        .map(this::resolve)
+                        .toList());
+            }
             case Symbol symbol -> {
                 LispExpr lispExpr = definitions.get(symbol);
                 yield switch (lispExpr) {
@@ -36,34 +41,18 @@ public class Main {
         };
     }
 
-    private LispExpr evalLispExpr(LispExpr rhs) {
-        switch (rhs) {
-            case Symbol symbol -> {
-                return resolve(symbol);
-            }
-            case ListExpr list -> {
-                return resolve(list);
-            }
-        }
-    }
-
     EvalResult evalExpression(Expr expr) {
         switch (expr) {
             case Assignment assignment -> {
-                Symbol lhs = assignment.lhs();
-                LispExpr lispExpr = evalLispExpr(assignment.rhs());
-                definitions.put(lhs, lispExpr);
+                LispExpr lispExpr = resolve(assignment.rhs());
+                definitions.put(assignment.lhs(), lispExpr);
                 return lispExpr.eval();
             }
             case ListExpr listExpr -> {
-                return evalLispExpr(listExpr).eval();
+                return resolve(listExpr).eval();
             }
             case Symbol symbol -> {
-                LispExpr resolved = resolve(symbol);
-                if (resolved.isSymbol()) {
-                    return null;
-                }
-                return resolved.eval();
+                return resolve(symbol).eval();
             }
         }
     }
@@ -73,7 +62,7 @@ public class Main {
         while ((line = reader.readLine()) != null) {
             try {
                 EvalResult expr = evalExpression(Parser.parseExpr(line));
-                if (expr == null) {
+                if (expr.isSymbol()) {
                     System.out.println("?");
                 } else {
                     System.out.println(expr);

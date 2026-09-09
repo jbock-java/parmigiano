@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 class MainTest {
 
@@ -42,8 +41,9 @@ class MainTest {
 
     @Test
     void testError() {
+        assertEquals("a", eval("a"));
         assertEquals("a", eval("a=a"));
         assertEquals("a", eval("a = a"));
-        assertNull(eval("a = a", "a"));
+        assertEquals("a", eval("a = a", "a"));
     }
 }
