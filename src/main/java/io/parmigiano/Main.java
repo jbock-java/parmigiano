@@ -42,7 +42,7 @@ public class Main {
         }
     }
 
-    private Permutation evalExpression(Expr expr) {
+    Permutation evalExpression(Expr expr) {
         switch (expr) {
             case Assignment assignment -> {
                 Symbol lhs = assignment.lhs();
@@ -51,7 +51,7 @@ public class Main {
                 return lispExpr.toPermutation();
             }
             case ListExpr listExpr -> {
-                return listExpr.toPermutation();
+                return evalLispExpr(listExpr).toPermutation();
             }
             case Symbol symbol -> {
                 LispExpr resolved = resolve(symbol);
