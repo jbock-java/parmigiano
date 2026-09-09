@@ -139,7 +139,7 @@ public final class LispParser {
                 result.add(parse(reader));
             }
         }
-        return ListExpr.of(result);
+        throw new IllegalArgumentException("unmatched parentheses");
     }
 
     static LispExpr parse(PushbackReader reader) throws IOException {
@@ -162,6 +162,8 @@ public final class LispParser {
                     }
                 }
                 return Symbol.of(smb, 0, len);
+            } else if (c == ')') {
+                throw new IllegalArgumentException("unmatched parentheses");
             } else if (c == '(') {
                 return parseList(reader);
             } else if (c != ' ' && c != '*') {

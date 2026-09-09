@@ -66,11 +66,18 @@ public class Main {
     void run(BufferedReader reader) throws IOException {
         String line;
         while ((line = reader.readLine()) != null) {
-            Permutation expr = evalExpression(Parser.parseExpr(line));
-            if (expr == null) {
-                System.out.println("?");
-            } else {
-                System.out.println(expr);
+            if (line.isBlank()) {
+                continue;
+            }
+            try {
+                Permutation expr = evalExpression(Parser.parseExpr(line));
+                if (expr == null) {
+                    System.out.println("?");
+                } else {
+                    System.out.println(expr);
+                }
+            } catch (RuntimeException e) {
+                System.out.println(e.getMessage());
             }
         }
     }

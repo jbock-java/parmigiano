@@ -11,6 +11,7 @@ import java.util.List;
 import static io.parmigiano.Parser.parse;
 import static io.parmigiano.Parser.parseExpr;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ParserTest {
 
@@ -49,6 +50,13 @@ class ParserTest {
         Assignment a = (Assignment) expr;
         assertEquals(Symbol.of("a"), a.lhs());
         assertEquals(Parser.parse("(1 2)"), a.rhs().toPermutation());
+    }
+
+    @Test
+    void testParseError() {
+        assertThrows(RuntimeException.class, () -> parseExpr("("));
+        assertThrows(RuntimeException.class, () -> parseExpr(")"));
+        assertThrows(RuntimeException.class, () -> parseExpr(")("));
     }
 
     private static ListExpr listOf(String smb1, String smb2) {
