@@ -10,7 +10,7 @@ import static java.lang.Math.floorMod;
 /**
  * <p>An operation that shuffles a list.
  */
-public final class Permutation {
+public final class Permutation implements EvalResult {
 
     static final Permutation IDENTITY = new Permutation(new int[0], new int[0], 0);
 

@@ -18,7 +18,7 @@ public final class LispParser {
 
         int asNumber();
 
-        Permutation toPermutation();
+        EvalResult eval();
     }
 
     public record ListExpr(List<? extends LispExpr> exprs) implements LispExpr, Expr {
@@ -27,7 +27,7 @@ public final class LispParser {
         }
 
         @Override
-        public Permutation toPermutation() {
+        public EvalResult eval() {
             List<Permutation> result = new ArrayList<>(exprs.size());
             int[] acc = new int[exprs.size()];
             int pos = 0;
@@ -41,7 +41,11 @@ public final class LispParser {
                     if (pos != 0) {
                         throw new IllegalArgumentException("mixing numbers with lists");
                     }
-                    result.add(expr.toPermutation());
+                    EvalResult er = expr.eval();
+                    switch (er) {
+                        case Symbol _ -> throw new IllegalArgumentException("symbol not allowed here");
+                        case Permutation permutation -> result.add(permutation);
+                    }
                 } else {
                     throw new IllegalArgumentException("not a number or list: " + expr);
                 }
@@ -81,7 +85,7 @@ public final class LispParser {
         }
     }
 
-    public record Symbol(String name) implements LispExpr, Expr {
+    public record Symbol(String name) implements LispExpr, Expr, EvalResult {
         public static Symbol of(String name) {
             return new Symbol(name);
         }
@@ -117,8 +121,8 @@ public final class LispParser {
         }
 
         @Override
-        public Permutation toPermutation() {
-            throw new UnsupportedOperationException("not a list");
+        public EvalResult eval() {
+            return this;
         }
 
         @Override

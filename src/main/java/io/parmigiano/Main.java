@@ -24,7 +24,12 @@ public class Main {
                 LispExpr lispExpr = definitions.get(symbol);
                 yield switch (lispExpr) {
                     case ListExpr listExpr -> listExpr;
-                    case Symbol smb -> resolve(smb);
+                    case Symbol smb -> {
+                        if (symbol.equals(smb)) {
+                            yield symbol;
+                        }
+                        yield resolve(smb);
+                    }
                     case null -> symbol;
                 };
             }
@@ -42,23 +47,23 @@ public class Main {
         }
     }
 
-    Permutation evalExpression(Expr expr) {
+    EvalResult evalExpression(Expr expr) {
         switch (expr) {
             case Assignment assignment -> {
                 Symbol lhs = assignment.lhs();
                 LispExpr lispExpr = evalLispExpr(assignment.rhs());
                 definitions.put(lhs, lispExpr);
-                return lispExpr.toPermutation();
+                return lispExpr.eval();
             }
             case ListExpr listExpr -> {
-                return evalLispExpr(listExpr).toPermutation();
+                return evalLispExpr(listExpr).eval();
             }
             case Symbol symbol -> {
                 LispExpr resolved = resolve(symbol);
                 if (resolved.isSymbol()) {
-                    throw new IllegalArgumentException("unknown symbol: " + resolved);
+                    return null;
                 }
-                return resolved.toPermutation();
+                return resolved.eval();
             }
         }
     }
@@ -66,11 +71,8 @@ public class Main {
     void run(BufferedReader reader) throws IOException {
         String line;
         while ((line = reader.readLine()) != null) {
-            if (line.isBlank()) {
-                continue;
-            }
             try {
-                Permutation expr = evalExpression(Parser.parseExpr(line));
+                EvalResult expr = evalExpression(Parser.parseExpr(line));
                 if (expr == null) {
                     System.out.println("?");
                 } else {

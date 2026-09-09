@@ -10,16 +10,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class MainTest {
-
-    private final Main main = new Main();
 
     private String eval(String... exprs) {
         String s = Stream.of(exprs).map(expr -> expr + "\n")
                 .collect(Collectors.joining());
-        Permutation result = null;
+        EvalResult result = null;
+        Main main = new Main();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(s.getBytes())))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -28,13 +27,23 @@ class MainTest {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        assertNotNull(result);
+        if (result == null) {
+            return null;
+        }
         return result.toString();
     }
 
     @Test
     void testEval() {
         assertEquals("()", eval("a = (0 1)", "a a"));
+        assertEquals("()", eval(""));
         assertEquals("(0 2 1)", eval("a = (0 1 2)", "a a"));
+    }
+
+    @Test
+    void testError() {
+        assertEquals("a", eval("a=a"));
+        assertEquals("a", eval("a = a"));
+        assertNull(eval("a = a", "a"));
     }
 }

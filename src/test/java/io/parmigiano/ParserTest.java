@@ -49,7 +49,7 @@ class ParserTest {
         Assertions.assertInstanceOf(Assignment.class, expr);
         Assignment a = (Assignment) expr;
         assertEquals(Symbol.of("a"), a.lhs());
-        assertEquals(Parser.parse("(1 2)"), a.rhs().toPermutation());
+        assertEquals(Parser.parse("(1 2)"), a.rhs().eval());
     }
 
     @Test
