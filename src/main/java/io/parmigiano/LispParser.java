@@ -9,15 +9,7 @@ import java.util.List;
 import static java.util.stream.Collectors.joining;
 
 public final class LispParser {
-    public sealed interface LispExpr extends Expr permits ListExpr, Symbol {
-        // todo add a Number class
-        boolean isNumeric();
-
-        boolean isList();
-
-        boolean isSymbol();
-
-        int asNumber();
+    public sealed interface LispExpr extends Expr permits ListExpr, Symbol, Number {
 
         EvalResult eval();
     }
@@ -32,24 +24,25 @@ public final class LispParser {
             List<Permutation> result = new ArrayList<>(exprs.size());
             int[] acc = new int[exprs.size()];
             int pos = 0;
+            EvalResult previous = null;
             for (LispExpr expr : exprs) {
-                if (expr.isNumeric()) {
-                    if (!result.isEmpty()) {
-                        throw new IllegalArgumentException("mixing numbers with lists");
+                EvalResult er = expr.eval();
+                switch (er) {
+                    case Symbol _ -> throw new IllegalArgumentException("symbol not allowed here");
+                    case Permutation permutation -> {
+                        if (previous != null && !previous.isPermutation()) {
+                            throw new IllegalArgumentException("bad product");
+                        }
+                        result.add(permutation);
                     }
-                    acc[pos++] = expr.asNumber();
-                } else if (expr.isList()) {
-                    if (pos != 0) {
-                        throw new IllegalArgumentException("mixing numbers with lists");
+                    case Number number -> {
+                        if (previous != null && !previous.isNumber()) {
+                            throw new IllegalArgumentException("bad product");
+                        }
+                        acc[pos++] = number.number;
                     }
-                    EvalResult er = expr.eval();
-                    switch (er) {
-                        case Symbol _ -> throw new IllegalArgumentException("symbol not allowed here");
-                        case Permutation permutation -> result.add(permutation);
-                    }
-                } else {
-                    throw new IllegalArgumentException("not a number or list: " + expr);
                 }
+                previous = er;
             }
             if (pos == 0) {
                 return Permutation.product(result);
@@ -58,26 +51,6 @@ public final class LispParser {
                 System.arraycopy(acc, 0, cycle, 0, pos);
                 return Permutation.cycle(cycle);
             }
-        }
-
-        @Override
-        public boolean isNumeric() {
-            return false;
-        }
-
-        @Override
-        public boolean isList() {
-            return true;
-        }
-
-        @Override
-        public boolean isSymbol() {
-            return false;
-        }
-
-        @Override
-        public int asNumber() {
-            throw new UnsupportedOperationException("not a number");
         }
 
         @Override
@@ -98,27 +71,50 @@ public final class LispParser {
         }
 
         @Override
-        public boolean isNumeric() {
-            if (name.isEmpty()) {
-                return false;
-            }
-            char c = name.charAt(0);
-            return c >= '0' && c <= '9';
-        }
-
-        @Override
-        public boolean isList() {
-            return false;
-        }
-
-        @Override
         public boolean isSymbol() {
             return true;
         }
 
         @Override
-        public int asNumber() {
-            return Integer.parseInt(name);
+        public boolean isPermutation() {
+            return false;
+        }
+
+        @Override
+        public EvalResult eval() {
+            return this;
+        }
+
+        @Override
+        public String toString() {
+            return stringify(this);
+        }
+    }
+
+    public record Number(int number) implements LispExpr, Expr, EvalResult {
+        public static Number of(String name) {
+            return new Number(Integer.parseInt(name));
+        }
+
+        public static Number of(char[] input, int off, int len) {
+            char[] smb = new char[len];
+            System.arraycopy(input, off, smb, 0, len);
+            return of(new String(smb));
+        }
+
+        @Override
+        public boolean isNumber() {
+            return true;
+        }
+
+        @Override
+        public boolean isPermutation() {
+            return false;
+        }
+
+        @Override
+        public boolean isSymbol() {
+            return false;
         }
 
         @Override
@@ -151,7 +147,23 @@ public final class LispParser {
         int d;
         while ((d = reader.read()) != -1) {
             char c = (char) d;
-            if (c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
+            if (c >= '0' && c <= '9') {
+                char[] smb = new char[16];
+                int len = 1;
+                smb[0] = c;
+                while ((d = reader.read()) != -1) {
+                    c = (char) d;
+                    if (c >= '0' && c <= '9') {
+                        smb[len++] = c;
+                    } else if (c == ' ' || c == '*' || c == '(' || c == ')' || c == '=') {
+                        reader.unread(c);
+                        return Number.of(smb, 0, len);
+                    } else {
+                        throw new IllegalArgumentException("digit expected: " + c);
+                    }
+                }
+                return Number.of(smb, 0, len);
+            } else if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
                 char[] smb = new char[16];
                 int len = 1;
                 smb[0] = c;
@@ -163,7 +175,7 @@ public final class LispParser {
                         reader.unread(c);
                         return Symbol.of(smb, 0, len);
                     } else {
-                        throw new IllegalArgumentException("bad input: " + c);
+                        throw new IllegalArgumentException("bad symbol: " + c);
                     }
                 }
                 return Symbol.of(smb, 0, len);
@@ -223,6 +235,7 @@ public final class LispParser {
                     .map(LispParser::stringify)
                     .collect(joining(" ", "(", ")"));
             case Symbol lispSymbol -> lispSymbol.name;
+            case Number number -> Integer.toString(number.number);
         };
     }
 }

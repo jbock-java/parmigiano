@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MainTest {
 
@@ -45,5 +46,10 @@ class MainTest {
         assertEquals("a", eval("a=a"));
         assertEquals("a", eval("a = a"));
         assertEquals("a", eval("a = a", "a"));
+    }
+
+    @Test
+    void testBadInput() {
+        assertThrows(RuntimeException.class, () -> eval("(0 1) 2"));
     }
 }

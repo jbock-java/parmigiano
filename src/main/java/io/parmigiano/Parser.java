@@ -2,6 +2,7 @@ package io.parmigiano;
 
 import io.parmigiano.Expr.Assignment;
 import io.parmigiano.LispParser.LispExpr;
+import io.parmigiano.LispParser.Number;
 import io.parmigiano.LispParser.Symbol;
 
 public final class Parser {
@@ -55,6 +56,7 @@ public final class Parser {
             EvalResult er = p.eval();
             return switch (er) {
                 case Symbol symbol -> throw new IllegalArgumentException("not a cycle expression");
+                case Number number -> throw new IllegalArgumentException("not a cycle expression");
                 case Permutation permutation -> permutation;
             };
         }

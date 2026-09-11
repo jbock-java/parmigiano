@@ -3,6 +3,7 @@ package io.parmigiano;
 import io.parmigiano.Expr.Assignment;
 import io.parmigiano.LispParser.LispExpr;
 import io.parmigiano.LispParser.ListExpr;
+import io.parmigiano.LispParser.Number;
 import io.parmigiano.LispParser.Symbol;
 
 import java.io.BufferedReader;
@@ -29,6 +30,7 @@ public class Main {
                 LispExpr lispExpr = definitions.get(symbol);
                 yield switch (lispExpr) {
                     case ListExpr listExpr -> listExpr;
+                    case Number number -> number;
                     case Symbol smb -> {
                         if (symbol.equals(smb)) {
                             yield symbol;
@@ -38,6 +40,7 @@ public class Main {
                     case null -> symbol;
                 };
             }
+            case Number number -> number;
         };
     }
 
@@ -53,6 +56,9 @@ public class Main {
             }
             case Symbol symbol -> {
                 return resolve(symbol).eval();
+            }
+            case Number number -> {
+                return number;
             }
         }
     }

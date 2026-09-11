@@ -399,6 +399,11 @@ public final class Permutation implements EvalResult {
         return new TakingBuilderList<>(a);
     }
 
+    @Override
+    public boolean isPermutation() {
+        return true;
+    }
+
     public record TakingBuilderList<E>(List<E> from) {
         public Permutation to(List<E> to) {
             return fromRanking(Rankings.from(from, to));
