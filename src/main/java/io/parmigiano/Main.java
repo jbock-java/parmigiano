@@ -1,33 +1,24 @@
 package io.parmigiano;
 
-import io.parmigiano.Expr.Assignment;
 import io.parmigiano.LispParser.LispExpr;
 import io.parmigiano.LispParser.ListExpr;
+import io.parmigiano.LispParser.Nothing;
 import io.parmigiano.LispParser.Number;
 import io.parmigiano.LispParser.Symbol;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Main {
 
-    private final Map<Symbol, LispExpr> definitions = new HashMap<>();
+    private final Eval eval = new Eval();
 
     private LispExpr resolve(LispExpr expr) {
         return switch (expr) {
-            case ListExpr listExpr -> {
-                if (listExpr.exprs().size() == 1) {
-                    yield resolve(listExpr.exprs().getFirst());
-                }
-                yield ListExpr.of(listExpr.exprs().stream()
-                        .map(this::resolve)
-                        .toList());
-            }
+            case ListExpr listExpr -> resolveList(listExpr);
             case Symbol symbol -> {
-                LispExpr lispExpr = definitions.get(symbol);
+                LispExpr lispExpr = eval.resolve(symbol);
                 yield switch (lispExpr) {
                     case ListExpr listExpr -> listExpr;
                     case Number number -> number;
@@ -38,29 +29,43 @@ public class Main {
                         yield resolve(smb);
                     }
                     case null -> symbol;
+                    case Nothing nothing -> nothing;
                 };
             }
             case Number number -> number;
+            case Nothing nothing -> nothing;
         };
     }
 
-    EvalResult evalExpression(Expr expr) {
-        switch (expr) {
-            case Assignment assignment -> {
-                LispExpr lispExpr = resolve(assignment.rhs());
-                definitions.put(assignment.lhs(), lispExpr);
-                return lispExpr.eval();
+    private ListExpr resolveList(ListExpr listExpr) {
+        return ListExpr.of(listExpr.exprs().stream()
+                .map(this::resolve)
+                .toList());
+    }
+
+    public LispExpr resolveSymbol(Symbol symbol) {
+        LispExpr lispExpr = eval.resolve(symbol);
+        return switch (lispExpr) {
+            case ListExpr listExpr -> listExpr;
+            case Number number -> number;
+            case Symbol smb -> {
+                if (symbol.equals(smb)) {
+                    yield symbol;
+                }
+                yield resolve(smb);
             }
-            case ListExpr listExpr -> {
-                return resolve(listExpr).eval();
-            }
-            case Symbol symbol -> {
-                return resolve(symbol).eval();
-            }
-            case Number number -> {
-                return number;
-            }
-        }
+            case null -> symbol;
+            case Nothing nothing -> nothing;
+        };
+    }
+
+    EvalResult evalExpression(LispExpr expr) {
+        return switch (expr) {
+            case ListExpr list -> eval.evalListExpression(resolveList(list));
+            case Symbol symbol -> eval.eval(resolveSymbol(symbol));
+            case Number number -> number;
+            case Nothing nothing -> nothing;
+        };
     }
 
     void run(BufferedReader reader) throws IOException {
@@ -68,10 +73,18 @@ public class Main {
         while ((line = reader.readLine()) != null) {
             try {
                 EvalResult expr = evalExpression(Parser.parseExpr(line));
-                if (expr.isSymbol()) {
-                    System.out.println("?");
-                } else {
-                    System.out.println(expr);
+                switch (expr) {
+                    case Number number -> System.out.println(number);
+                    case Symbol symbol -> {
+                        if (symbol.name().equals("q")) {
+                            return;
+                        } else {
+                            System.out.println("?");
+                        }
+                    }
+                    case Permutation permutation -> System.out.println(permutation);
+                    case Nothing _ -> {
+                    }
                 }
             } catch (RuntimeException e) {
                 System.out.println(e.getMessage());
@@ -79,7 +92,7 @@ public class Main {
         }
     }
 
-    public static void main(String[] args) {
+    static void main() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             new Main().run(reader);
         } catch (IOException e) {

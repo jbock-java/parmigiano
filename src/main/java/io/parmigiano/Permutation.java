@@ -28,10 +28,18 @@ public final class Permutation implements EvalResult {
     }
 
     static Permutation cycle(int... cycle) {
-        int max = 0;
-        for (int n : cycle) {
-            max = Math.max(max, n);
+        if (cycle.length < 2) {
+            throw new IllegalArgumentException("not a cycle");
         }
+        int[] sorted = Arrays.copyOf(cycle, cycle.length);
+        Arrays.sort(sorted);
+        int previous = -1;
+        for (int j : sorted) {
+            if (j <= previous) {
+                throw new IllegalArgumentException("not a cycle");
+            }
+        }
+        int max = sorted[sorted.length - 1];
         return new Permutation(new int[]{cycle.length}, cycle, max);
     }
 
@@ -391,17 +399,17 @@ public final class Permutation implements EvalResult {
         return new Permutation(lengths, result, maxMovedIndex);
     }
 
+    @Override
+    public boolean isPermutation() {
+        return true;
+    }
+
     public static TakingBuilderInt taking(int[] a) {
         return new TakingBuilderInt(a);
     }
 
     public static <E extends Comparable<E>> TakingBuilderList<E> taking(List<E> a) {
         return new TakingBuilderList<>(a);
-    }
-
-    @Override
-    public boolean isPermutation() {
-        return true;
     }
 
     public record TakingBuilderList<E>(List<E> from) {

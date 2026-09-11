@@ -9,48 +9,39 @@ import java.util.List;
 import static java.util.stream.Collectors.joining;
 
 public final class LispParser {
-    public sealed interface LispExpr extends Expr permits ListExpr, Symbol, Number {
-
-        EvalResult eval();
+    public sealed interface LispExpr permits Nothing, ListExpr, Symbol, Number {
+        default boolean isSymbol(String smb) {
+            return false;
+        }
     }
 
-    public record ListExpr(List<? extends LispExpr> exprs) implements LispExpr, Expr {
+    public record ListExpr(List<? extends LispExpr> exprs) implements LispExpr {
         public static ListExpr of(List<? extends LispExpr> exprs) {
             return new ListExpr(exprs);
         }
 
-        @Override
-        public EvalResult eval() {
-            List<Permutation> result = new ArrayList<>(exprs.size());
-            int[] acc = new int[exprs.size()];
-            int pos = 0;
-            EvalResult previous = null;
-            for (LispExpr expr : exprs) {
-                EvalResult er = expr.eval();
-                switch (er) {
-                    case Symbol _ -> throw new IllegalArgumentException("symbol not allowed here");
-                    case Permutation permutation -> {
-                        if (previous != null && !previous.isPermutation()) {
-                            throw new IllegalArgumentException("bad product");
-                        }
-                        result.add(permutation);
-                    }
-                    case Number number -> {
-                        if (previous != null && !previous.isNumber()) {
-                            throw new IllegalArgumentException("bad product");
-                        }
-                        acc[pos++] = number.number;
-                    }
-                }
-                previous = er;
-            }
-            if (pos == 0) {
-                return Permutation.product(result);
-            } else {
-                int[] cycle = new int[pos];
-                System.arraycopy(acc, 0, cycle, 0, pos);
-                return Permutation.cycle(cycle);
-            }
+        public boolean startsWithSymbol(String smb) {
+            return !exprs.isEmpty() && exprs.getFirst().isSymbol(smb);
+        }
+
+        public LispExpr head() {
+            return get(0);
+        }
+
+        public LispExpr get(int n) {
+            return exprs.get(n);
+        }
+
+        public ListExpr tail() {
+            return tail(1);
+        }
+
+        public ListExpr tail(int n) {
+            return new ListExpr(exprs.subList(2, exprs.size()));
+        }
+
+        public int length() {
+            return exprs.size();
         }
 
         @Override
@@ -59,7 +50,7 @@ public final class LispParser {
         }
     }
 
-    public record Symbol(String name) implements LispExpr, Expr, EvalResult {
+    public record Symbol(String name) implements LispExpr, EvalResult {
         public static Symbol of(String name) {
             return new Symbol(name);
         }
@@ -71,18 +62,8 @@ public final class LispParser {
         }
 
         @Override
-        public boolean isSymbol() {
-            return true;
-        }
-
-        @Override
-        public boolean isPermutation() {
-            return false;
-        }
-
-        @Override
-        public EvalResult eval() {
-            return this;
+        public boolean isSymbol(String smb) {
+            return name.equals(smb);
         }
 
         @Override
@@ -91,9 +72,12 @@ public final class LispParser {
         }
     }
 
-    public record Number(int number) implements LispExpr, Expr, EvalResult {
-        public static Number of(String name) {
-            return new Number(Integer.parseInt(name));
+    public record Number(int number) implements LispExpr, EvalResult {
+        public static Number of(int n) {
+            return new Number(n);
+        }
+        public static Number of(String n) {
+            return new Number(Integer.parseInt(n));
         }
 
         public static Number of(char[] input, int off, int len) {
@@ -105,21 +89,6 @@ public final class LispParser {
         @Override
         public boolean isNumber() {
             return true;
-        }
-
-        @Override
-        public boolean isPermutation() {
-            return false;
-        }
-
-        @Override
-        public boolean isSymbol() {
-            return false;
-        }
-
-        @Override
-        public EvalResult eval() {
-            return this;
         }
 
         @Override
@@ -141,6 +110,14 @@ public final class LispParser {
             }
         }
         throw new IllegalArgumentException("unmatched parentheses");
+    }
+
+    static final class Nothing implements LispExpr, EvalResult {
+
+        @Override
+        public String toString() {
+            return stringify(this);
+        }
     }
 
     static LispExpr parse(PushbackReader reader) throws IOException {
@@ -231,11 +208,12 @@ public final class LispParser {
 
     public static String stringify(LispExpr expr) {
         return switch (expr) {
-            case ListExpr listExpr -> listExpr.exprs.stream()
+            case ListExpr list -> list.exprs.stream()
                     .map(LispParser::stringify)
                     .collect(joining(" ", "(", ")"));
-            case Symbol lispSymbol -> lispSymbol.name;
+            case Symbol symbol -> symbol.name;
             case Number number -> Integer.toString(number.number);
+            case Nothing _ -> "nothing";
         };
     }
 }

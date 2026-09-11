@@ -1,11 +1,11 @@
 package io.parmigiano;
 
-import io.parmigiano.Expr.Assignment;
 import io.parmigiano.LispParser.ListExpr;
+import io.parmigiano.LispParser.Number;
 import io.parmigiano.LispParser.Symbol;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static io.parmigiano.Parser.parse;
@@ -45,11 +45,11 @@ class ParserTest {
 
     @Test
     void testParseAssignment() {
-        Expr expr = Parser.parseExpr("a = (1 2)");
-        Assertions.assertInstanceOf(Assignment.class, expr);
-        Assignment a = (Assignment) expr;
-        assertEquals(Symbol.of("a"), a.lhs());
-        assertEquals(Parser.parse("(1 2)"), a.rhs().eval());
+        LispParser.LispExpr expr = Parser.parseExpr("(def a (1 2))");
+        ListExpr list = (ListExpr) ((ListExpr) expr).head();
+        assertEquals(Symbol.of("def"), list.head());
+        assertEquals(Symbol.of("a"), list.get(1));
+        assertEquals(ListExpr.of(List.of(Number.of(1), Number.of(2))), list.get(2));
     }
 
     @Test

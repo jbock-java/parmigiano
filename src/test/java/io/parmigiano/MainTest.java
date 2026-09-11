@@ -35,17 +35,34 @@ class MainTest {
 
     @Test
     void testEval() {
-        assertEquals("()", eval("a = (0 1)", "a a"));
-        assertEquals("()", eval(""));
-        assertEquals("(0 2 1)", eval("a = (0 1 2)", "a a"));
+        assertEquals("()", eval("def a (0 1)", "a a"));
+        assertEquals("(0 2 1)", eval("(def a (0 1 2))", "a a"));
     }
 
     @Test
-    void testError() {
-        assertEquals("a", eval("a"));
-        assertEquals("a", eval("a=a"));
-        assertEquals("a", eval("a = a"));
-        assertEquals("a", eval("a = a", "a"));
+    void testNothing() {
+        assertEquals("nothing", eval(""));
+    }
+
+    @Test
+    void testNumber() {
+        assertEquals("1", eval("1"));
+    }
+
+    @Test
+    void testNumbers() {
+        assertEquals("(0 1)", eval("(def a 0)", "(def b 1)", "a b"));
+    }
+
+    @Test
+    void testAssignment() {
+        assertEquals("1", eval("(def a 1)", "a"));
+    }
+
+    @Test
+    void testUndefined() {
+        assertThrows(RuntimeException.class, () -> eval("a"));
+        assertThrows(RuntimeException.class, () -> eval("(def a a)"));
     }
 
     @Test

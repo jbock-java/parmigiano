@@ -1,11 +1,11 @@
 package io.parmigiano;
 
-public sealed interface EvalResult permits Permutation, LispParser.Symbol, LispParser.Number {
-    default boolean isSymbol() {
-        return false;
-    }
+public sealed interface EvalResult permits Permutation, LispParser.Nothing, LispParser.Symbol, LispParser.Number {
     default boolean isNumber() {
         return false;
     }
-    boolean isPermutation();
+
+    default boolean isPermutation() {
+        return false;
+    }
 }
