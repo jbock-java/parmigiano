@@ -17,20 +17,20 @@ class MainTest {
     private String eval(String... exprs) {
         String s = Stream.of(exprs).map(expr -> expr + "\n")
                 .collect(Collectors.joining());
-        EvalResult result = null;
+        String result = null;
+        String line;
         Main main = new Main();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(s.getBytes())))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result = main.evalExpression(Parser.parseExpr(line));
-            }
+            do {
+                line = main.getNextString(reader);
+                if (line != null) {
+                    result = line;
+                }
+            } while (line != null);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        if (result == null) {
-            return null;
-        }
-        return result.toString();
+        return result;
     }
 
     @Test
@@ -66,7 +66,7 @@ class MainTest {
 
     @Test
     void testUndefined() {
-        assertThrows(RuntimeException.class, () -> eval("a"));
+        assertEquals("?", eval("a"));
         assertThrows(RuntimeException.class, () -> eval("(def a a)"));
     }
 

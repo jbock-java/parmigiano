@@ -66,37 +66,57 @@ public class Main {
         };
     }
 
-    EvalResult evalExpression(LispExpr expr) {
+    LispExpr evalExpression(LispExpr expr) {
         return switch (expr) {
-            case ListExpr list -> eval.evalListExpression(resolveList(list));
-            case Symbol symbol -> eval.eval(resolveSymbol(symbol));
+            case ListExpr list -> {
+                if (list.length() == 1) {
+                    yield evalExpression(list.get(0));
+                }
+                yield  eval.evalListExpression(resolveList(list));
+            }
+            case Symbol symbol -> resolveSymbol(symbol);
             case Number number -> number;
             case Nothing nothing -> nothing;
         };
     }
 
+
+    String getNextString(BufferedReader reader) throws IOException {
+        String line;
+        line = reader.readLine();
+        if (line == null) {
+            return null;
+        }
+        switch (evalExpression(Parser.parseExpr(line))) {
+            case Number number -> {
+                return number.toString();
+            }
+            case Symbol symbol -> {
+                if (symbol.name().equals("q")) {
+                    return null;
+                } else {
+                    return "?";
+                }
+            }
+            case Nothing _ -> {
+                return "()";
+            }
+            case ListExpr listExpr -> {
+                if (listExpr.length() == 1) {
+                    return listExpr.get(0).toString();
+                }
+                return listExpr.toPermutation().toString();
+            }
+        }
+    }
+
     void run(BufferedReader reader) throws IOException {
         String line;
-        while ((line = reader.readLine()) != null) {
+        while ((line = getNextString(reader)) != null) {
             try {
-                EvalResult expr = evalExpression(Parser.parseExpr(line));
-                switch (expr) {
-                    case Number number -> System.out.println(number);
-                    case Symbol symbol -> {
-                        if (symbol.name().equals("q")) {
-                            return;
-                        } else {
-                            System.out.println("?");
-                        }
-                    }
-                    case Permutation permutation -> System.out.println(permutation);
-                    case Nothing _ -> {
-                    }
-                    case ListExpr listExpr -> {
-                    }
-                }
+                System.out.println(line);
             } catch (RuntimeException e) {
-                System.out.println(e.getMessage());
+                e.printStackTrace(System.err);
             }
         }
     }

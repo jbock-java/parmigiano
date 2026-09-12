@@ -10,15 +10,58 @@ import static java.util.stream.Collectors.joining;
 
 public final class LispParser {
     public sealed interface LispExpr permits Nothing, ListExpr, Symbol, Number {
+        default Permutation toPermutation() {
+            throw new IllegalArgumentException("cannot build permutation from " + this);
+        }
     }
 
-    public record ListExpr(List<? extends LispExpr> exprs) implements LispExpr, EvalResult {
+    public record ListExpr(List<? extends LispExpr> exprs) implements LispExpr {
         public static ListExpr of(List<? extends LispExpr> exprs) {
             return new ListExpr(exprs);
         }
 
+        @Override
+        public Permutation toPermutation() {
+            if (isEmpty()) {
+                return Permutation.identity();
+            }
+            if (length() == 1 && startsWithList()) {
+                return get(0).toPermutation();
+            }
+            if (startsWithNumber()) {
+                int[] numbers = new int[length()];
+                int numbers_pos = 0;
+                for (LispExpr pr : exprs) {
+                    numbers[numbers_pos++] = ((Number) pr).number();
+                }
+                return Permutation.cycle(numbers);
+            } else if (startsWithList()) {
+                return Permutation.product(exprs().stream()
+                        .map(LispExpr::toPermutation)
+                        .toList());
+            } else {
+                throw new IllegalArgumentException("bad list: " + this);
+            }
+        }
+
         public boolean startsWith(Symbol smb) {
             return !exprs.isEmpty() && exprs.getFirst().equals(smb);
+        }
+
+        public boolean isEmpty() {
+            return exprs.isEmpty();
+        }
+
+        public boolean startsWithNumber() {
+            return !exprs.isEmpty() && exprs.getFirst() instanceof Number;
+        }
+
+        public boolean startsWithList() {
+            if (exprs.isEmpty()) {
+                return false;
+            }
+            LispExpr first = exprs.getFirst();
+            return first instanceof ListExpr;
         }
 
         public LispExpr get(int n) {
@@ -35,7 +78,7 @@ public final class LispParser {
         }
     }
 
-    public record Symbol(String name) implements LispExpr, EvalResult {
+    public record Symbol(String name) implements LispExpr {
         public static Symbol of(String name) {
             return new Symbol(name);
         }
@@ -52,7 +95,7 @@ public final class LispParser {
         }
     }
 
-    public record Number(int number) implements LispExpr, EvalResult {
+    public record Number(int number) implements LispExpr {
         public static Number of(int n) {
             return new Number(n);
         }
@@ -65,11 +108,6 @@ public final class LispParser {
             char[] smb = new char[len];
             System.arraycopy(input, off, smb, 0, len);
             return of(new String(smb));
-        }
-
-        @Override
-        public boolean isNumber() {
-            return true;
         }
 
         @Override
@@ -93,7 +131,7 @@ public final class LispParser {
         throw new IllegalArgumentException("unmatched parentheses");
     }
 
-    static final class Nothing implements LispExpr, EvalResult {
+    static final class Nothing implements LispExpr {
 
         @Override
         public String toString() {
@@ -176,11 +214,6 @@ public final class LispParser {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static LispExpr parse(String s) {
-        char[] chars = s.toCharArray();
-        return parse(chars);
     }
 
     public static String stringify(LispExpr expr) {
