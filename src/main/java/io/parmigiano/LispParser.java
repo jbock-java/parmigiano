@@ -10,22 +10,15 @@ import static java.util.stream.Collectors.joining;
 
 public final class LispParser {
     public sealed interface LispExpr permits Nothing, ListExpr, Symbol, Number {
-        default boolean isSymbol(String smb) {
-            return false;
-        }
     }
 
-    public record ListExpr(List<? extends LispExpr> exprs) implements LispExpr {
+    public record ListExpr(List<? extends LispExpr> exprs) implements LispExpr, EvalResult {
         public static ListExpr of(List<? extends LispExpr> exprs) {
             return new ListExpr(exprs);
         }
 
         public boolean startsWith(Symbol smb) {
             return !exprs.isEmpty() && exprs.getFirst().equals(smb);
-        }
-
-        public LispExpr head() {
-            return get(0);
         }
 
         public LispExpr get(int n) {
@@ -51,11 +44,6 @@ public final class LispParser {
             char[] smb = new char[len];
             System.arraycopy(input, off, smb, 0, len);
             return new Symbol(new String(smb));
-        }
-
-        @Override
-        public boolean isSymbol(String smb) {
-            return name.equals(smb);
         }
 
         @Override
@@ -170,14 +158,10 @@ public final class LispParser {
         }
     }
 
-    public static LispExpr parse(char[] input, int off) {
-        if (off != 0) {
-            char[] tmp = new char[input.length - off];
-            System.arraycopy(input, off, tmp, 0, input.length - off);
-            input = tmp;
-        }
+    public static LispExpr parse(char[] input) {
         List<LispExpr> acc = new ArrayList<>();
         try (PushbackReader reader = new PushbackReader(new CharArrayReader(input))) {
+            consumeWhitespace(reader);
             int d;
             while ((d = reader.read()) != -1) {
                 reader.unread(d);
@@ -196,7 +180,7 @@ public final class LispParser {
 
     public static LispExpr parse(String s) {
         char[] chars = s.toCharArray();
-        return parse(chars, 0);
+        return parse(chars);
     }
 
     public static String stringify(LispExpr expr) {

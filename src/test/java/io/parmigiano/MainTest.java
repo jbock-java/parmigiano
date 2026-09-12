@@ -41,7 +41,7 @@ class MainTest {
 
     @Test
     void testNothing() {
-        assertEquals("nothing", eval(""));
+        assertEquals("()", eval(""));
     }
 
     @Test
@@ -73,5 +73,10 @@ class MainTest {
     @Test
     void testBadInput() {
         assertThrows(RuntimeException.class, () -> eval("(0 1) 2"));
+    }
+
+    @Test
+    void testBadCycle() {
+        assertThrows(RuntimeException.class, () -> eval("(1 1)"));
     }
 }

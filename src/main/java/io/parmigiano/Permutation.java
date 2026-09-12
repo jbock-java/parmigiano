@@ -38,6 +38,7 @@ public final class Permutation implements EvalResult {
             if (j <= previous) {
                 throw new IllegalArgumentException("not a cycle");
             }
+            previous = j;
         }
         int max = sorted[sorted.length - 1];
         return new Permutation(new int[]{cycle.length}, cycle, max);

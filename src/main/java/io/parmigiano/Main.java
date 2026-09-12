@@ -92,6 +92,8 @@ public class Main {
                     case Permutation permutation -> System.out.println(permutation);
                     case Nothing _ -> {
                     }
+                    case ListExpr listExpr -> {
+                    }
                 }
             } catch (RuntimeException e) {
                 System.out.println(e.getMessage());

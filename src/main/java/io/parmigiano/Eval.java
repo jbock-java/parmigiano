@@ -54,9 +54,11 @@ final class Eval {
                     numbers[numbers_pos++] = number.number();
                 }
                 case Nothing _ -> throw new IllegalArgumentException("nothing not expected here");
+                case ListExpr _ -> throw new IllegalArgumentException("todo, create permutation");
             }
             previous = er;
         }
+        // can we return list expression
         if (numbers_pos == 0) {
             return Permutation.product(result);
         } else {
