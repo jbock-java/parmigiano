@@ -9,6 +9,7 @@ import io.parmigiano.LispParser.Symbol;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 
 public class Main {
 
@@ -38,6 +39,12 @@ public class Main {
     }
 
     private ListExpr resolveList(ListExpr listExpr) {
+        if (listExpr.startsWith(Symbols.DEF)) {
+            return ListExpr.of(List.of(
+                    listExpr.get(0),
+                    listExpr.get(1),
+                    resolve(listExpr.get(2))));
+        }
         return ListExpr.of(listExpr.exprs().stream()
                 .map(this::resolve)
                 .toList());

@@ -29,7 +29,7 @@ final class Eval {
     }
 
     EvalResult evalListExpression(ListExpr list) {
-        if (list.startsWithSymbol("def")) {
+        if (list.startsWith(Symbols.DEF)) {
             definitions.put((Symbol) list.get(1), list.get(2));
             return eval(list.get(2));
         }

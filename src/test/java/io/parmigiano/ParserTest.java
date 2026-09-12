@@ -1,5 +1,6 @@
 package io.parmigiano;
 
+import io.parmigiano.LispParser.LispExpr;
 import io.parmigiano.LispParser.ListExpr;
 import io.parmigiano.LispParser.Number;
 import io.parmigiano.LispParser.Symbol;
@@ -45,9 +46,9 @@ class ParserTest {
 
     @Test
     void testParseAssignment() {
-        LispParser.LispExpr expr = Parser.parseExpr("(def a (1 2))");
-        ListExpr list = (ListExpr) ((ListExpr) expr).head();
-        assertEquals(Symbol.of("def"), list.head());
+        LispExpr expr = Parser.parseExpr("(def a (1 2))");
+        ListExpr list = (ListExpr) ((ListExpr) expr).get(0);
+        assertEquals(Symbol.of("def"), list.get(0));
         assertEquals(Symbol.of("a"), list.get(1));
         assertEquals(ListExpr.of(List.of(Number.of(1), Number.of(2))), list.get(2));
     }

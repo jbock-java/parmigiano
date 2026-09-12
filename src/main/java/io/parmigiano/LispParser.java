@@ -20,8 +20,8 @@ public final class LispParser {
             return new ListExpr(exprs);
         }
 
-        public boolean startsWithSymbol(String smb) {
-            return !exprs.isEmpty() && exprs.getFirst().isSymbol(smb);
+        public boolean startsWith(Symbol smb) {
+            return !exprs.isEmpty() && exprs.getFirst().equals(smb);
         }
 
         public LispExpr head() {
@@ -30,14 +30,6 @@ public final class LispParser {
 
         public LispExpr get(int n) {
             return exprs.get(n);
-        }
-
-        public ListExpr tail() {
-            return tail(1);
-        }
-
-        public ListExpr tail(int n) {
-            return new ListExpr(exprs.subList(2, exprs.size()));
         }
 
         public int length() {
@@ -76,6 +68,7 @@ public final class LispParser {
         public static Number of(int n) {
             return new Number(n);
         }
+
         public static Number of(String n) {
             return new Number(Integer.parseInt(n));
         }

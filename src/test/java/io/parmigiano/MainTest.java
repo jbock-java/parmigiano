@@ -55,8 +55,13 @@ class MainTest {
     }
 
     @Test
-    void testAssignment() {
+    void testDef() {
         assertEquals("1", eval("(def a 1)", "a"));
+    }
+
+    @Test
+    void testDoubleDef() {
+        assertEquals("1", eval("(def a 0)", "(def a 1)", "a"));
     }
 
     @Test
