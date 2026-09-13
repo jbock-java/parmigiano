@@ -9,7 +9,7 @@ import java.util.List;
 import static java.util.stream.Collectors.joining;
 
 public final class LispParser {
-    public sealed interface LispExpr permits Nothing, ListExpr, Symbol, Number {
+    public sealed interface LispExpr permits ListExpr, Symbol, Number {
         default Permutation toPermutation() {
             throw new IllegalArgumentException("cannot build permutation from " + this);
         }
@@ -22,13 +22,7 @@ public final class LispParser {
 
         @Override
         public Permutation toPermutation() {
-            if (isEmpty()) {
-                return Permutation.identity();
-            }
-            if (length() == 1 && startsWithList()) {
-                return get(0).toPermutation();
-            }
-            if (startsWithNumber()) {
+            if (isEmpty() || startsWithNumber()) {
                 int[] numbers = new int[length()];
                 int numbers_pos = 0;
                 for (LispExpr pr : exprs) {
@@ -74,7 +68,9 @@ public final class LispParser {
 
         @Override
         public String toString() {
-            return stringify(this);
+            return exprs.stream()
+                    .map(LispExpr::toString)
+                    .collect(joining(" ", "(", ")"));
         }
     }
 
@@ -91,7 +87,7 @@ public final class LispParser {
 
         @Override
         public String toString() {
-            return stringify(this);
+            return name;
         }
     }
 
@@ -112,7 +108,7 @@ public final class LispParser {
 
         @Override
         public String toString() {
-            return stringify(this);
+            return Integer.toString(number);
         }
     }
 
@@ -129,14 +125,6 @@ public final class LispParser {
             }
         }
         throw new IllegalArgumentException("unmatched parentheses");
-    }
-
-    static final class Nothing implements LispExpr {
-
-        @Override
-        public String toString() {
-            return stringify(this);
-        }
     }
 
     static LispExpr parse(PushbackReader reader) throws IOException {
@@ -214,16 +202,5 @@ public final class LispParser {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static String stringify(LispExpr expr) {
-        return switch (expr) {
-            case ListExpr list -> list.exprs.stream()
-                    .map(LispParser::stringify)
-                    .collect(joining(" ", "(", ")"));
-            case Symbol symbol -> symbol.name;
-            case Number number -> Integer.toString(number.number);
-            case Nothing _ -> "nothing";
-        };
     }
 }

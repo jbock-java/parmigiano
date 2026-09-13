@@ -137,7 +137,7 @@ class PermutationTest {
     @Test
     void testIdentity() {
         assertTrue(Permutation.identity().isIdentity());
-        assertTrue(parse("(1 2)").compose("(1 2)").isIdentity());
+        assertTrue(parse("(1 2) (1 2)").isIdentity());
         assertFalse(parse("(1 2)").isIdentity());
     }
 
@@ -181,7 +181,7 @@ class PermutationTest {
         assertEquals(List.of("c", "a", "b"),
                 Permutation.product(parse("(0 1)"), parse("(1 2)")).apply(TestUtil.symbols(3)));
         assertEquals(List.of("c", "a", "b"), parse("(0 1 2)").apply(TestUtil.symbols(3)));
-        assertEquals(List.of("a", "c", "b"), 
+        assertEquals(List.of("a", "c", "b"),
                 parse("(0 1) (0 1) (1 2)").apply(TestUtil.symbols(3)));
     }
 

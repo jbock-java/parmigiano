@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static io.parmigiano.Parser.parse;
-import static io.parmigiano.Parser.parseExpr;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -46,7 +45,7 @@ class ParserTest {
 
     @Test
     void testParseAssignment() {
-        LispExpr expr = Parser.parseExpr("(def a (1 2))");
+        LispExpr expr = parseExpr("(def a (1 2))");
         ListExpr list = (ListExpr) ((ListExpr) expr).get(0);
         assertEquals(Symbol.of("def"), list.get(0));
         assertEquals(Symbol.of("a"), list.get(1));
@@ -58,6 +57,11 @@ class ParserTest {
         assertThrows(RuntimeException.class, () -> parseExpr("("));
         assertThrows(RuntimeException.class, () -> parseExpr(")"));
         assertThrows(RuntimeException.class, () -> parseExpr(")("));
+    }
+
+    private static LispExpr parseExpr(String s) {
+        char[] input = s.toCharArray();
+        return LispParser.parse(input);
     }
 
     private static ListExpr listOf(String... symbols) {

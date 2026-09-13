@@ -28,7 +28,10 @@ public final class Permutation {
     }
 
     static Permutation cycle(int... cycle) {
-        if (cycle.length < 2) {
+        if (cycle.length == 0) {
+            return identity();
+        }
+        if (cycle.length == 1) {
             throw new IllegalArgumentException("not a cycle");
         }
         int[] sorted = Arrays.copyOf(cycle, cycle.length);
@@ -186,10 +189,6 @@ public final class Permutation {
             off += len;
         }
         return n;
-    }
-
-    public Permutation compose(String s) {
-        return compose(Parser.parse(s));
     }
 
     /**
