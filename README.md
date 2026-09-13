@@ -2,26 +2,29 @@
 
 This library does finite permutations in Java.
 
-### Cycle based
-
-````java
-Permutation.cycle(0, 1).apply(List.of("a", "b", "c"));
-// => ["b", "a", "c"]
-````
-
-### Composition
-
-````java
-Permutation.cycle(0, 1).compose(2, 3);
-// => (0 1) (2 3)
-````
-
-### Getting all permutations of 5 Elements
-
-````java
-Permutation.symmetricGroup(5).count();
-// => 120
-````
+```
+$ make && make run
+def a 1
+1
+def b 2
+2
+def c a
+1
+a c
+java.lang.IllegalArgumentException: not a cycle
+b c
+(2 1)
+c b
+(1 2)
+def d (b c)
+(2 1)
+d
+(2 1)
+d d
+()
+def e (d d d)
+(1 2)
+```
 
 Permutation group:
 
