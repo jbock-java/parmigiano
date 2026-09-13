@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MainTest {
@@ -31,13 +32,13 @@ class MainTest {
 
     @Test
     void testEval() {
-        assertEquals("()", eval("def a (0 1)", "a a"));
-        assertEquals("(0 2 1)", eval("(def a (0 1 2))", "a a"));
+        assertEquals("()", eval("(def a (0 1))", "(a a)"));
+        assertEquals("(0 2 1)", eval("(def a (0 1 2))", "(a a)"));
     }
 
     @Test
     void testNothing() {
-        assertEquals("()", eval(""));
+        assertNull(eval(""));
     }
 
     @Test
@@ -47,7 +48,7 @@ class MainTest {
 
     @Test
     void testNumbers() {
-        assertEquals("(0 1)", eval("(def a 0)", "(def b 1)", "a b"));
+        assertEquals("(0 1)", eval("(def a 0)", "(def b 1)", "(a b)"));
     }
 
     @Test
@@ -68,7 +69,7 @@ class MainTest {
 
     @Test
     void testBadInput() {
-        assertThrows(RuntimeException.class, () -> eval("(0 1) 2"));
+        assertThrows(RuntimeException.class, () -> eval("((0 1) 2)"));
     }
 
     @Test

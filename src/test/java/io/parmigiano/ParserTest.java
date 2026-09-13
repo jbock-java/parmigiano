@@ -24,29 +24,23 @@ class ParserTest {
     }
 
     @Test
-    void testParseSymbol() {
-        assertEquals(listOf("a"), parseExpr("a"));
-        assertEquals(listOf("a"), parseExpr(" a"));
-        assertEquals(listOf("a"), parseExpr("a "));
-        assertEquals(listOf("a"), parseExpr(" a "));
-    }
-
-    @Test
-    void testParseSymbols() {
-        assertEquals(listOf("a", "b"), parseExpr("a b"));
-        assertEquals(listOf("a", "b"), parseExpr(" a b"));
-        assertEquals(listOf("a", "b"), parseExpr("a b "));
-        assertEquals(listOf("a", "b"), parseExpr(" a b "));
-        assertEquals(listOf("a", "b"), parseExpr("a * b"));
-        assertEquals(listOf("a", "b"), parseExpr("a*b"));
-        assertEquals(listOf("a", "b"), parseExpr(" a * b "));
-        assertEquals(listOf("a", "b"), parseExpr(" a*b "));
+    void testWhitespace() {
+        assertEquals(listOf("a", "b"), parseExpr("(a b)"));
+        assertEquals(listOf("a", "b"), parseExpr("( a b)"));
+        assertEquals(listOf("a", "b"), parseExpr("(a b )"));
+        assertEquals(listOf("a", "b"), parseExpr("( a b )"));
+        assertEquals(listOf("a", "b"), parseExpr("(a  b)"));
+        assertEquals(listOf("a", "b"), parseExpr(" ( a  b ) "));
+        assertEquals(listOf("a"), parseExpr("(a)"));
+        assertEquals(listOf("a"), parseExpr("( a)"));
+        assertEquals(listOf("a"), parseExpr("(a )"));
+        assertEquals(listOf("a"), parseExpr("( a )"));
     }
 
     @Test
     void testParseAssignment() {
         LispExpr expr = parseExpr("(def a (1 2))");
-        ListExpr list = (ListExpr) ((ListExpr) expr).get(0);
+        ListExpr list = (ListExpr) expr;
         assertEquals(Symbol.of("def"), list.get(0));
         assertEquals(Symbol.of("a"), list.get(1));
         assertEquals(ListExpr.of(List.of(Number.of(1), Number.of(2))), list.get(2));
@@ -61,7 +55,7 @@ class ParserTest {
 
     @Test
     void testParse() {
-        assertEquals("((1 (2 3)))", parseExpr("(1 * (2 * 3))").toString());
+        assertEquals("(1 (2 3))", parseExpr("(1 (2 3))").toString());
     }
 
     private static LispExpr parseExpr(String s) {

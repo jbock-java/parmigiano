@@ -140,7 +140,7 @@ public final class LispParser {
                     c = (char) d;
                     if (c >= '0' && c <= '9') {
                         smb[len++] = c;
-                    } else if (c == ' ' || c == '*' || c == '(' || c == ')' || c == '=') {
+                    } else if (c == ' ' || c == '(' || c == ')' || c == '=') {
                         reader.unread(c);
                         return Number.of(smb, 0, len);
                     } else {
@@ -156,7 +156,7 @@ public final class LispParser {
                     c = (char) d;
                     if (c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
                         smb[len++] = c;
-                    } else if (c == ' ' || c == '*' || c == '(' || c == ')' || c == '=') {
+                    } else if (c == ' ' || c == '(' || c == ')' || c == '=') {
                         reader.unread(c);
                         return Symbol.of(smb, 0, len);
                     } else {
@@ -168,7 +168,7 @@ public final class LispParser {
                 throw new IllegalArgumentException("unmatched parentheses");
             } else if (c == '(') {
                 return parseList(reader);
-            } else if (c != ' ' && c != '*') {
+            } else if (c != ' ') {
                 throw new IllegalArgumentException("bad input: " + c);
             }
         }
@@ -178,7 +178,7 @@ public final class LispParser {
     private static void consumeWhitespace(PushbackReader reader) throws IOException {
         int d;
         while ((d = reader.read()) != -1) {
-            if (d != ' ' && d != '*') {
+            if (d != ' ') {
                 reader.unread(d);
                 return;
             }
@@ -186,19 +186,13 @@ public final class LispParser {
     }
 
     public static void parse(char[] input, Consumer<LispExpr> out) {
-        List<LispExpr> acc = new ArrayList<>();
         try (PushbackReader reader = new PushbackReader(new CharArrayReader(input))) {
             consumeWhitespace(reader);
             int d;
             while ((d = reader.read()) != -1) {
                 reader.unread(d);
-                acc.add(parse(reader));
+                out.accept(parse(reader));
                 consumeWhitespace(reader);
-            }
-            if (acc.isEmpty()) {
-                out.accept(ListExpr.of(List.of()));
-            } else {
-                out.accept(ListExpr.of(acc));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

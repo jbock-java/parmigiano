@@ -78,12 +78,7 @@ final class Eval {
 
     LispExpr eval(LispExpr expr) {
         return switch (expr) {
-            case ListExpr list -> {
-                if (list.length() == 1) {
-                    yield eval(list.get(0));
-                }
-                yield evalListExpression(resolveList(list));
-            }
+            case ListExpr list -> evalListExpression(resolveList(list));
             case Symbol symbol -> resolveSymbol(symbol);
             case LispParser.Number number -> number;
         };

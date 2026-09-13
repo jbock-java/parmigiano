@@ -4,25 +4,25 @@ This library does finite permutations in Java.
 
 ```
 $ make && make run
-def a 1
+> (def a 1)
 1
-def b 2
+> (def b 2)
 2
-def c a
+> (def c a)
 1
-a c
+> (a c)
 java.lang.IllegalArgumentException: not a cycle
-b c
+> (b c)
 (2 1)
-c b
+> (c b)
 (1 2)
-def d (b c)
+> (def d (b c))
 (2 1)
-d
+> d
 (2 1)
-d d
+> (d d)
 ()
-def e (d d d)
+> (def e (d d d))
 (1 2)
 ```
 

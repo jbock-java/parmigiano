@@ -344,7 +344,7 @@ class PermutationTest {
 
     @Test
     void testOrder() {
-        Permutation p = parse("(0 4) * (1 3 2)");
+        Permutation p = parse("(0 4) (1 3 2)");
         assertEquals(6, p.order());
     }
 
