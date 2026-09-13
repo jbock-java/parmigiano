@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PushbackReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.joining;
 
@@ -184,7 +185,7 @@ public final class LispParser {
         }
     }
 
-    public static LispExpr parse(char[] input) {
+    public static void parse(char[] input, Consumer<LispExpr> out) {
         List<LispExpr> acc = new ArrayList<>();
         try (PushbackReader reader = new PushbackReader(new CharArrayReader(input))) {
             consumeWhitespace(reader);
@@ -195,9 +196,9 @@ public final class LispParser {
                 consumeWhitespace(reader);
             }
             if (acc.isEmpty()) {
-                return ListExpr.of(List.of());
+                out.accept(ListExpr.of(List.of()));
             } else {
-                return ListExpr.of(acc);
+                out.accept(ListExpr.of(acc));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

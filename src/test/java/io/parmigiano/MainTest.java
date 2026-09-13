@@ -17,20 +17,16 @@ class MainTest {
     private String eval(String... exprs) {
         String s = Stream.of(exprs).map(expr -> expr + "\n")
                 .collect(Collectors.joining());
-        String result = null;
-        String line;
-        Main main = new Main();
+        String[] line = new String[1];
+        Main main = new Main(string -> line[0] = string);
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(s.getBytes())))) {
             do {
-                line = main.getNextString(reader);
-                if (line != null) {
-                    result = line;
-                }
-            } while (line != null);
+                main.getNextString(reader);
+            } while (main.isRunning());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return result;
+        return line[0];
     }
 
     @Test

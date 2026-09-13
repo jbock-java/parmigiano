@@ -59,9 +59,16 @@ class ParserTest {
         assertThrows(RuntimeException.class, () -> parseExpr(")("));
     }
 
+    @Test
+    void testParse() {
+        assertEquals("((1 (2 3)))", parseExpr("(1 * (2 * 3))").toString());
+    }
+
     private static LispExpr parseExpr(String s) {
         char[] input = s.toCharArray();
-        return LispParser.parse(input);
+        LispExpr[] result = new LispExpr[1];
+        LispParser.parse(input, ex -> result[0] = ex);
+        return result[0];
     }
 
     private static ListExpr listOf(String... symbols) {
