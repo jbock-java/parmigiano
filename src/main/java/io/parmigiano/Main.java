@@ -72,7 +72,7 @@ public class Main {
                 if (list.length() == 1) {
                     yield evalExpression(list.get(0));
                 }
-                yield  eval.evalListExpression(resolveList(list));
+                yield eval.evalListExpression(resolveList(list));
             }
             case Symbol symbol -> resolveSymbol(symbol);
             case Number number -> number;
@@ -112,8 +112,12 @@ public class Main {
 
     void run(BufferedReader reader) throws IOException {
         String line;
-        while ((line = getNextString(reader)) != null) {
+        while (true) {
             try {
+                line = getNextString(reader);
+                if (line == null) {
+                    break;
+                }
                 System.out.println(line);
             } catch (RuntimeException e) {
                 e.printStackTrace(System.err);
