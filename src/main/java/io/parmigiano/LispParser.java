@@ -10,6 +10,9 @@ import java.util.function.Consumer;
 import static java.util.stream.Collectors.joining;
 
 public final class LispParser {
+
+    private static final ListExpr NIL = ListExpr.of(List.of());
+
     public sealed interface LispExpr permits ListExpr, Symbol, Number {
         default Permutation toPermutation() {
             throw new IllegalArgumentException("cannot build permutation from " + this);
@@ -113,7 +116,7 @@ public final class LispParser {
         }
     }
 
-    static ListExpr parseList(PushbackReader reader) throws IOException {
+    private static ListExpr parseList(PushbackReader reader) throws IOException {
         List<LispExpr> result = new ArrayList<>();
         int d;
         while ((d = reader.read()) != -1) {
@@ -128,71 +131,79 @@ public final class LispParser {
         throw new IllegalArgumentException("unmatched parentheses");
     }
 
-    static LispExpr parse(PushbackReader reader) throws IOException {
+    private static Number parseNumber(PushbackReader reader, char c) throws IOException {
         int d;
+        char[] smb = new char[16];
+        int len = 1;
+        smb[0] = c;
         while ((d = reader.read()) != -1) {
-            char c = (char) d;
+            c = (char) d;
             if (c >= '0' && c <= '9') {
-                char[] smb = new char[16];
-                int len = 1;
-                smb[0] = c;
-                while ((d = reader.read()) != -1) {
-                    c = (char) d;
-                    if (c >= '0' && c <= '9') {
-                        smb[len++] = c;
-                    } else if (c == ' ' || c == '(' || c == ')' || c == '=') {
-                        reader.unread(c);
-                        return Number.of(smb, 0, len);
-                    } else {
-                        throw new IllegalArgumentException("digit expected: " + c);
-                    }
-                }
+                smb[len++] = c;
+            } else if (c == ' ' || c == '(' || c == ')' || c == '=') {
+                reader.unread(c);
                 return Number.of(smb, 0, len);
-            } else if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
-                char[] smb = new char[16];
-                int len = 1;
-                smb[0] = c;
-                while ((d = reader.read()) != -1) {
-                    c = (char) d;
-                    if (c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
-                        smb[len++] = c;
-                    } else if (c == ' ' || c == '(' || c == ')' || c == '=') {
-                        reader.unread(c);
-                        return Symbol.of(smb, 0, len);
-                    } else {
-                        throw new IllegalArgumentException("bad symbol: " + c);
-                    }
-                }
-                return Symbol.of(smb, 0, len);
-            } else if (c == ')') {
-                throw new IllegalArgumentException("unmatched parentheses");
-            } else if (c == '(') {
-                return parseList(reader);
-            } else if (c != ' ') {
-                throw new IllegalArgumentException("bad input: " + c);
+            } else {
+                throw new IllegalArgumentException("digit expected: " + c);
             }
         }
-        throw new IllegalArgumentException("bad input?");
+        return Number.of(smb, 0, len);
     }
 
-    private static void consumeWhitespace(PushbackReader reader) throws IOException {
+    private static Symbol parseSymbol(PushbackReader reader, char c) throws IOException {
+        int d;
+        char[] smb = new char[16];
+        int len = 1;
+        smb[0] = c;
+        while ((d = reader.read()) != -1) {
+            c = (char) d;
+            if (c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
+                smb[len++] = c;
+            } else if (c == ' ' || c == '(' || c == ')' || c == '=') {
+                reader.unread(c);
+                return Symbol.of(smb, 0, len);
+            } else {
+                throw new IllegalArgumentException("bad symbol: " + c);
+            }
+        }
+        return Symbol.of(smb, 0, len);
+    }
+
+    private static LispExpr parse(PushbackReader reader) throws IOException {
+        int d = reader.read();
+        if (d == -1) {
+            return NIL;
+        }
+        char c = (char) d;
+        if (c >= '0' && c <= '9') {
+            return parseNumber(reader, c);
+        } else if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
+            return parseSymbol(reader, c);
+        } else if (c == '(') {
+            return parseList(reader);
+        } else if (c == ')') {
+            throw new IllegalArgumentException("unmatched parentheses");
+        } else {
+            throw new IllegalArgumentException("bad input: " + c + "(" + (int) c + ")");
+        }
+    }
+
+    private static boolean consumeWhitespace(PushbackReader reader) throws IOException {
         int d;
         while ((d = reader.read()) != -1) {
             if (d != ' ') {
                 reader.unread(d);
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     public static void parse(char[] input, Consumer<LispExpr> out) {
         try (PushbackReader reader = new PushbackReader(new CharArrayReader(input))) {
-            consumeWhitespace(reader);
-            int d;
-            while ((d = reader.read()) != -1) {
-                reader.unread(d);
-                out.accept(parse(reader));
-                consumeWhitespace(reader);
+            while (consumeWhitespace(reader)) {
+                LispExpr expr = parse(reader);
+                out.accept(expr);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
