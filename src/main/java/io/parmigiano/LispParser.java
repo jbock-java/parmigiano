@@ -1,6 +1,5 @@
 package io.parmigiano;
 
-import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.util.ArrayList;
@@ -123,7 +122,7 @@ public final class LispParser {
             char c = (char) d;
             if (c == ')') {
                 return ListExpr.of(result);
-            } else if (c != ' ') {
+            } else if (c != ' ' && c != '\n') {
                 reader.unread(c);
                 result.add(parse(reader));
             }
@@ -140,7 +139,7 @@ public final class LispParser {
             c = (char) d;
             if (c >= '0' && c <= '9') {
                 smb[len++] = c;
-            } else if (c == ' ' || c == '(' || c == ')' || c == '=') {
+            } else if (c == ' ' || c == '\n' || c == '(' || c == ')' || c == '=') {
                 reader.unread(c);
                 return Number.of(smb, 0, len);
             } else {
@@ -159,7 +158,7 @@ public final class LispParser {
             c = (char) d;
             if (c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
                 smb[len++] = c;
-            } else if (c == ' ' || c == '(' || c == ')' || c == '=') {
+            } else if (c == ' ' || c == '\n' || c == '(' || c == ')' || c == '=') {
                 reader.unread(c);
                 return Symbol.of(smb, 0, len);
             } else {
@@ -169,7 +168,7 @@ public final class LispParser {
         return Symbol.of(smb, 0, len);
     }
 
-    private static LispExpr parse(PushbackReader reader) throws IOException {
+    static LispExpr parse(PushbackReader reader) throws IOException {
         int d = reader.read();
         if (d == -1) {
             return NIL;
@@ -188,10 +187,10 @@ public final class LispParser {
         }
     }
 
-    private static boolean consumeWhitespace(PushbackReader reader) throws IOException {
+    static boolean consumeWhitespace(PushbackReader reader) throws IOException {
         int d;
         while ((d = reader.read()) != -1) {
-            if (d != ' ') {
+            if (d != ' ' && d != '\n') {
                 reader.unread(d);
                 return true;
             }
@@ -199,8 +198,9 @@ public final class LispParser {
         return false;
     }
 
-    public static void parse(char[] input, Consumer<LispExpr> out) {
-        try (PushbackReader reader = new PushbackReader(new CharArrayReader(input))) {
+    @Deprecated(forRemoval = true)
+    public static void parse(PushbackReader reader, Consumer<LispExpr> out) {
+        try {
             while (consumeWhitespace(reader)) {
                 LispExpr expr = parse(reader);
                 out.accept(expr);

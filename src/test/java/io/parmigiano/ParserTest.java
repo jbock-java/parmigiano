@@ -6,6 +6,10 @@ import io.parmigiano.LispParser.Number;
 import io.parmigiano.LispParser.Symbol;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PushbackReader;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -59,10 +63,13 @@ class ParserTest {
     }
 
     private static LispExpr parseExpr(String s) {
-        char[] input = s.toCharArray();
-        LispExpr[] result = new LispExpr[1];
-        LispParser.parse(input, ex -> result[0] = ex);
-        return result[0];
+        byte[] input = s.getBytes();
+        try (PushbackReader reader = new PushbackReader(new InputStreamReader(new ByteArrayInputStream(input)))) {
+            LispParser.consumeWhitespace(reader);
+            return LispParser.parse(reader);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static ListExpr listOf(String... symbols) {

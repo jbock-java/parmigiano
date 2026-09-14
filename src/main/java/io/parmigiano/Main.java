@@ -5,9 +5,9 @@ import io.parmigiano.LispParser.ListExpr;
 import io.parmigiano.LispParser.Number;
 import io.parmigiano.LispParser.Symbol;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PushbackReader;
 import java.util.function.Consumer;
 
 public class Main implements Consumer<LispExpr> {
@@ -22,14 +22,16 @@ public class Main implements Consumer<LispExpr> {
         this.out = out;
     }
 
-    void getNextString(BufferedReader reader) throws IOException {
-        String line;
-        line = reader.readLine();
-        if (line == null) {
+    void getNextString(PushbackReader reader) throws IOException {
+        try {
+            while (LispParser.consumeWhitespace(reader)) {
+                LispExpr expr = LispParser.parse(reader);
+                accept(expr);
+            }
             running = false;
-            return;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        LispParser.parse(line.toCharArray(), this);
     }
 
     @Override
@@ -56,7 +58,7 @@ public class Main implements Consumer<LispExpr> {
         }
     }
 
-    void run(BufferedReader reader) throws IOException {
+    void run(PushbackReader reader) throws IOException {
         while (running) {
             try {
                 getNextString(reader);
@@ -67,7 +69,7 @@ public class Main implements Consumer<LispExpr> {
     }
 
     static void main() {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+        try (PushbackReader reader = new PushbackReader(new InputStreamReader(System.in))) {
             new Main(System.out::println).run(reader);
         } catch (IOException e) {
             e.printStackTrace(System.err);

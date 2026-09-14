@@ -2,10 +2,10 @@ package io.parmigiano;
 
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PushbackReader;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,7 +20,7 @@ class MainTest {
                 .collect(Collectors.joining());
         String[] line = new String[1];
         Main main = new Main(string -> line[0] = string);
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(s.getBytes())))) {
+        try (PushbackReader reader = new PushbackReader(new InputStreamReader(new ByteArrayInputStream(s.getBytes())))) {
             do {
                 main.getNextString(reader);
             } while (main.isRunning());
