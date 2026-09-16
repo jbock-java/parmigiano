@@ -20,6 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ParserTest {
 
     @Test
+    void testParseNumbers() {
+        assertEquals("1", parseExpr("1").toString());
+        assertEquals("-1", parseExpr("-1").toString());
+    }
+
+    @Test
     void testParseCycle() {
         assertEquals("()", parse("()").toString());
         assertEquals("(1 2)", parse("(1 2)").toString());
@@ -58,7 +64,7 @@ class ParserTest {
     }
 
     @Test
-    void testParse() {
+    void testNesting() {
         assertEquals("(1 (2 3))", parseExpr("(1 (2 3))").toString());
     }
 

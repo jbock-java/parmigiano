@@ -9,7 +9,7 @@ import java.io.PushbackReader;
 
 public final class Parser {
 
-    public static Permutation parseDo(String s) {
+    public static Permutation run(String s) {
         byte[] input = s.getBytes();
         byte[] mod = new byte[input.length + 5];
         mod[0] = '(';
@@ -28,6 +28,10 @@ public final class Parser {
     }
 
     public static Permutation parse(String s) {
+        return (Permutation) parseExpr(s);
+    }
+
+    static LispExpr parseExpr(String s) {
         byte[] input = s.getBytes();
         byte[] mod = new byte[input.length + 2];
         mod[0] = '(';
@@ -35,8 +39,7 @@ public final class Parser {
         System.arraycopy(input, 0, mod, 1, input.length);
         try (PushbackReader reader = new PushbackReader(new InputStreamReader(new ByteArrayInputStream(mod)))) {
             LispParser.consumeWhitespace(reader);
-            LispExpr result = new Eval().eval(LispParser.parse(reader));
-            return (Permutation) result;
+            return new Eval().eval(LispParser.parse(reader));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

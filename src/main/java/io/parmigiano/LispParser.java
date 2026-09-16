@@ -138,9 +138,9 @@ public final class LispParser {
         smb[0] = c;
         while ((d = reader.read()) != -1) {
             c = (char) d;
-            if (c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
+            if (c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_' || c == '-') {
                 smb[len++] = c;
-            } else if (c == ' ' || c == '\n' || c == '(' || c == ')' || c == '=') {
+            } else if (c == ' ' || c == '\t' || c == '\n' || c == ')') {
                 reader.unread(c);
                 return Symbol.of(smb, 0, len);
             } else {
@@ -156,9 +156,9 @@ public final class LispParser {
             return NIL;
         }
         char c = (char) d;
-        if (c >= '0' && c <= '9') {
+        if (c == '-' || c >= '0' && c <= '9') {
             return parseNumber(reader, c);
-        } else if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
+        } else if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_') {
             return parseSymbol(reader, c);
         } else if (c == '(') {
             return parseList(reader);
@@ -172,7 +172,7 @@ public final class LispParser {
     static boolean consumeWhitespace(PushbackReader reader) throws IOException {
         int d;
         while ((d = reader.read()) != -1) {
-            if (d != ' ' && d != '\n') {
+            if (d != ' ' && d != '\n' && d != '\t') {
                 reader.unread(d);
                 return true;
             }

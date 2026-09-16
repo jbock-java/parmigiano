@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static io.parmigiano.Parser.parse;
-import static io.parmigiano.Parser.parseDo;
+import static io.parmigiano.Parser.run;
 import static io.parmigiano.Permutation.symmetricGroup;
 import static io.parmigiano.TestUtil.commutator;
 import static io.parmigiano.TestUtil.factorial;
@@ -56,7 +56,7 @@ class ArrayUtilTest {
         List<Permutation> a = symmetricGroup(5);
         List<Permutation> center = TestUtil.center(a);
         assertEquals(1, center.size());
-        assertTrue(center.get(0).isIdentity());
+        assertTrue(center.getFirst().isIdentity());
     }
 
     @Test
@@ -212,21 +212,32 @@ class ArrayUtilTest {
 
     @Test
     void testFindCommutator() {
-        assertEquals(parse("(0 1 2)"), parseDo("(def a (1 2)) (def b (0 1)) ((inv a) (inv b) a b)"));
+        String e = """
+                (def a (1 2))
+                (def b (0 1))
+                ((inv a) (inv b) a b)
+                """;
+        assertEquals(parse("(0 1 2)"), run(e));
     }
 
     @Test
     void testEvenCommutator() {
-        Permutation p = Permutation.cycle(0, 4, 1);
-        Permutation q = Permutation.cycle(0, 3, 2, 1, 4);
-        assertEquals(Permutation.cycle(0, 1, 2), Permutation.product(p.invert(), q.invert(), p, q));
+        String e = """
+                (def a (0 4 1))
+                (def b (0 3 2 1 4))
+                ((inv a) (inv b) a b)
+                """;
+        assertEquals(parse("(0 1 2)"), run(e));
     }
 
     @Test
     void testEvenCommutator2() {
-        Permutation p = Permutation.cycle(0, 3, 1);
-        Permutation q = Permutation.cycle(0, 4, 2, 1, 3);
-        assertEquals(Permutation.cycle(0, 1, 2), Permutation.product(p.invert(), q.invert(), p, q));
+        String e = """
+                (def a (0 3 1))
+                (def b (0 4 2 1 3))
+                ((inv a) (inv b) a b)
+                """;
+        assertEquals(parse("(0 1 2)"), run(e));
     }
 
     @Test
