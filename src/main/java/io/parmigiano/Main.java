@@ -38,9 +38,7 @@ public class Main implements Consumer<LispExpr> {
     public void accept(LispExpr expr) {
         LispExpr ex = eval.eval(expr);
         switch (ex) {
-            case Number number -> {
-                out.accept(number.toString());
-            }
+            case Number number -> out.accept(number.toString());
             case Symbol symbol -> {
                 if (symbol.name().equals("q")) {
                     running = false;
@@ -48,13 +46,8 @@ public class Main implements Consumer<LispExpr> {
                     out.accept("?");
                 }
             }
-            case ListExpr listExpr -> {
-                if (listExpr.length() == 1) {
-                    out.accept(listExpr.get(0).toString());
-                } else {
-                    out.accept(listExpr.toPermutation().toString());
-                }
-            }
+            case ListExpr list -> out.accept(list.toString());
+            case Permutation p -> out.accept(p.toString());
         }
     }
 

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static io.parmigiano.Parser.parse;
+import static io.parmigiano.Parser.parseDo;
 import static io.parmigiano.Permutation.symmetricGroup;
 import static io.parmigiano.TestUtil.commutator;
 import static io.parmigiano.TestUtil.factorial;
@@ -210,9 +212,7 @@ class ArrayUtilTest {
 
     @Test
     void testFindCommutator() {
-        Permutation p = Permutation.cycle(1, 2);
-        Permutation q = Permutation.cycle(0, 1);
-        assertEquals(Permutation.cycle(0, 1, 2), Permutation.product(p.invert(), q.invert(), p, q));
+        assertEquals(parse("(0 1 2)"), parseDo("(def a (1 2)) (def b (0 1)) ((inv a) (inv b) a b)"));
     }
 
     @Test

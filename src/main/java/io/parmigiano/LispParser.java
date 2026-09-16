@@ -4,41 +4,19 @@ import java.io.IOException;
 import java.io.PushbackReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.joining;
 
 public final class LispParser {
 
-    private static final ListExpr NIL = ListExpr.of(List.of());
+    static final ListExpr NIL = ListExpr.of(List.of());
 
-    public sealed interface LispExpr permits ListExpr, Symbol, Number {
-        default Permutation toPermutation() {
-            throw new IllegalArgumentException("cannot build permutation from " + this);
-        }
+    public sealed interface LispExpr permits ListExpr, Number, Symbol, Permutation {
     }
 
     public record ListExpr(List<? extends LispExpr> exprs) implements LispExpr {
         public static ListExpr of(List<? extends LispExpr> exprs) {
             return new ListExpr(exprs);
-        }
-
-        @Override
-        public Permutation toPermutation() {
-            if (isEmpty() || startsWithNumber()) {
-                int[] numbers = new int[length()];
-                int numbers_pos = 0;
-                for (LispExpr pr : exprs) {
-                    numbers[numbers_pos++] = ((Number) pr).number();
-                }
-                return Permutation.cycle(numbers);
-            } else if (startsWithList()) {
-                return Permutation.product(exprs().stream()
-                        .map(LispExpr::toPermutation)
-                        .toList());
-            } else {
-                throw new IllegalArgumentException("bad list: " + this);
-            }
         }
 
         public boolean startsWith(Symbol smb) {
@@ -59,6 +37,10 @@ public final class LispParser {
             }
             LispExpr first = exprs.getFirst();
             return first instanceof ListExpr;
+        }
+
+        public boolean isSingleton() {
+            return length() == 1;
         }
 
         public LispExpr get(int n) {
@@ -196,17 +178,5 @@ public final class LispParser {
             }
         }
         return false;
-    }
-
-    @Deprecated(forRemoval = true)
-    public static void parse(PushbackReader reader, Consumer<LispExpr> out) {
-        try {
-            while (consumeWhitespace(reader)) {
-                LispExpr expr = parse(reader);
-                out.accept(expr);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

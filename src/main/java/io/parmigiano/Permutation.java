@@ -1,5 +1,7 @@
 package io.parmigiano;
 
+import io.parmigiano.LispParser.LispExpr;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -10,7 +12,7 @@ import static java.lang.Math.floorMod;
 /**
  * <p>An operation that shuffles a list.
  */
-public final class Permutation {
+public final class Permutation implements LispExpr {
 
     static final Permutation IDENTITY = new Permutation(new int[0], new int[0], 0);
 
@@ -109,7 +111,7 @@ public final class Permutation {
         return powApply(a, 1);
     }
 
-    public void apply(int[] a, int[] out, int sign) {
+    public void apply(int[] a, int[] out, int shift) {
         System.arraycopy(a, 0, out, 0, a.length);
         int off = 0;
         for (int len : lengths) {
@@ -117,7 +119,7 @@ public final class Permutation {
                 break;
             }
             for (int j = 0; j < len; j++) {
-                out[cycles[off + j]] = a[cycles[off + floorMod(j + sign, len)]];
+                out[cycles[off + j]] = a[cycles[off + floorMod(j + shift, len)]];
             }
             off += len;
         }
