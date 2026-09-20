@@ -32,8 +32,8 @@ class MainTest {
 
     @Test
     void testEval() {
-        assertEquals("()", eval("(def a (0 1))", "(a a)"));
-        assertEquals("(0 2 1)", eval("(def a (0 1 2))", "(a a)"));
+        assertEquals("()", eval("(def a (0 1))", "(* a a)"));
+        assertEquals("(0 2 1)", eval("(def a (0 1 2))", "(* a a)"));
     }
 
     @Test
@@ -69,7 +69,7 @@ class MainTest {
 
     @Test
     void testBadInput() {
-        assertThrows(RuntimeException.class, () -> eval("((0 1) 2)"));
+        assertThrows(RuntimeException.class, () -> eval("(* (0 1) 2)"));
     }
 
     @Test

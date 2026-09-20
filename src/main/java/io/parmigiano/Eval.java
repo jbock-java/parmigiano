@@ -55,16 +55,16 @@ final class Eval {
         };
     }
 
-    public Permutation toPermutation(ListExpr list) {
-        if (list.isEmpty() || list.startsWithNumber()) {
-            int[] numbers = new int[list.length()];
+    public Permutation toPermutation(List<? extends LispExpr> list) {
+        if (list.isEmpty() || list.getFirst() instanceof Number) {
+            int[] numbers = new int[list.size()];
             int numbers_pos = 0;
-            for (LispExpr pr : list.exprs()) {
+            for (LispExpr pr : list) {
                 numbers[numbers_pos++] = ((Number) pr).number();
             }
             return Permutation.cycle(numbers);
-        } else if (list.startsWithList()) {
-            return Permutation.product(list.exprs().stream()
+        } else if (list.getFirst() instanceof ListExpr) {
+            return Permutation.product(list.stream()
                     .map(this::eval)
                     .map(expr -> (Permutation) expr)
                     .toList());
@@ -91,7 +91,7 @@ final class Eval {
                 return p.invert();
             }
             if (list.get(1) instanceof ListExpr l) {
-                return toPermutation(l).invert();
+                return toPermutation(l.exprs()).invert();
             }
             throw new IllegalArgumentException("param of inv must be a permutation");
         }
@@ -107,11 +107,14 @@ final class Eval {
             definitions.put(lhs, rhs);
             return eval(rhs);
         }
-        if (list.isSingleton()) {
-            return eval(list.get(0));
+        if (list.isEmpty()) {
+            return Permutation.identity();
         }
-        if (list.startsWithList() || list.isEmpty() || list.startsWithNumber()) {
-            return toPermutation(list);
+        if (list.startsWith(Symbols.MUL)) {
+            return toPermutation(list.exprs().subList(1, list.exprs().size()));
+        }
+        if (list.startsWithNumber()) {
+            return toPermutation(list.exprs());
         }
         return list;
     }

@@ -30,7 +30,7 @@ class ParserTest {
         assertEquals("()", parse("()").toString());
         assertEquals("(1 2)", parse("(1 2)").toString());
         assertEquals("(1 2 3)", parse("(1 2 3)").toString());
-        assertEquals("(1 2) (3 4)", parse("(1 2) (3 4)").toString());
+        assertEquals("(1 2) (3 4)", parse("(* (1 2) (3 4))").toString());
     }
 
     @Test

@@ -16,9 +16,9 @@ class KleinFourTest {
 
     private final List<Permutation> klein = List.of(
             Permutation.identity(),
-            parse("(0 1) (2 3)"),
-            parse("(0 2) (1 3)"),
-            parse("(0 3) (1 2)"));
+            parse("(* (0 1) (2 3))"),
+            parse("(* (0 2) (1 3))"),
+            parse("(* (0 3) (1 2))"));
 
     private final Set<Permutation> coset_a1 = Set.of(
             parse("(0 1 2)"),
@@ -63,7 +63,7 @@ class KleinFourTest {
     void funProduct() {
         assertEquals(
                 parse("(0 1 2 3)"),
-                parse("(0 1) (2 3) (1 3)"));
+                parse("(* (0 1) (2 3) (1 3))"));
     }
 
     @Test

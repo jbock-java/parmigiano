@@ -215,7 +215,7 @@ class ArrayUtilTest {
         String e = """
                 (def a (1 2))
                 (def b (0 1))
-                ((inv a) (inv b) a b)
+                (* (inv a) (inv b) a b)
                 """;
         assertEquals(parse("(0 1 2)"), run(e));
     }
@@ -225,7 +225,7 @@ class ArrayUtilTest {
         String e = """
                 (def a (0 4 1))
                 (def b (0 3 2 1 4))
-                ((inv a) (inv b) a b)
+                (* (inv a) (inv b) a b)
                 """;
         assertEquals(parse("(0 1 2)"), run(e));
     }
@@ -235,7 +235,7 @@ class ArrayUtilTest {
         String e = """
                 (def a (0 3 1))
                 (def b (0 4 2 1 3))
-                ((inv a) (inv b) a b)
+                (* (inv a) (inv b) a b)
                 """;
         assertEquals(parse("(0 1 2)"), run(e));
     }

@@ -137,7 +137,7 @@ class PermutationTest {
     @Test
     void testIdentity() {
         assertTrue(Permutation.identity().isIdentity());
-        assertTrue(parse("(1 2) (1 2)").isIdentity());
+        assertTrue(parse("(* (1 2) (1 2))").isIdentity());
         assertFalse(parse("(1 2)").isIdentity());
     }
 
@@ -182,7 +182,7 @@ class PermutationTest {
                 Permutation.product(parse("(0 1)"), parse("(1 2)")).apply(TestUtil.symbols(3)));
         assertEquals(List.of("c", "a", "b"), parse("(0 1 2)").apply(TestUtil.symbols(3)));
         assertEquals(List.of("a", "c", "b"),
-                parse("(0 1) (0 1) (1 2)").apply(TestUtil.symbols(3)));
+                parse("(* (0 1) (0 1) (1 2))").apply(TestUtil.symbols(3)));
     }
 
     @Test
@@ -203,14 +203,14 @@ class PermutationTest {
 
     @Test
     void testCycleEquals() {
-        assertTrue(Permutation.product(parse("(1 2)"), parse("(2 1)")).isIdentity());
-        assertEquals(parse("(2 3)"), parse("(1 2) (1 2) (2 3)"));
+        assertTrue(parse("(* (1 2) (2 1))").isIdentity());
+        assertEquals(parse("(2 3)"), parse("(* (1 2) (1 2) (2 3))"));
     }
 
     @Test
     void testCycleLaw() {
         Permutation longest = parse("(2 4 1 11 3)");
-        assertEquals(Permutation.product(parse("(2 4) (4 1 11 3)")), longest);
+        assertEquals(Permutation.product(parse("(* (2 4) (4 1 11 3))")), longest);
     }
 
     @Test
@@ -344,7 +344,7 @@ class PermutationTest {
 
     @Test
     void testOrder() {
-        Permutation p = parse("(0 4) (1 3 2)");
+        Permutation p = parse("(* (0 4) (1 3 2))");
         assertEquals(6, p.order());
     }
 

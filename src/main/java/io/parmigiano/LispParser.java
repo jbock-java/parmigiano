@@ -64,7 +64,6 @@ public final class LispParser {
         }
     }
 
-    // todo, parse square brackets
     public record ArrayExpr(List<? extends LispExpr> exprs) implements LispExpr {
         public static ArrayExpr of(List<? extends LispExpr> exprs) {
             return new ArrayExpr(exprs);
@@ -124,13 +123,13 @@ public final class LispParser {
         }
     }
 
-    private static ListExpr parseList(PushbackReader reader) throws IOException {
+    private static List<LispExpr> parseList(PushbackReader reader, char delim) throws IOException {
         List<LispExpr> result = new ArrayList<>();
         int d;
         while ((d = reader.read()) != -1) {
             char c = (char) d;
-            if (c == ')') {
-                return ListExpr.of(result);
+            if (c == delim) {
+                return result;
             } else if (c != ' ' && c != '\n') {
                 reader.unread(c);
                 result.add(parse(reader));
@@ -185,11 +184,13 @@ public final class LispParser {
         char c = (char) d;
         if (c == '-' || c >= '0' && c <= '9') {
             return parseNumber(reader, c);
-        } else if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_') {
+        } else if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_' || c == '*') {
             return parseSymbol(reader, c);
         } else if (c == '(') {
-            return parseList(reader);
-        } else if (c == ')') {
+            return ListExpr.of(parseList(reader, ')'));
+        } else if (c == '[') {
+            return ArrayExpr.of(parseList(reader, ']'));
+        } else if (c == ')' || c == ']') {
             throw new IllegalArgumentException("unmatched parentheses");
         } else {
             throw new IllegalArgumentException("bad input: " + c + "(" + (int) c + ")");
