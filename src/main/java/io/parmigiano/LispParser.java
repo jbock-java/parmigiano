@@ -11,7 +11,12 @@ public final class LispParser {
 
     static final ListExpr NIL = ListExpr.of(List.of());
 
-    public sealed interface LispExpr permits ListExpr, Number, Symbol, Permutation {
+    public sealed interface LispExpr permits
+            ArrayExpr,
+            ListExpr,
+            Number,
+            Symbol,
+            Permutation {
     }
 
     public record ListExpr(List<? extends LispExpr> exprs) implements LispExpr {
@@ -56,6 +61,28 @@ public final class LispParser {
             return exprs.stream()
                     .map(LispExpr::toString)
                     .collect(joining(" ", "(", ")"));
+        }
+    }
+
+    // todo, parse square brackets
+    public record ArrayExpr(List<? extends LispExpr> exprs) implements LispExpr {
+        public static ArrayExpr of(List<? extends LispExpr> exprs) {
+            return new ArrayExpr(exprs);
+        }
+
+        public LispExpr get(int n) {
+            return exprs.get(n);
+        }
+
+        public int length() {
+            return exprs.size();
+        }
+
+        @Override
+        public String toString() {
+            return exprs.stream()
+                    .map(LispExpr::toString)
+                    .collect(joining(" ", "[", "]"));
         }
     }
 

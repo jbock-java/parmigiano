@@ -49,12 +49,12 @@ final class ArrayUtil {
             return INT_0;
         int[] result = new int[Math.abs(start - end)];
         if (start < end) {
-            for (int i = 0; i < result.length; i++) {
-                result[i] = start++;
+            for (int j = 0; j < result.length; j++) {
+                result[j] = start++;
             }
         } else {
-            for (int i = 0; i < result.length; i++) {
-                result[i] = start--;
+            for (int j = 0; j < result.length; j++) {
+                result[j] = start--;
             }
         }
         return result;
@@ -68,9 +68,9 @@ final class ArrayUtil {
      * found in {@code a}, or if all occurences are skipped
      */
     static int indexOf(int[] a, int el) {
-        for (int i = 0; i < a.length; i += 1) {
-            if (a[i] == el) {
-                return i;
+        for (int j = 0; j < a.length; j++) {
+            if (a[j] == el) {
+                return j;
             }
         }
         return -1;

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.function.BiPredicate;
 
 import static io.parmigiano.ArrayUtil.negativeFailure;
-import static io.parmigiano.Preconditions.checkState;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.binarySearch;
 
@@ -240,7 +239,9 @@ public final class Rankings {
         int[] ranking = new int[a.length];
         for (int i = 0; i < a.length; i += 1) {
             int indexInB = ArrayUtil.indexOf(b, a[i]);
-            checkState(indexInB >= 0, "not found in b: %s", a[i]);
+            if (indexInB == -1) {
+                throw new IllegalArgumentException(String.format("not in b: %s", a[i]));
+            }
             ranking[i] = indexInB;
         }
         checkRanking(ranking);
@@ -252,7 +253,9 @@ public final class Rankings {
         int[] ranking = new int[a.size()];
         for (int i = 0; i < a.size(); i += 1) {
             int indexInB = b.indexOf(a.get(i));
-            checkState(indexInB >= 0, "not found in b: %s", a.get(i));
+            if (indexInB == -1) {
+                throw new IllegalArgumentException(String.format("not in b: %s", a.get(i)));
+            }
             ranking[i] = indexInB;
         }
         checkRanking(ranking);

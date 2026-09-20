@@ -1,5 +1,6 @@
 package io.parmigiano;
 
+import io.parmigiano.LispParser.ArrayExpr;
 import io.parmigiano.LispParser.LispExpr;
 import io.parmigiano.LispParser.ListExpr;
 import io.parmigiano.LispParser.Number;
@@ -48,6 +49,7 @@ public class Main implements Consumer<LispExpr> {
             }
             case ListExpr list -> out.accept(list.toString());
             case Permutation p -> out.accept(p.toString());
+            case ArrayExpr a -> out.accept(a.toString());
         }
     }
 

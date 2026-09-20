@@ -1,8 +1,10 @@
 package io.parmigiano;
 
+import io.parmigiano.LispParser.ArrayExpr;
 import io.parmigiano.LispParser.LispExpr;
 import io.parmigiano.LispParser.ListExpr;
 import io.parmigiano.LispParser.Symbol;
+import io.parmigiano.LispParser.Number;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,57 +18,41 @@ final class Eval {
 
     private LispExpr resolve(LispExpr expr) {
         return switch (expr) {
-            case ListExpr listExpr -> resolveList(listExpr);
-            case Symbol symbol -> {
-                LispExpr lispExpr = resolve(symbol);
-                yield switch (lispExpr) {
-                    case ListExpr listExpr -> listExpr;
-                    case LispParser.Number number -> number;
-                    case Symbol smb -> {
-                        if (symbol.equals(smb)) {
-                            yield symbol;
-                        }
-                        yield resolve(smb);
-                    }
-                    case null -> symbol;
-                    case Permutation p -> p;
-                };
-            }
-            case LispParser.Number number -> number;
+            case ListExpr listExpr -> ListExpr.of(resolveList(listExpr.exprs()));
+            case Symbol symbol -> resolveSymbol(symbol);
+            case Number number -> number;
             case Permutation p -> p;
+            case ArrayExpr a -> ArrayExpr.of(resolveList(a.exprs()));
         };
     }
 
-    private ListExpr resolveList(ListExpr listExpr) {
-        if (listExpr.startsWith(Symbols.DEF)) {
-            return ListExpr.of(List.of(
+    private List<LispExpr> resolveList(List<? extends LispExpr> listExpr) {
+        if (!listExpr.isEmpty() && listExpr.get(0).equals(Symbols.DEF)) {
+            return List.of(
                     Symbols.DEF,
                     listExpr.get(1),
-                    resolve(listExpr.get(2))));
+                    resolve(listExpr.get(2)));
         }
-        return ListExpr.of(listExpr.exprs().stream()
+        return listExpr.stream()
                 .map(this::resolve)
-                .toList());
+                .toList();
     }
 
     public LispExpr resolveSymbol(Symbol symbol) {
-        LispExpr lispExpr = resolve(symbol);
+        LispExpr lispExpr = definitions.get(symbol);
         return switch (lispExpr) {
             case ListExpr listExpr -> listExpr;
-            case LispParser.Number number -> number;
+            case Number number -> number;
             case Symbol smb -> {
                 if (symbol.equals(smb)) {
                     yield symbol;
                 }
-                yield resolve(smb);
+                yield definitions.get(smb);
             }
             case null -> symbol;
             case Permutation permutation -> permutation;
+            case ArrayExpr a -> a;
         };
-    }
-
-    LispExpr resolve(Symbol symbol) {
-        return definitions.get(symbol);
     }
 
     public Permutation toPermutation(ListExpr list) {
@@ -74,7 +60,7 @@ final class Eval {
             int[] numbers = new int[list.length()];
             int numbers_pos = 0;
             for (LispExpr pr : list.exprs()) {
-                numbers[numbers_pos++] = ((LispParser.Number) pr).number();
+                numbers[numbers_pos++] = ((Number) pr).number();
             }
             return Permutation.cycle(numbers);
         } else if (list.startsWithList()) {
@@ -132,7 +118,7 @@ final class Eval {
 
     LispExpr eval(LispExpr expr) {
         return switch (expr) {
-            case ListExpr list -> evalListExpression(resolveList(list));
+            case ListExpr list -> evalListExpression(ListExpr.of(resolveList(list.exprs())));
             case Symbol symbol -> {
                 LispExpr result = resolveSymbol(symbol);
                 if (result instanceof Symbol) {
@@ -140,8 +126,9 @@ final class Eval {
                 }
                 yield eval(result);
             }
-            case LispParser.Number number -> number;
+            case Number number -> number;
             case Permutation p -> p;
+            case ArrayExpr a -> a;
         };
     }
 }
